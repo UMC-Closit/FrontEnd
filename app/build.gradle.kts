@@ -1,14 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
 }
 
 android {
-    namespace = "com.example.mission"
+    namespace = "com.example.umc_closit"
     compileSdk = 35
+    viewBinding.isEnabled = true
 
     defaultConfig {
-        applicationId = "com.example.mission"
+        applicationId = "com.example.umc_closit"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -27,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -42,8 +44,20 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("androidx.exifinterface:exifinterface:1.3.6")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    // Splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // ViewModel
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+
+    // camera
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
 }

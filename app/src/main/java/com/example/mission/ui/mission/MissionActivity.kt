@@ -7,11 +7,11 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mission.R
 import com.example.mission.camera.CameraPreviewCallback
 import com.example.mission.camera.CameraPreviewManager
+import com.example.umc_closit.R
 
-class MainActivity : AppCompatActivity(), CameraPreviewCallback {
+class MissionActivity : AppCompatActivity(), CameraPreviewCallback {
 
     private lateinit var surfaceView: SurfaceView
     private lateinit var surfaceViewSecond: SurfaceView
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), CameraPreviewCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_mission)
 
         // 상단 툴바
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.topNavigationBar)

@@ -54,7 +54,7 @@ class   PreviewActivity : AppCompatActivity() {
         }
 
         btnRetake.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, MissionActivity::class.java)
             startActivity(intent)
             finish()
         }
