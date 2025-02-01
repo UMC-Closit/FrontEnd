@@ -1,4 +1,4 @@
-package com.example.mission.ui.mission
+package com.example.umc_closit.ui.mission
 
 import android.content.Intent
 import android.os.Bundle

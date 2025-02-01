@@ -1,22 +1,22 @@
-package com.example.mission.ui.mission
+package com.example.umc_closit.ui.mission
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageButton
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import android.content.DialogInterface
-import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.drawable.GradientDrawable
-import android.widget.LinearLayout
-import com.example.mission.R
+import com.example.umc_closit.R
 
 class BackOnlyActivity : AppCompatActivity() {
 

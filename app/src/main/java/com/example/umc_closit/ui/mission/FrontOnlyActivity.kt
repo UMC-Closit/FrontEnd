@@ -1,28 +1,26 @@
-package com.example.mission.ui.mission
+package com.example.umc_closit.ui.mission
 
-import android.widget.*
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import android.graphics.drawable.GradientDrawable
-import android.widget.ImageButton
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
-import android.content.DialogInterface
-import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import androidx.appcompat.app.AlertDialog
-import com.example.mission.R
-import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
+import com.example.umc_closit.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class FrontOnlyActivity : AppCompatActivity() {
 

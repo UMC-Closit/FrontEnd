@@ -1,4 +1,4 @@
-package com.example.mission.ui.mission
+package com.example.umc_closit.ui.mission
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mission.R
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
+import com.example.umc_closit.R
 
 class   PreviewActivity : AppCompatActivity() {
 
