@@ -66,6 +66,7 @@ object DateUtils {
         return dateFormat.format(calendar.time)
     }
 
+
     // 현재 시간을 "yyyy-MM-dd'T'HH:mm:ss.SSSSSS" 형식으로 반환
     fun getFormattedTime(currentTimeMillis: Long): String {
         val currentDate = Date(currentTimeMillis)

@@ -33,6 +33,7 @@ class TimelineActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
+
                R.id.menu_profile -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, ProfileFragment())

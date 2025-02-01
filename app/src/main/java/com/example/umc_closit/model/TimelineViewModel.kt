@@ -76,7 +76,7 @@ class TimelineViewModel : ViewModel() {
         )
     }
 
-/*    // 좋아요 상태 변경
+    // 좋아요 상태 변경
     fun toggleLike(postId: Int) {
         val updatedItems = _timelineItems.value?.map {
             if (it.id == postId) {
@@ -94,7 +94,7 @@ class TimelineViewModel : ViewModel() {
             } else it
         }
         _timelineItems.value = updatedItems
-    }*/
+    }
 
     // 게시글 상태 가져오기
     fun getPostStatus(postId: Int): Pair<Boolean, Boolean>? {
