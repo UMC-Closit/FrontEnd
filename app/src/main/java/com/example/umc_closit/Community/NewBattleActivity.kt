@@ -18,7 +18,7 @@ class NewBattleActivity : AppCompatActivity() {
         // RecyclerView 설정 (가로 3개 그리드)
         val itemList = List(21) { R.drawable.img_gray_square } // 모든 항목을 동일한 이미지로 설정
 
-        val adapter = BattleAdapter(itemList)
+        val adapter = BattleAdapter(itemList, this)
         binding.challengeRecyclerView.layoutManager = GridLayoutManager(this, 3) // 한 줄에 3개
         binding.challengeRecyclerView.adapter = adapter
 

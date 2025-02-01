@@ -45,6 +45,11 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.imgDetail2.setOnClickListener {
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            startActivity(intent)
+        }
+
         // btnUpload 버튼 클릭 시 UploadFragment 실행
         binding.btnUpload.setOnClickListener {
             parentFragmentManager.commit {
@@ -71,6 +76,21 @@ class CommunityFragment : Fragment() {
             fragmentTransaction.addToBackStack(null) // 뒤로 가기 가능하도록 설정
             fragmentTransaction.commit()
         }
+
+        binding.imgBattle1.setOnClickListener {
+            val fragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.fragment_container, ChallengeFragment()) // fragment_todaycloset.xml을 로드하는 Fragment
+            fragmentTransaction.addToBackStack(null) // 뒤로 가기 가능하도록 설정
+            fragmentTransaction.commit()
+        }
+
+        binding.imgBattle2.setOnClickListener {
+            val fragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.fragment_container, ChallengeFragment()) // fragment_todaycloset.xml을 로드하는 Fragment
+            fragmentTransaction.addToBackStack(null) // 뒤로 가기 가능하도록 설정
+            fragmentTransaction.commit()
+        }
+
     }
 
     override fun onDestroyView() {

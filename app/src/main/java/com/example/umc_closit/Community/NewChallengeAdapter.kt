@@ -11,10 +11,10 @@ import com.example.umc_closit.R
 
 
 
-class BattleAdapter(
+class NewChallengeAdapter(
     private val itemList: List<Int>,
     private val context: Context
-) : RecyclerView.Adapter<BattleAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<NewChallengeAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.img_battle_icon) // item_battle.xml 내 이미지뷰
@@ -31,7 +31,7 @@ class BattleAdapter(
 
         // 클릭 이벤트 추가 (이미지를 클릭하면 NewBattleDetailActivity로 이동)
         holder.imageView.setOnClickListener {
-            val intent = Intent(context, NewBattleDetailActivity::class.java).apply {
+            val intent = Intent(context, NewChallengeDetailActivity::class.java).apply {
                 putExtra("ITEM_POSITION", position) // 클릭한 아이템의 위치 정보 전달
                 putExtra("IMAGE_RES_ID", itemList[position]) // 클릭한 이미지 리소스 전달
             }
