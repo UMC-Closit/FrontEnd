@@ -1,0 +1,193 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Search Bar Container -->
+    <LinearLayout
+        android:id="@+id/search_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/lookup_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Search Icon -->
+        <ImageView
+            android:id="@+id/img_Search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/search"
+            android:contentDescription="Search Icon" />
+
+        <!-- Search Input -->
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="무엇이든 검색하시오"
+            android:background="@null"
+            android:padding="15dp" />
+    </LinearLayout>
+
+    <!-- Title -->
+    <Button
+        android:id="@+id/btn_todaycloset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="오늘의 옷장"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_container" />
+
+
+    <ImageButton
+        android:id="@+id/btn_upload"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/upload"
+        android:background="@null"
+        android:contentDescription="Upload Button"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
+        app:layout_constraintBottom_toBottomOf="@id/btn_todaycloset"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Scrollable Section -->
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_todaycloset"
+>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="20dp">
+
+            <!-- Detail Image 1 -->
+            <ImageButton
+                android:id="@+id/img_detail1"
+                android:layout_width="137dp"
+                android:layout_height="208dp"
+                android:src="@drawable/search"
+                android:layout_marginEnd="10dp"
+                android:background="@null"
+                android:contentDescription="Detail Image 1" />
+
+            <!-- Detail Image 2 -->
+            <ImageButton
+                android:id="@+id/img_detail2"
+                android:layout_width="137dp"
+                android:layout_height="208dp"
+                android:src="@drawable/search"
+                android:layout_marginEnd="10dp"
+                android:background="@null"
+                android:contentDescription="Detail Image 2" />
+
+            <!-- Detail Image 3 -->
+            <ImageButton
+                android:id="@+id/img_detail3"
+                android:layout_width="137dp"
+                android:layout_height="208dp"
+                android:src="@drawable/search"
+                android:layout_marginEnd="10dp"
+
+                android:background="@null"
+                android:contentDescription="Detail Image 3" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/btn_battle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="배틀 게시판"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view" />
+
+    <ImageButton
+        android:id="@+id/btn_upload2"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/upload"
+        android:background="@null"
+        android:contentDescription="Battle Upload Button"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view"
+        app:layout_constraintBottom_toBottomOf="@id/btn_battle"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <!-- Scrollable Section -->
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll_view2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_battle"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="20dp">
+
+            <!-- Detail Image 1 -->
+            <ImageButton
+                android:id="@+id/img_battle1"
+                android:layout_width="137dp"
+                android:layout_height="208dp"
+                android:src="@drawable/search"
+                android:layout_marginEnd="10dp"
+                android:background="@null"
+                android:contentDescription="Detail Image 1" />
+
+            <!-- Detail Image 2 -->
+            <ImageButton
+                android:id="@+id/img_battle2"
+                android:layout_width="137dp"
+                android:layout_height="208dp"
+                android:src="@drawable/search"
+                android:layout_marginEnd="10dp"
+                android:background="@null"
+                android:contentDescription="Detail Image 2" />
+
+            <!-- Detail Image 3 -->
+            <ImageButton
+                android:id="@+id/img_battle3"
+                android:layout_width="137dp"
+                android:layout_height="208dp"
+                android:src="@drawable/search"
+                android:layout_marginEnd="10dp"
+
+                android:background="@null"
+                android:contentDescription="Detail Image 3" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

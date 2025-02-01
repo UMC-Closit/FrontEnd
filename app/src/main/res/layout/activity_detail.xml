@@ -22,7 +22,7 @@
             android:id="@+id/iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/ic_back_black"
             android:layout_marginStart="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,10 +35,10 @@
             android:text="오늘의 옷장"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:paddingStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_back"
+            app:layout_constraintStart_toEndOf="@+id/iv_back"
+            app:layout_constraintTop_toTopOf="@+id/iv_back" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 스크롤 가능한 콘텐츠 -->

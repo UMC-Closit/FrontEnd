@@ -5,6 +5,68 @@ import java.util.*
 
 object DateUtils {
 
+    private val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
+    private val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+
+    fun parseUploadDate(uploadDate: String): String {
+        return try {
+            val date = inputFormat.parse(uploadDate)
+            outputFormat.format(date ?: Date())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    fun parseUploadDateToDate(uploadDate: String): Date {
+        return try {
+            inputFormat.parse(uploadDate) ?: Date()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Date()
+        }
+    }
+
+
+    fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yy.MM.dd", Locale.getDefault())
+        return dateFormat.format(Date())
+    }
+
+    // 특정 연도와 월의 총 일 수 반환
+    fun getDaysInMonth(year: Int, month: Int): Int {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    }
+
+    // 📌 YYYY-MM-DD 형식의 날짜를 받아서 연/월을 반환하는 함수
+    fun getYearMonthFromDate(dateString: String): Pair<Int, Int> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = dateFormat.parse(dateString)
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        return Pair(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH))
+    }
+
+    // 특정 연도와 월의 첫 번째 날의 요일 반환 (0 = 일요일, 1 = 월요일, ..., 6 = 토요일)
+    fun getFirstDayOfWeek(year: Int, month: Int): Int {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, 1) // 1일로 설정
+        return calendar.get(Calendar.DAY_OF_WEEK) - 1 // 0부터 시작하도록 조정
+    }
+
+    // 현재 연도와 월을 "YYYY년 MM월" 형식으로 반환
+    fun getMonthYearString(calendar: Calendar): String {
+        val dateFormat = SimpleDateFormat("yyyy년 MM월", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
+
     // 현재 시간을 "yyyy-MM-dd'T'HH:mm:ss.SSSSSS" 형식으로 반환
     fun getFormattedTime(currentTimeMillis: Long): String {
         val currentDate = Date(currentTimeMillis)

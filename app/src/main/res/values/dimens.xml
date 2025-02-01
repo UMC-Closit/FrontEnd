@@ -1,0 +1,5 @@
+<resources>
+    <!-- ViewPager 좌우 여백을 위한 마진 -->
+    <dimen name="viewpager_page_margin">12dp</dimen>
+    <dimen name="viewpager_offset">12dp</dimen>
+</resources>

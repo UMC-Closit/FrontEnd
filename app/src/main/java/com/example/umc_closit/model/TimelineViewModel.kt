@@ -15,7 +15,7 @@ class TimelineViewModel : ViewModel() {
         _timelineItems.value = listOf(
             TimelineItem(
                 id = 1,
-                mainImageResId = R.drawable.img_timeline_big_default,
+                mainImageResId = R.drawable.example_profile,
                 overlayImageResId = R.drawable.img_timeline_small_default,
                 userProfileResId = R.drawable.img_profile_default,
                 userName = "User1",
@@ -24,7 +24,9 @@ class TimelineViewModel : ViewModel() {
                 isLiked = false,
                 isSaved = true,
                 postText = "This is a sample post text",
-                hashtags = listOf("#Nature", "#Sunset")
+                hashtags = listOf("#Nature", "#Sunset"),
+                uploadDate = "2024-11-12T06:52:07.831513",
+                pointColor = "#FF5733"
             ),
             TimelineItem(
                 id = 2,
@@ -37,8 +39,40 @@ class TimelineViewModel : ViewModel() {
                 isLiked = true,
                 isSaved = false,
                 postText = "Another sample post",
-                hashtags = listOf("#Travel", "#Adventure")
-            )
+                hashtags = listOf("#Travel", "#Adventure"),
+                uploadDate = "2024-12-02T12:30:15.123456",
+                pointColor = "#4287f5"
+            ),
+            TimelineItem(
+                id = 3,
+                mainImageResId = R.drawable.example_profile,
+                overlayImageResId = R.drawable.example_profile,
+                userProfileResId = R.drawable.example_profile,
+                userName = "User2",
+                likeCount = 25,
+                commentCount = 3,
+                isLiked = true,
+                isSaved = false,
+                postText = "Another sample post",
+                hashtags = listOf("#Travel", "#Adventure"),
+                uploadDate = "2025-12-02T12:33:15.123456",
+                pointColor = "#000000"
+            ),
+            TimelineItem(
+                id = 4,
+                mainImageResId = R.drawable.example_profile,
+                overlayImageResId = R.drawable.example_profile,
+                userProfileResId = R.drawable.example_profile,
+                userName = "User2",
+                likeCount = 25,
+                commentCount = 3,
+                isLiked = true,
+                isSaved = false,
+                postText = "Another sample post",
+                hashtags = listOf("#Travel", "#Adventure"),
+                uploadDate = "2024-11-02T12:30:15.123456",
+                pointColor = "#000000"
+            ),
         )
     }
 
@@ -77,5 +111,9 @@ class TimelineViewModel : ViewModel() {
             } else it
         }
         _timelineItems.value = updatedItems
+    }
+
+    fun getTimelineItemByDate(uploadDate: String): TimelineItem? {
+        return _timelineItems.value?.find { it.uploadDate.substring(0, 10) == uploadDate }
     }
 }

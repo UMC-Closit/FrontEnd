@@ -2,8 +2,13 @@ package com.example.umc_closit.ui.timeline
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.replace
+import com.example.umc_closit.Community.CommunityFragment
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ActivityTimelineBinding
+import com.example.umc_closit.ui.profile.ProfileFragment
+import com.example.umc_closit.ui.upload.UploadAdapter
+import com.example.umc_closit.ui.upload.UploadFragment
 
 class TimelineActivity : AppCompatActivity() {
 
@@ -28,12 +33,25 @@ class TimelineActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
-/*                R.id.menu_profile -> {
+
+               R.id.menu_profile -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, ProfileFragment())
                         .commit()
                     true
-                }*/
+                }
+                R.id.menu_community -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, CommunityFragment())
+                        .commit()
+                    true
+                }
+                R.id.menu_upload -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, UploadFragment())
+                        .commit()
+                    true
+                }
                 else -> false
             }
         }
