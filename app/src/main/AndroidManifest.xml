@@ -25,7 +25,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.timeline.DetailActivity" />
+        <activity android:name=".ui.profile.highlight.AddHighlightActivity" />
         <activity android:name=".ui.timeline.notification.NotificationActivity"/>
+        <activity android:name=".ui.profile.history.HistoryActivity" />
     </application>
 
 </manifest>

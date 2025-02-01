@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ActivityTimelineBinding
+import com.example.umc_closit.ui.profile.ProfileFragment
 
 class TimelineActivity : AppCompatActivity() {
 
@@ -28,12 +29,12 @@ class TimelineActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
-/*                R.id.menu_profile -> {
+               R.id.menu_profile -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, ProfileFragment())
                         .commit()
                     true
-                }*/
+                }
                 else -> false
             }
         }

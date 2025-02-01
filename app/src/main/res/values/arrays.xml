@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="privacy_options">
+        <item>공개</item>
+        <item>친구만</item>
+        <item>비공개</item>
+    </string-array>
+</resources>
