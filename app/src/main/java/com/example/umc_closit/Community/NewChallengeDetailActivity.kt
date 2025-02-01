@@ -5,11 +5,11 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
 
-class NewBattleDetailActivity : AppCompatActivity() {
+class NewChallengeDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_battle_detail)
+        setContentView(R.layout.activity_new_challenge_detail)
 
         // 뒤로 가기 버튼 클릭 시 현재 액티비티 종료
         val backButton: ImageView = findViewById(R.id.iv_back)
