@@ -57,4 +57,7 @@ dependencies {
 
     // ViewModel
     implementation("androidx.fragment:fragment-ktx:1.6.1")
+
+    //camera
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
 }

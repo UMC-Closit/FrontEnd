@@ -34,6 +34,11 @@
         <activity android:name=".ui.profile.highlight.AddHighlightActivity" />
         <activity android:name=".ui.timeline.notification.NotificationActivity"/>
         <activity android:name=".ui.profile.history.HistoryActivity" />
+        <activity android:name="com.example.mission.ui.mission.BackOnlyActivity"/>
+        <activity android:name="com.example.mission.ui.mission.FrontOnlyActivity"/>
+        <activity android:name="com.example.mission.ui.mission.MissionActivity"/>
+        <activity android:name="com.example.mission.ui.mission.PreviewActivity"/>
+        <activity android:name="com.example.mission.ui.mission.TaggingActivity"/>
 
         <activity
             android:name=".Login.LoginActivity"
