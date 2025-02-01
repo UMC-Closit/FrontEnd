@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".TimelineActivity"
+            android:name=".ui.timeline.TimelineActivity"
             android:exported="true"
             android:theme="@style/Theme.UMC_Closit">
         </activity>

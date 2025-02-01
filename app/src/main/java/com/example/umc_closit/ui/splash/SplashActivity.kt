@@ -9,6 +9,7 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.MainActivity
 import com.example.umc_closit.databinding.ActivitySplashBinding
+import com.example.umc_closit.ui.timeline.TimelineActivity
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashBinding
@@ -48,7 +49,7 @@ class SplashActivity : AppCompatActivity() {
 
         // 3초 후 MainActivity로 이동
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, TimelineActivity::class.java))
             finish()
         }, 3000)
     }
