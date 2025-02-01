@@ -1,0 +1,126 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- 큰 프레임 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 사진 영역 (겹쳐진 이미지) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_image_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="W,428:366"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- 첫 번째 이미지 -->
+            <ImageView
+                android:id="@+id/iv_image_big"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_image"
+                android:clipToOutline="true"
+                android:src="@drawable/img_timeline_big_default"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- 두 번째 이미지 (겹쳐짐) -->
+            <ImageView
+                android:id="@+id/iv_image_small"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_image"
+                android:clipToOutline="true"
+                android:src="@drawable/img_timeline_small_default"
+                app:layout_constraintDimensionRatio="W,153:125"
+                app:layout_constraintStart_toStartOf="@id/iv_image_big"
+                app:layout_constraintTop_toTopOf="@id/iv_image_big"
+                app:layout_constraintWidth_percent="0.33" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- 유저 프로필 이미지 -->
+        <ImageView
+            android:id="@+id/iv_user_profile"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_profile_default"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintDimensionRatio="1:1"
+            android:background="@drawable/bg_timeline_circle_shape"
+            app:layout_constraintTop_toBottomOf="@id/cl_image_container"
+            app:layout_constraintStart_toStartOf="@id/cl_frame"
+            app:layout_constraintBottom_toBottomOf="@id/cl_frame"/>
+
+        <!-- 댓글, 좋아요, 저장 버튼 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_actions"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/cl_frame"
+            app:layout_constraintEnd_toEndOf="@id/cl_frame"
+            app:layout_constraintHeight_default="spread"
+            app:layout_constraintStart_toEndOf="@+id/iv_user_profile"
+            app:layout_constraintTop_toBottomOf="@id/cl_image_container">
+
+            <!-- 댓글 버튼 -->
+            <ImageView
+                android:id="@+id/iv_comment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_comment"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/iv_like"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1" />
+
+            <!-- 좋아요 버튼 -->
+            <ImageView
+                android:id="@+id/iv_like"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_like_off"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/iv_save"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1" />
+
+            <!-- 저장 버튼 -->
+            <ImageView
+                android:id="@+id/iv_save"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_save_off"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="@id/cl_actions"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
