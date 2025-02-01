@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.umc_closit.R
 import com.example.umc_closit.databinding.FragmentTodayclosetBinding
+import com.example.umc_closit.ui.upload.UploadFragment
 
 class TodayClosetFragment : Fragment() {
 
@@ -29,6 +32,14 @@ class TodayClosetFragment : Fragment() {
 
         binding.recyclerTodaycloset.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerTodaycloset.adapter = adapter
+
+        // createButton 클릭 시 UploadFragment로 이동
+        binding.createButton.setOnClickListener {
+            parentFragmentManager.commit {
+                replace(R.id.fragment_container, UploadFragment()) // fragment_upload.xml을 로드하는 Fragment
+                addToBackStack(null) // 뒤로 가기 가능하도록 설정
+            }
+        }
     }
 
     override fun onDestroyView() {

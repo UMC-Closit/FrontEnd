@@ -1,12 +1,15 @@
 package com.example.umc_closit.Community
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
 
-class ChallengeAdapter(private val itemList: List<String>) :
+
+class ChallengeAdapter(private val itemList: List<String>, private val context: Context) :
     RecyclerView.Adapter<ChallengeAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -21,7 +24,12 @@ class ChallengeAdapter(private val itemList: List<String>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // 아이템 데이터 바인딩 로직 추가 가능 (예: 이미지 설정, 클릭 리스너 추가 등)
+        // 오른쪽 아이템 클릭 시 NewChallengeActivity로 이동
+        holder.rightItem.setOnClickListener {
+            val intent = Intent(context, NewChallengeActivity::class.java)
+            intent.putExtra("ITEM_POSITION", position) // 클릭한 아이템의 위치 정보 전달 가능
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = itemList.size

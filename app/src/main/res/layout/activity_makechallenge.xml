@@ -52,12 +52,12 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/makeChallenge_recyclerView"
+        app:layout_constraintBottom_toTopOf="@+id/challengeRecyclerView"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/makeChallenge_recyclerView"
+        android:id="@+id/challengeRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="8dp"
@@ -65,18 +65,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-    <Button
-        android:id="@+id/btn_login"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="continue"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:backgroundTint="@color/black_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="20dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
