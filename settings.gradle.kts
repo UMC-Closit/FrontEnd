@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "UMC_Closit"
 include(":app")
+include(":app")
  

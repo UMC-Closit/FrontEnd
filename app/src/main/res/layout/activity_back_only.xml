@@ -1,0 +1,98 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayoutRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/topNavigationBar"
+        layout="@layout/toolbar_top" />
+
+    <ImageView
+        android:id="@+id/imageViewBackOnly"
+        android:layout_width="250dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/image_background"/>
+
+    <!-- 문구 + 색상 아이콘 LinearLayout -->
+    <LinearLayout
+        android:id="@+id/layoutPointColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageViewBackOnly"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="28dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- 왼쪽 텍스트 (오늘의 포인트 색상) -->
+        <TextView
+            android:id="@+id/textTodayColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오늘의 포인트 색상"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:layout_marginRight="8dp"
+            />
+
+        <!-- 색상 아이콘 -->
+        <View
+            android:id="@+id/viewColorIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/round_shape" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutPointColor"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/btnHashtag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutPointColor"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/btn_hashtag"
+            android:visibility="visible"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <!--해시태그 TextView -->
+        <TextView
+            android:id="@+id/textHashtag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnHashtag"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/btnPrivacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btn_privacy"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnUpload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/btn_upload"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+</RelativeLayout>
