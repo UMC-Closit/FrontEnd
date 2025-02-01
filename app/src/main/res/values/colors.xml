@@ -11,4 +11,6 @@
     <color name="gray">#B0B0B0</color>
 
     <color name="light_gray">#D3D3D3</color>
+    <color name="white_profile_bg">#FAFAFA</color>
+    <color name="gray_profile_follow">#BABECD</color>
 </resources>
