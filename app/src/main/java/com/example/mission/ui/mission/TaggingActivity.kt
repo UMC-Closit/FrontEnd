@@ -84,10 +84,12 @@ class TaggingActivity : AppCompatActivity() {
         val tagView = TextView(this).apply {
             text = tagText
             setTextColor(Color.WHITE)
+            gravity = right
             textSize = 14f
             setBackgroundResource(R.drawable.bg_hashtag)
+            val leftPad = dpToPx(20)
             val pad = dpToPx(8)
-            setPadding(pad, pad, pad, pad)
+            setPadding(leftPad, pad, pad, pad)
         }
 
         val imageLoc = IntArray(2)

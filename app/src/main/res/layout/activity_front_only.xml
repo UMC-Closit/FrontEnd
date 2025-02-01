@@ -1,5 +1,4 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,12 +9,14 @@
 
     <ImageView
         android:id="@+id/imageViewFrontOnly"
-        android:layout_width="250dp"
-        android:layout_height="400dp"
+        android:layout_width="300dp"
+        android:layout_height="500dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/image_background"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/image_background"
+        android:clipToOutline="true" />
 
     <!-- 문구 + 색상 아이콘 LinearLayout -->
     <LinearLayout
@@ -28,7 +29,6 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <!-- 왼쪽 텍스트 (오늘의 포인트 색상) -->
         <TextView
             android:id="@+id/textTodayColor"
             android:layout_width="wrap_content"
@@ -36,10 +36,8 @@
             android:text="오늘의 포인트 색상"
             android:textColor="@android:color/black"
             android:textSize="20sp"
-            android:layout_marginRight="8dp"
-            />
+            android:layout_marginRight="8dp" />
 
-        <!-- 색상 아이콘 -->
         <View
             android:id="@+id/viewColorIcon"
             android:layout_width="40dp"
@@ -47,33 +45,31 @@
             android:background="@drawable/round_shape" />
     </LinearLayout>
 
+    <!-- 해시태그 버튼 및 해시태그 Container -->
     <LinearLayout
+        android:id="@+id/layoutHashtags"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/layoutPointColor"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp">
 
         <ImageButton
             android:id="@+id/btnHashtag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btn_hashtag"
-            android:layout_below="@id/layoutPointColor"
-            android:layout_marginLeft="20dp"
-            android:visibility="visible"/>
+            android:background="@android:color/transparent" />
 
-        <!--해시태그 TextView -->
-        <TextView
-            android:id="@+id/textHashtag"
+        <LinearLayout
+            android:id="@+id/hashtagContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/btnHashtag"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="8dp"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:visibility="gone"/>
-
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:layout_alignParentTop="true" />
     </LinearLayout>
 
     <ImageButton
@@ -81,8 +77,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/btn_continue"
+        android:background="@android:color/transparent"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:padding="5dp"
         android:layout_marginBottom="5dp"/>
-
 </RelativeLayout>

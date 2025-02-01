@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.mission.R
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
 
-class PreviewActivity : AppCompatActivity() {
+class   PreviewActivity : AppCompatActivity() {
 
     private lateinit var imageViewMain: ImageView
     private lateinit var imageViewSmall: ImageView

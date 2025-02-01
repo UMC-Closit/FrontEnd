@@ -15,6 +15,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.drawable.GradientDrawable
+import android.widget.LinearLayout
 import com.example.mission.R
 
 class BackOnlyActivity : AppCompatActivity() {
@@ -24,9 +25,8 @@ class BackOnlyActivity : AppCompatActivity() {
     private var originalBitmapPath: String? = null
 
     private lateinit var btnHashtag: ImageButton
-    private lateinit var textHashtag: TextView
+    private lateinit var hashtagContainer: LinearLayout
     private lateinit var btnPrivacy: ImageButton
-    // 업로드 버튼 (추후 연결 필요)
     private lateinit var btnUpload: ImageButton
 
     private var originalBitmap: Bitmap? = null
@@ -48,17 +48,14 @@ class BackOnlyActivity : AppCompatActivity() {
         ivLeftButton = toolbar.findViewById(R.id.ivLeftButton)
         tvTitle = toolbar.findViewById(R.id.tvTitle)
         ivLeftButton.setOnClickListener {
-            // TODO: 툴바 화살표 버튼 동작 추가
             finish()
         }
 
         imageViewBackOnly = findViewById(R.id.imageViewBackOnly)
         viewColorIcon = findViewById(R.id.viewColorIcon)
-
         btnHashtag = findViewById(R.id.btnHashtag)
-        textHashtag = findViewById(R.id.textHashtag)
+        hashtagContainer = findViewById(R.id.hashtagContainer)
         btnPrivacy = findViewById(R.id.btnPrivacy)
-
         btnUpload = findViewById(R.id.btnUpload)
 
         val backPhotoPath = intent.getStringExtra("backPhotoPath")
@@ -82,6 +79,7 @@ class BackOnlyActivity : AppCompatActivity() {
                         val color = getTouchedColor(bmp, view as ImageView, event.x, event.y)
                         setIconColor(viewColorIcon, color)
                     }
+                    isColorExtractMode = false
                 }
             } else {
                 if (event.action == MotionEvent.ACTION_UP) {
@@ -91,38 +89,39 @@ class BackOnlyActivity : AppCompatActivity() {
                     startActivityForResult(intent, TAGGING_REQUEST_CODE)
                 }
             }
-                true
+            true
         }
 
+        // 해시태그 버튼 클릭
         btnHashtag.setOnClickListener {
             showHashtagDialog(
                 currentHashtag = null,
                 onHashtagSaved = { newHashtag ->
-                    btnHashtag.visibility = View.GONE
-                    textHashtag.visibility = View.VISIBLE
-                    textHashtag.text = newHashtag
+                    // 새 해시태그 추가
+                    addHashtagToContainer(newHashtag)
                 }
             )
         }
-
-        textHashtag.setOnClickListener {
-            showHashtagDialog(
-                currentHashtag = textHashtag.text.toString(),
-                onHashtagSaved = { updatedHashtag ->
-                    textHashtag.text = updatedHashtag
-                }
-            )
-        }
-
-        /**
-         * 공개범위 버튼과 업로드 버튼 추후 연결
-        */
-        // 공개범위 버튼 (추후 연결)
-        // btnPrivacy.setOnClickListener { }
-        // 업로드 버튼 (추후 연결)
-        // btnUpload.setOnClickListener { }
     }
 
+    private fun addHashtagToContainer(hashtag: String) {
+        val hashtagView = TextView(this).apply {
+            text = "#$hashtag"
+            setBackgroundResource(R.drawable.bg_detail_hashtag)  // bg_detail_hashtag.xml 배경
+            setTextColor(resources.getColor(android.R.color.white))
+            setPadding(10, 10, 10, 10)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginStart = 10
+                marginEnd = 10
+            }
+        }
+        hashtagContainer.addView(hashtagView)
+    }
+
+    // 해시태그 입력 다이얼로그
     private fun showHashtagDialog(
         currentHashtag: String?,
         onHashtagSaved: (String) -> Unit
@@ -191,5 +190,3 @@ class BackOnlyActivity : AppCompatActivity() {
         }
     }
 }
-
-

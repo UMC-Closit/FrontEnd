@@ -12,7 +12,7 @@ import android.view.MotionEvent
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -40,7 +40,7 @@ class CameraPreviewManager(
     private val context: Context,
     private val surfaceView: SurfaceView,
     private val surfaceViewSecond: SurfaceView,
-    private val captureButton: Button
+    private val captureButton: ImageButton
 ) {
 
     var callback: CameraPreviewCallback? = null

@@ -14,9 +14,15 @@ import android.widget.TextView
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import androidx.appcompat.app.AlertDialog
 import com.example.mission.R
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
 
 class FrontOnlyActivity : AppCompatActivity() {
 
@@ -29,7 +35,9 @@ class FrontOnlyActivity : AppCompatActivity() {
     private lateinit var viewColorIcon: View
 
     private lateinit var btnHashtag: ImageButton
-    private lateinit var textHashtag: TextView
+    private lateinit var hashtagContainer: LinearLayout
+
+    private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
     private lateinit var btnContinue: ImageButton
 
@@ -63,7 +71,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         viewColorIcon = findViewById(R.id.viewColorIcon)
 
         btnHashtag = findViewById(R.id.btnHashtag)
-        textHashtag = findViewById(R.id.textHashtag)
+        hashtagContainer = findViewById(R.id.hashtagContainer)
 
         frontPhotoPath = intent.getStringExtra("frontPhotoPath")
         frontPhotoPath?.let { path ->
@@ -75,7 +83,6 @@ class FrontOnlyActivity : AppCompatActivity() {
 
 
         }
-
 
 
         backPhotoPath = intent.getStringExtra("backPhotoPath")
@@ -106,28 +113,18 @@ class FrontOnlyActivity : AppCompatActivity() {
             true
         }
 
-
-        // 해시태그 버튼 (처음 입력)
-        btnHashtag.setOnClickListener {
-            showHashtagDialog(
-                currentHashtag = null,
-                onHashtagSaved = { newHashtag ->
-                    // 입력 완료시 버튼을 숨긴 후 텍스트뷰 노출
-                    btnHashtag.visibility = View.GONE
-                    textHashtag.visibility = View.VISIBLE
-                    textHashtag.text = newHashtag
-                }
-            )
+        lifecycleScope.launch(Dispatchers.Main) {
+            hashtagsFlow.collect { hashtags ->
+                updateHashtagsUI(hashtags)
+            }
         }
 
-        // 해시태그 수정
-        textHashtag.setOnClickListener {
-            showHashtagDialog(
-                currentHashtag = textHashtag.text.toString(),
-                onHashtagSaved = { updatedHashtag ->
-                    textHashtag.text = updatedHashtag
-                }
-            )
+
+        // 해시태그 버튼
+        btnHashtag.setOnClickListener {
+            showHashtagDialog { newHashtag ->
+                addHashtag(newHashtag)
+            }
         }
 
         // BackOnlyActivity로 이동
@@ -140,21 +137,23 @@ class FrontOnlyActivity : AppCompatActivity() {
         }
     }
 
+    private fun addHashtag(hashtag: String) {
+        // Update the flow with the new hashtag
+        val currentHashtags = hashtagsFlow.value.toMutableList()
+        currentHashtags.add(hashtag)
+        hashtagsFlow.value = currentHashtags
+    }
 
     // 해시태그 입력 다이얼로그
-    private fun showHashtagDialog(
-        currentHashtag: String?,
-        onHashtagSaved: (String) -> Unit
-    ) {
+    private fun showHashtagDialog(onHashtagSaved: (String) -> Unit) {
         val editText = EditText(this).apply {
             hint = "#해시태그 입력"
-            currentHashtag?.let { setText(it) }
         }
 
         AlertDialog.Builder(this)
-            .setTitle("해시태그 ${if (currentHashtag == null) "입력" else "수정"}")
+            .setTitle("해시태그 입력")
             .setView(editText)
-            .setPositiveButton("확인") { _: DialogInterface, _: Int ->
+            .setPositiveButton("확인") { _, _ ->
                 val input = editText.text.toString()
                 if (input.isNotBlank()) {
                     onHashtagSaved(input)
@@ -162,6 +161,28 @@ class FrontOnlyActivity : AppCompatActivity() {
             }
             .setNegativeButton("취소", null)
             .show()
+    }
+
+    private fun updateHashtagsUI(hashtags: List<String>) {
+        hashtagContainer.removeAllViews()
+
+        hashtags.forEach { hashtag ->
+            val hashtagTextView = TextView(this).apply {
+                text = "#$hashtag"
+                setTextColor(resources.getColor(R.color.white))
+                setPadding(16, 8, 16, 8)
+                background = resources.getDrawable(R.drawable.bg_detail_hashtag, null)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = 8
+                }
+            }
+
+            // Add the hashtag to the container
+            hashtagContainer.addView(hashtagTextView)
+        }
     }
 
     // 아이콘 색상 변경

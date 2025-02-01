@@ -3,7 +3,7 @@ package com.example.mission.ui.mission
 import android.content.Intent
 import android.os.Bundle
 import android.view.SurfaceView
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(), CameraPreviewCallback {
 
     private lateinit var surfaceView: SurfaceView
     private lateinit var surfaceViewSecond: SurfaceView
-    private lateinit var captureButton: Button
+    private lateinit var captureButton: ImageButton
 
     private lateinit var cameraPreviewManager: CameraPreviewManager
 

@@ -3,5 +3,6 @@
     <solid android:color="@android:color/darker_gray"/>
     <size
         android:width="40dp"
-        android:height="40dp"/>
+        android:height="40dp"
+        android:adjustViewBounds="true"/>
 </shape>
