@@ -2,12 +2,10 @@ package com.example.umc_closit.ui.timeline
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.replace
 import com.example.umc_closit.Community.CommunityFragment
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ActivityTimelineBinding
 import com.example.umc_closit.ui.profile.ProfileFragment
-import com.example.umc_closit.ui.upload.UploadAdapter
 import com.example.umc_closit.ui.upload.UploadFragment
 
 class TimelineActivity : AppCompatActivity() {
