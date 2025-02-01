@@ -9,8 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.FragmentCommunityBinding
+import com.example.umc_closit.ui.timeline.DetailActivity
+import com.example.umc_closit.ui.upload.UploadFragment
+
 class CommunityFragment : Fragment() {
 
     private var _binding: FragmentCommunityBinding? = null
@@ -33,6 +37,20 @@ class CommunityFragment : Fragment() {
             fragmentTransaction.replace(R.id.fragment_container, TodayClosetFragment()) // fragment_todaycloset.xml을 로드하는 Fragment
             fragmentTransaction.addToBackStack(null) // 뒤로 가기 가능하도록 설정
             fragmentTransaction.commit()
+        }
+
+        // imgDetail1 버튼 클릭 시 NewBattleActivity 실행
+        binding.imgDetail1.setOnClickListener {
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            startActivity(intent)
+        }
+
+        // btnUpload 버튼 클릭 시 UploadFragment 실행
+        binding.btnUpload.setOnClickListener {
+            parentFragmentManager.commit {
+                replace(R.id.fragment_container, UploadFragment()) // fragment_upload.xml을 로드하는 Fragment
+                addToBackStack(null) // 뒤로 가기 가능하도록 설정
+            }
         }
 
         binding.btnBattle.setOnClickListener {

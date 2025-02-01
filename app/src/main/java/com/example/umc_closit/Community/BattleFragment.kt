@@ -24,6 +24,7 @@ class BattleFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.Battle_recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+
         // 더미 데이터 추가
         val itemList = List(10) { "아이템 ${it + 1}" }
         recyclerView.adapter = BattlePageAdapter(itemList)

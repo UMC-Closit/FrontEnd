@@ -21,5 +21,9 @@ class NewBattleActivity : AppCompatActivity() {
         val adapter = BattleAdapter(itemList)
         binding.challengeRecyclerView.layoutManager = GridLayoutManager(this, 3) // 한 줄에 3개
         binding.challengeRecyclerView.adapter = adapter
+
+        binding.createButton.setOnClickListener {
+            onBackPressed()  // 뒤로 가기
+        }
     }
 }
