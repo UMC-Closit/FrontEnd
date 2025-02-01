@@ -35,6 +35,6 @@
         <include
             android:id="@+id/right_item"
             layout="@layout/item_card2"/>
-    </LinearLayout>
 
+    </LinearLayout>
 </LinearLayout>
