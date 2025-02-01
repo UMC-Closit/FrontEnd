@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
-import com.example.umc_closit.Community.TimelineActivity
+import com.example.umc_closit.ui.timeline.TimelineActivity
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

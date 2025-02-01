@@ -25,13 +25,18 @@
         </activity>
         <activity android:name=".Login.RegisterActivity" />
         <activity android:name=".Login.MakeIdActivity" />
-        <activity android:name=".Community.TimelineActivity" />
+        <activity android:name=".ui.timeline.TimelineActivity" />
         <activity android:name=".Community.NewBattleActivity" />
+        <activity android:name=".Community.NewBattleDetailActivity" />
         <activity android:name=".Login.FindID2Activity" />
         <activity android:name=".Login.FindIDActivity" />
         <activity android:name=".Login.FindPassword2Activity" />
         <activity android:name=".Login.FindPasswordActivity" />
         <activity android:name=".Login.PasswordActivity" />
+        <activity android:name=".ui.timeline.DetailActivity" />
+        <activity android:name=".ui.profile.highlight.AddHighlightActivity" />
+        <activity android:name=".ui.timeline.notification.NotificationActivity"/>
+        <activity android:name=".ui.profile.history.HistoryActivity" />
 
     </application>
 
