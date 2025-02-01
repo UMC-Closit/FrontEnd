@@ -57,32 +57,38 @@ class TimelineAdapter(
                 commentFragment.show((context as AppCompatActivity).supportFragmentManager, commentFragment.tag)
             }
 
+            // 초기 좋아요 및 저장 상태 설정 (ViewModel에서 가져오기)
+            val (isLiked, isSaved) = timelineViewModel.getPostStatus(item.id) ?: Pair(false, false)
+
+            ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
+            ivSave.setImageResource(if (isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
+
             // 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
-                // 좋아요 상태 변경
-                timelineViewModel.toggleLike(item.id)
+                val newLikeState = !isLiked // 현재 상태 반대로 변경
+                timelineViewModel.updatePostStatus(item.id, newLikeState, isSaved) // ViewModel 업데이트
 
-                // 좋아요 상태에 맞게 아이콘 변경
                 ivLike.setImageResource(
-                    if (item.isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off
+                    if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off
                 )
 
-                // 좋아요 개수 갱신
-                Toast.makeText(context, if (item.isLiked) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, if (newLikeState) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
+
+                notifyItemChanged(position) // UI 업데이트
             }
 
             // 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
-                // 저장 상태 변경
-                timelineViewModel.toggleSave(item.id)
+                val newSaveState = !isSaved
+                timelineViewModel.updatePostStatus(item.id, isLiked, newSaveState)
 
-                // 저장 상태에 맞게 아이콘 변경
                 ivSave.setImageResource(
-                    if (item.isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off
+                    if (newSaveState) R.drawable.ic_save_on else R.drawable.ic_save_off
                 )
 
-                // 저장 상태 메시지 표시
-                Toast.makeText(context, if (item.isSaved) "저장됨!" else "저장 취소", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, if (newSaveState) "저장됨!" else "저장 취소", Toast.LENGTH_SHORT).show()
+
+                notifyItemChanged(position) // UI 업데이트
             }
 
             // 유저 프로필 클릭 이벤트
