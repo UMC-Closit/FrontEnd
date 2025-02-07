@@ -1,5 +1,6 @@
 package com.example.umc_closit.ui.upload
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.fragment.app.viewModels
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.FragmentUploadBinding
 import com.example.umc_closit.model.TimelineViewModel
+import com.example.umc_closit.ui.mission.MissionActivity
 
 class UploadFragment : Fragment() {
 
@@ -73,6 +75,9 @@ class UploadFragment : Fragment() {
         binding.btnUpload.setOnClickListener {
             if (photoList.isNotEmpty()) {
                 Toast.makeText(requireContext(), "사진이 업로드되었습니다.", Toast.LENGTH_SHORT).show()
+                // MissionActivity로 이동
+                val intent = Intent(requireContext(), MissionActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(requireContext(), "업로드할 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
             }

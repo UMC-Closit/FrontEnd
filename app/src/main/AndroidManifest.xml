@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+
+    <!-- 카메라 권한 추가 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -21,18 +27,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Login.RegisterActivity" />
-        <activity android:name=".Login.MakeIdActivity" />
-        <activity android:name=".Community.NewBattleActivity" />
-        <activity android:name=".Community.NewBattleDetailActivity" />
-        <activity android:name=".Community.NewChallengeActivity" />
-        <activity android:name=".Community.NewChallengeDetailActivity" />
-        <activity android:name=".Login.FindID2Activity" />
-        <activity android:name=".Login.FindIDActivity" />
-        <activity android:name=".Login.FindPassword2Activity" />
-        <activity android:name=".Login.FindPasswordActivity" />
-        <activity android:name=".Login.PasswordActivity" />
-        <activity android:name=".ui.timeline.DetailActivity" />
+        <activity android:name=".ui.login.RegisterActivity" />
+        <activity android:name=".ui.login.MakeIdActivity" />
+        <activity android:name=".ui.community.battle.NewBattleActivity" />
+        <activity android:name=".ui.community.battle.NewBattleDetailActivity" />
+        <activity android:name=".ui.community.challenge.NewChallengeActivity" />
+        <activity android:name=".ui.community.challenge.NewChallengeDetailActivity" />
+        <activity android:name=".ui.login.find.FindID2Activity" />
+        <activity android:name=".ui.login.find.FindIDActivity" />
+        <activity android:name=".ui.login.find.FindPassword2Activity" />
+        <activity android:name=".ui.login.find.FindPasswordActivity" />
+        <activity android:name=".ui.login.PasswordActivity" />
+        <activity android:name=".ui.timeline.detail.DetailActivity" />
         <activity android:name=".ui.timeline.TimelineActivity" />
         <activity android:name=".ui.profile.highlight.AddHighlightActivity" />
         <activity android:name=".ui.timeline.notification.NotificationActivity"/>
@@ -44,7 +50,7 @@
         <activity android:name=".ui.mission.BackOnlyActivity"/>
 
         <activity
-            android:name=".Login.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.UMC_Closit">
         </activity>

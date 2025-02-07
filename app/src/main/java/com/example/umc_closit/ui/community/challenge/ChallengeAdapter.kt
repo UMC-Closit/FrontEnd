@@ -1,26 +1,25 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.challenge
 
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.R
-
+import com.example.umc_closit.databinding.ItemChallengeBinding
 
 class ChallengeAdapter(private val itemList: List<String>, private val context: Context) :
     RecyclerView.Adapter<ChallengeAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val leftItem: View = view.findViewById(R.id.left_item)
-        val rightItem: View = view.findViewById(R.id.right_item)
+    class ViewHolder(private val binding: ItemChallengeBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        val leftItem = binding.leftItem.root
+        val rightItem = binding.rightItem.root
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_challenge, parent, false)
-        return ViewHolder(view)
+        val binding = ItemChallengeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

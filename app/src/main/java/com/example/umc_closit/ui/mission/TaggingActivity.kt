@@ -1,46 +1,43 @@
 package com.example.umc_closit.ui.mission
 
+import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ActivityTaggingBinding
+import com.example.umc_closit.databinding.CustomTagDialogBinding
 import java.io.File
 import java.io.FileOutputStream
 
 class TaggingActivity : AppCompatActivity() {
 
-    private lateinit var imageViewTag: ImageView
-    private lateinit var btnSave: ImageButton
-    private lateinit var taggingLayout: RelativeLayout
+    private lateinit var binding: ActivityTaggingBinding
     private var originalBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tagging)
 
-        imageViewTag = findViewById(R.id.imageViewTag)
-        btnSave = findViewById(R.id.btnSave)
-        taggingLayout = findViewById(R.id.taggingLayout)
+        // 🚀 View Binding 초기화
+        binding = ActivityTaggingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val photoPath = intent.getStringExtra("photoPath")
-        if (photoPath != null) {
-            originalBitmap = rotateBitmapIfNeeded(photoPath)
+        photoPath?.let { path ->
+            originalBitmap = rotateBitmapIfNeeded(path)
             originalBitmap?.let { bmp ->
-                imageViewTag.setImageBitmap(bmp)
+                binding.imageViewTag.setImageBitmap(bmp)
             }
         }
 
-        imageViewTag.setOnTouchListener { view, event ->
+        binding.imageViewTag.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val localX = event.x
                 val localY = event.y
@@ -51,87 +48,88 @@ class TaggingActivity : AppCompatActivity() {
             true
         }
 
-        btnSave.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             val savedFile = captureAndSaveTaggedImage()
-            if (savedFile != null) {
+            savedFile?.let {
                 val resultIntent = intent.apply {
-                    putExtra("taggedPhotoPath", savedFile.absolutePath)
+                    putExtra("taggedPhotoPath", it.absolutePath)
                 }
                 setResult(RESULT_OK, resultIntent)
                 finish()
-            } else {
-                // 저장 실패 처리 (추후 추가)
             }
         }
     }
 
     private fun showTagDialog(onTagSaved: (String) -> Unit) {
-        val editText = EditText(this).apply { hint = "해시태그 입력" }
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("해시태그 입력")
-            .setView(editText)
-            .setPositiveButton("확인") { _, _ ->
-                val input = editText.text.toString().trim()
-                if (input.isNotEmpty()) {
-                    onTagSaved(input)
-                }
+        val dialog = Dialog(this)
+        val binding = CustomTagDialogBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명 처리
+
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.btnConfirm.setOnClickListener {
+            val input = binding.etHashtag.text.toString().trim()
+            if (input.isNotEmpty()) {
+                onTagSaved(input)
+                dialog.dismiss()
             }
-            .setNegativeButton("취소", null)
-            .show()
+        }
+
+        dialog.show()
     }
 
     private fun addTagView(tagText: String, localX: Float, localY: Float) {
-        val tagView = TextView(this).apply {
+        val tagView = android.widget.TextView(this).apply {
             text = tagText
             setTextColor(Color.WHITE)
-            gravity = right
             textSize = 14f
-            setBackgroundResource(R.drawable.bg_hashtag)
-            val leftPad = dpToPx(20)
+            setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
+            val leftPad = dpToPx(30)
             val pad = dpToPx(8)
             setPadding(leftPad, pad, pad, pad)
+            id = View.generateViewId() // ✅ ConstraintLayout에서 동적 뷰 추가를 위해 ID 생성
         }
 
-        val imageLoc = IntArray(2)
-        imageViewTag.getLocationOnScreen(imageLoc)
+        // ✅ `imageViewTag` 내에서 상대적인 위치를 계산
+        val imageViewX = binding.imageViewTag.x
+        val imageViewY = binding.imageViewTag.y
 
-        val parentLoc = IntArray(2)
-        taggingLayout.getLocationOnScreen(parentLoc)
+        val finalX = imageViewX + localX
+        val finalY = imageViewY + localY
 
-        val absoluteX = imageLoc[0] + localX
-        val absoluteY = imageLoc[1] + localY
-
-        val finalX = absoluteX - parentLoc[0]
-        val finalY = absoluteY - parentLoc[1]
-
-        val params = RelativeLayout.LayoutParams(
-            RelativeLayout.LayoutParams.WRAP_CONTENT,
-            RelativeLayout.LayoutParams.WRAP_CONTENT
+        // ✅ ConstraintLayout.LayoutParams 적용
+        val params = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
+        params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
         params.leftMargin = finalX.toInt()
         params.topMargin = finalY.toInt()
 
-        taggingLayout.addView(tagView, params)
-        tagView.bringToFront()
+        // ✅ ConstraintLayout에 추가
+        binding.taggingLayout.addView(tagView, params)
     }
 
     private fun captureAndSaveTaggedImage(): File? {
+        val originalVisibility = binding.btnSave.visibility
+        binding.btnSave.visibility = View.GONE
 
-        val originalVisibility = btnSave.visibility
-        btnSave.visibility = View.GONE
-
-        val width = taggingLayout.width
-        val height = taggingLayout.height
+        val width = binding.taggingLayout.width
+        val height = binding.taggingLayout.height
         if (width <= 0 || height <= 0) {
-            btnSave.visibility = originalVisibility
+            binding.btnSave.visibility = originalVisibility
             return null
         }
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        taggingLayout.draw(canvas)
+        binding.taggingLayout.draw(canvas)
 
-        // 사진 저장 (JPEG, 품질 90)
         val file = File(filesDir, "tagged_${System.currentTimeMillis()}.jpg")
         return try {
             FileOutputStream(file).use { fos ->
@@ -140,11 +138,9 @@ class TaggingActivity : AppCompatActivity() {
             file
         } catch (e: Exception) {
             e.printStackTrace()
-            btnSave.visibility = originalVisibility
+            binding.btnSave.visibility = originalVisibility
             null
         }
-
-        btnSave.visibility = originalVisibility
     }
 
     private fun dpToPx(dp: Int): Int {

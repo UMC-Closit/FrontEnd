@@ -56,7 +56,7 @@ class TimelineViewModel : ViewModel() {
                 postText = "Another sample post",
                 hashtags = listOf("#Travel", "#Adventure"),
                 uploadDate = "2025-12-02T12:33:15.123456",
-                pointColor = "#000000"
+                pointColor = "#4287f5"
             ),
             TimelineItem(
                 id = 4,
@@ -71,7 +71,7 @@ class TimelineViewModel : ViewModel() {
                 postText = "Another sample post",
                 hashtags = listOf("#Travel", "#Adventure"),
                 uploadDate = "2024-11-02T12:30:15.123456",
-                pointColor = "#000000"
+                pointColor = "#4287f5"
             ),
         )
     }

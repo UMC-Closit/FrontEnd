@@ -2,7 +2,7 @@ package com.example.umc_closit.ui.timeline
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.umc_closit.Community.CommunityFragment
+import com.example.umc_closit.ui.community.CommunityFragment
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ActivityTimelineBinding
 import com.example.umc_closit.ui.profile.ProfileFragment
@@ -17,10 +17,17 @@ class TimelineActivity : AppCompatActivity() {
         binding = ActivityTimelineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TimelineFragment 로드
+        // ✅ "showUploadFragment" 값이 true라면 UploadFragment 표시, 아니면 TimelineFragment 표시
+        val fragment = if (intent.getBooleanExtra("showUploadFragment", false)) {
+            UploadFragment()
+        } else {
+            TimelineFragment()
+        }
+
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, TimelineFragment())
+            .replace(R.id.fragment_container, fragment)
             .commit()
+
 
         // BottomNavigationView 설정
         binding.btnvTimeline.setOnItemSelectedListener { item ->

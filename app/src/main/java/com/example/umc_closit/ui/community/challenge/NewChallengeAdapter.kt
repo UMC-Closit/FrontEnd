@@ -1,36 +1,29 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.challenge
 
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.R
-
-
+import com.example.umc_closit.databinding.ItemBattleBinding
 
 class NewChallengeAdapter(
     private val itemList: List<Int>,
     private val context: Context
 ) : RecyclerView.Adapter<NewChallengeAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.findViewById(R.id.img_battle_icon) // item_battle.xml 내 이미지뷰
-    }
+    class ViewHolder(val binding: ItemBattleBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_battle, parent, false)
-        return ViewHolder(view)
+        val binding = ItemBattleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.imageView.setImageResource(itemList[position])
+        holder.binding.imgBattleIcon.setImageResource(itemList[position])
 
         // 클릭 이벤트 추가 (이미지를 클릭하면 NewBattleDetailActivity로 이동)
-        holder.imageView.setOnClickListener {
+        holder.binding.imgBattleIcon.setOnClickListener {
             val intent = Intent(context, NewChallengeDetailActivity::class.java).apply {
                 putExtra("ITEM_POSITION", position) // 클릭한 아이템의 위치 정보 전달
                 putExtra("IMAGE_RES_ID", itemList[position]) // 클릭한 이미지 리소스 전달

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +14,8 @@ import com.example.umc_closit.R
 import com.example.umc_closit.data.TimelineItem
 import com.example.umc_closit.databinding.ItemTimelineBinding
 import com.example.umc_closit.model.TimelineViewModel
+import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.ui.timeline.detail.DetailActivity
 
 class TimelineAdapter(
     private val context: Context,
@@ -95,6 +96,7 @@ class TimelineAdapter(
             ivUserProfile.setOnClickListener {
                 Toast.makeText(context, "유저 프로필 클릭됨", Toast.LENGTH_SHORT).show()
                 // 유저 프로필 창 구현은 사용자가 설정
+
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.battle
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
-import com.example.umc_closit.Community.NewBattleActivity
+import com.example.umc_closit.ui.community.challenge.ChallengeFragment
 
 class BattleFragment : Fragment() {
 

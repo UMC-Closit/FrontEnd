@@ -1,19 +1,21 @@
-package com.example.umc_closit.Login
+package com.example.umc_closit.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ActivityPasswordBinding
 
 class PasswordActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityPasswordBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_password)
+        binding = ActivityPasswordBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // 설정 완료 버튼 클릭 이벤트
-        val setCredentialsButton: Button = findViewById(R.id.btn_set_credentials)
-        setCredentialsButton.setOnClickListener {
+        binding.btnSetCredentials.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // 스택 정리하여 로그인 화면으로 이동
             startActivity(intent)

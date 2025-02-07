@@ -1,23 +1,23 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.battle
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ItemBattleMainBinding
 
 class BattlePageAdapter(private val itemList: List<String>) :
     RecyclerView.Adapter<BattlePageAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val leftItem: View = view.findViewById(R.id.left_item)
-        val rightItem: View = view.findViewById(R.id.right_item)
+    class ViewHolder(private val binding: ItemBattleMainBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        val leftItem = binding.leftItem
+        val rightItem = binding.rightItem
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_battle_main, parent, false)
-        return ViewHolder(view)
+        val binding = ItemBattleMainBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

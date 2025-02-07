@@ -1,6 +1,5 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community
 
-import com.example.umc_closit.Community.BattleFragment
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.FragmentCommunityBinding
-import com.example.umc_closit.ui.timeline.DetailActivity
+import com.example.umc_closit.ui.community.battle.BattleFragment
+import com.example.umc_closit.ui.community.battle.NewBattleActivity
+import com.example.umc_closit.ui.community.challenge.ChallengeFragment
+import com.example.umc_closit.ui.community.todaycloset.TodayClosetFragment
+import com.example.umc_closit.ui.timeline.detail.DetailActivity
 import com.example.umc_closit.ui.upload.UploadFragment
 
 class CommunityFragment : Fragment() {

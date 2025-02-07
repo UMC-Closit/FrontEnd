@@ -1,19 +1,21 @@
-package com.example.umc_closit.Login
+package com.example.umc_closit.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ActivityMakeidBinding
 
 class MakeIdActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMakeidBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_makeid)
+        binding = ActivityMakeidBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // continue 버튼 클릭 이벤트
-        val setCredentialsButton: Button = findViewById(R.id.btn_next)
-        setCredentialsButton.setOnClickListener {
+        binding.btnNext.setOnClickListener {
             val intent = Intent(this, PasswordActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP // 스택 정리하여 다음 화면으로 이동
             startActivity(intent)

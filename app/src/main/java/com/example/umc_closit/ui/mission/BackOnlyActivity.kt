@@ -7,32 +7,18 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ActivityBackOnlyBinding
+import com.example.umc_closit.ui.timeline.TimelineActivity
 
 class BackOnlyActivity : AppCompatActivity() {
 
-    private lateinit var imageViewBackOnly: ImageView
-    private lateinit var viewColorIcon: View
+    private lateinit var binding: ActivityBackOnlyBinding
     private var originalBitmapPath: String? = null
-
-    private lateinit var btnHashtag: ImageButton
-    private lateinit var hashtagContainer: LinearLayout
-    private lateinit var btnPrivacy: ImageButton
-    private lateinit var btnUpload: ImageButton
-
     private var originalBitmap: Bitmap? = null
-
-    private lateinit var ivLeftButton: ImageView
-    private lateinit var tvTitle: TextView
 
     companion object {
         private const val TAGGING_REQUEST_CODE = 1001
@@ -40,44 +26,34 @@ class BackOnlyActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_back_only)
 
-        // 상단 툴바
-        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.topNavigationBar)
-        setSupportActionBar(toolbar)
-        ivLeftButton = toolbar.findViewById(R.id.ivLeftButton)
-        tvTitle = toolbar.findViewById(R.id.tvTitle)
-        ivLeftButton.setOnClickListener {
+        binding = ActivityBackOnlyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.ivBack.setOnClickListener {
             finish()
         }
-
-        imageViewBackOnly = findViewById(R.id.imageViewBackOnly)
-        viewColorIcon = findViewById(R.id.viewColorIcon)
-        btnHashtag = findViewById(R.id.btnHashtag)
-        hashtagContainer = findViewById(R.id.hashtagContainer)
-        btnPrivacy = findViewById(R.id.btnPrivacy)
-        btnUpload = findViewById(R.id.btnUpload)
 
         val backPhotoPath = intent.getStringExtra("backPhotoPath")
         backPhotoPath?.let { path ->
             originalBitmap = rotateBitmapIfNeeded(path)
             originalBitmap?.let { bmp ->
-                imageViewBackOnly.setImageBitmap(bmp)
+                binding.imageViewBackOnly.setImageBitmap(bmp)
             }
         }
 
         var isColorExtractMode = false
 
-        viewColorIcon.setOnClickListener {
+        binding.viewColorIcon.setOnClickListener {
             isColorExtractMode = !isColorExtractMode
         }
 
-        imageViewBackOnly.setOnTouchListener { view, event ->
+        binding.imageViewBackOnly.setOnTouchListener { _, event ->
             if (isColorExtractMode) {
                 if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
                     originalBitmap?.let { bmp ->
-                        val color = getTouchedColor(bmp, view as ImageView, event.x, event.y)
-                        setIconColor(viewColorIcon, color)
+                        val color = getTouchedColor(bmp, event.x, event.y)
+                        setIconColor(binding.viewColorIcon, color)
                     }
                     isColorExtractMode = false
                 }
@@ -93,40 +69,45 @@ class BackOnlyActivity : AppCompatActivity() {
         }
 
         // 해시태그 버튼 클릭
-        btnHashtag.setOnClickListener {
+        binding.btnHashtag.setOnClickListener {
             showHashtagDialog(
                 currentHashtag = null,
                 onHashtagSaved = { newHashtag ->
-                    // 새 해시태그 추가
                     addHashtagToContainer(newHashtag)
                 }
             )
         }
+
+        binding.btnUpload.setOnClickListener {
+            Toast.makeText(this, "미션 완료!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, TimelineActivity::class.java)
+            intent.putExtra("showUploadFragment", true)
+            startActivity(intent)
+        }
     }
 
     private fun addHashtagToContainer(hashtag: String) {
-        val hashtagView = TextView(this).apply {
+        val hashtagView = android.widget.TextView(this).apply {
             text = "#$hashtag"
-            setBackgroundResource(R.drawable.bg_detail_hashtag)  // bg_detail_hashtag.xml 배경
+            setBackgroundResource(com.example.umc_closit.R.drawable.bg_detail_hashtag)
             setTextColor(resources.getColor(android.R.color.white))
             setPadding(10, 10, 10, 10)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 marginStart = 10
                 marginEnd = 10
             }
         }
-        hashtagContainer.addView(hashtagView)
+        binding.hashtagContainer.addView(hashtagView)
     }
 
-    // 해시태그 입력 다이얼로그
     private fun showHashtagDialog(
         currentHashtag: String?,
         onHashtagSaved: (String) -> Unit
     ) {
-        val editText = EditText(this).apply {
+        val editText = android.widget.EditText(this).apply {
             hint = "#해시태그 입력"
             currentHashtag?.let { setText(it) }
         }
@@ -145,7 +126,7 @@ class BackOnlyActivity : AppCompatActivity() {
     }
 
     // 아이콘 색상 변경
-    private fun setIconColor(view: View, color: Int) {
+    private fun setIconColor(view: android.view.View, color: Int) {
         val bg = view.background
         if (bg is GradientDrawable) {
             bg.setColor(color)
@@ -155,14 +136,9 @@ class BackOnlyActivity : AppCompatActivity() {
     }
 
     // 이미지에서 색상 추출
-    private fun getTouchedColor(
-        bitmap: Bitmap,
-        imageView: ImageView,
-        touchX: Float,
-        touchY: Float
-    ): Int {
-        val ivWidth = imageView.width
-        val ivHeight = imageView.height
+    private fun getTouchedColor(bitmap: Bitmap, touchX: Float, touchY: Float): Int {
+        val ivWidth = binding.imageViewBackOnly.width
+        val ivHeight = binding.imageViewBackOnly.height
 
         val bmpWidth = bitmap.width
         val bmpHeight = bitmap.height
@@ -184,7 +160,7 @@ class BackOnlyActivity : AppCompatActivity() {
                 originalBitmapPath = taggedPhotoPath
                 val bmp = BitmapFactory.decodeFile(taggedPhotoPath)
                 if (bmp != null) {
-                    imageViewBackOnly.setImageBitmap(bmp)
+                    binding.imageViewBackOnly.setImageBitmap(bmp)
                 }
             }
         }

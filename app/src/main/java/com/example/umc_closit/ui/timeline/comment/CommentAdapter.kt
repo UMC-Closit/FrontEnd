@@ -1,4 +1,4 @@
-package com.example.umc_closit.ui.timeline
+package com.example.umc_closit.ui.timeline.comment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

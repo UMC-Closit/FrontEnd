@@ -1,9 +1,7 @@
-package com.example.umc_closit.ui.timeline
+package com.example.umc_closit.ui.timeline.detail
 
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity

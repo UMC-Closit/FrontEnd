@@ -1,4 +1,4 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.challenge
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,33 +7,40 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.FragmentChallengeBinding
+import com.example.umc_closit.ui.community.battle.NewBattleActivity
 
 class ChallengeFragment : Fragment() {
+
+    private var _binding: FragmentChallengeBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_challenge, container, false)
+    ): View {
+        _binding = FragmentChallengeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView: RecyclerView = view.findViewById(R.id.Challenge_recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.ChallengeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // 더미 데이터 추가
         val itemList = List(10) { "아이템 ${it + 1}" }
-        recyclerView.adapter = ChallengeAdapter(itemList, requireContext())
+        binding.ChallengeRecyclerView.adapter = ChallengeAdapter(itemList, requireContext())
 
         // createButton 클릭 시 NewBattleActivity로 이동
-        val createButton: View = view.findViewById(R.id.createButton)
-        createButton.setOnClickListener {
+        binding.createButton.setOnClickListener {
             val intent = Intent(requireContext(), NewBattleActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

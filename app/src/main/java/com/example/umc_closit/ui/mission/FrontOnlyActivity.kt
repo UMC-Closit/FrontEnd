@@ -6,98 +6,65 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ActivityFrontOnlyBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class FrontOnlyActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityFrontOnlyBinding
+
     private var frontPhotoPath: String? = null
     private var backPhotoPath: String? = null
     private var originalBitmapPath: String? = null
 
-    private lateinit var relativeLayout: RelativeLayout
-    private lateinit var imageViewFrontOnly: ImageView
-    private lateinit var viewColorIcon: View
-
-    private lateinit var btnHashtag: ImageButton
-    private lateinit var hashtagContainer: LinearLayout
-
     private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
-    private lateinit var btnContinue: ImageButton
-
     private var originalBitmap: Bitmap? = null
-
-    private lateinit var ivLeftButton: ImageView
-    private lateinit var tvTitle: TextView
-
 
     companion object {
         private const val TAGGING_REQUEST_CODE = 1001
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_front_only)
 
-        // 상단 툴바
-        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.topNavigationBar)
-        setSupportActionBar(toolbar)
-        ivLeftButton = toolbar.findViewById(R.id.ivLeftButton)
-        tvTitle = toolbar.findViewById(R.id.tvTitle)
-        ivLeftButton.setOnClickListener {
-            // TODO: 툴바 화살표 버튼 동작 추가
-            finish()
+        // 🚀 View Binding 초기화
+        binding = ActivityFrontOnlyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // 툴바 뒤로가기 버튼 설정
+        binding.ivBack.setOnClickListener {
+            onBackPressed()
         }
-
-        relativeLayout = findViewById(R.id.relativeLayout)
-        imageViewFrontOnly = findViewById(R.id.imageViewFrontOnly)
-        viewColorIcon = findViewById(R.id.viewColorIcon)
-
-        btnHashtag = findViewById(R.id.btnHashtag)
-        hashtagContainer = findViewById(R.id.hashtagContainer)
 
         frontPhotoPath = intent.getStringExtra("frontPhotoPath")
         frontPhotoPath?.let { path ->
             originalBitmap = rotateBitmapIfNeeded(path)
             originalBitmap?.let { bmp ->
-                imageViewFrontOnly.setImageBitmap(bmp)
+                binding.imageViewFrontOnly.setImageBitmap(bmp)
             }
-
-
-
         }
-
 
         backPhotoPath = intent.getStringExtra("backPhotoPath")
 
         var isColorExtractMode = false
 
-        viewColorIcon.setOnClickListener {
+        binding.viewColorIcon.setOnClickListener {
             isColorExtractMode = !isColorExtractMode
         }
 
-
-        imageViewFrontOnly.setOnTouchListener { view, event ->
+        binding.imageViewFrontOnly.setOnTouchListener { view, event ->
             if (isColorExtractMode) {
                 if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
                     originalBitmap?.let { bmp ->
-                        val color = getTouchedColor(bmp, view as ImageView, event.x, event.y)
-                        setIconColor(viewColorIcon, color)
+                        val color = getTouchedColor(bmp, event.x, event.y)
+                        setIconColor(binding.viewColorIcon, color)
                     }
                 }
             } else {
@@ -117,17 +84,15 @@ class FrontOnlyActivity : AppCompatActivity() {
             }
         }
 
-
         // 해시태그 버튼
-        btnHashtag.setOnClickListener {
+        binding.btnHashtag.setOnClickListener {
             showHashtagDialog { newHashtag ->
                 addHashtag(newHashtag)
             }
         }
 
         // BackOnlyActivity로 이동
-        btnContinue = findViewById(R.id.btnContinue)
-        btnContinue.setOnClickListener {
+        binding.btnContinue.setOnClickListener {
             val intent = Intent(this, BackOnlyActivity::class.java).apply {
                 putExtra("backPhotoPath", backPhotoPath)
             }
@@ -136,7 +101,6 @@ class FrontOnlyActivity : AppCompatActivity() {
     }
 
     private fun addHashtag(hashtag: String) {
-        // Update the flow with the new hashtag
         val currentHashtags = hashtagsFlow.value.toMutableList()
         currentHashtags.add(hashtag)
         hashtagsFlow.value = currentHashtags
@@ -144,7 +108,7 @@ class FrontOnlyActivity : AppCompatActivity() {
 
     // 해시태그 입력 다이얼로그
     private fun showHashtagDialog(onHashtagSaved: (String) -> Unit) {
-        val editText = EditText(this).apply {
+        val editText = android.widget.EditText(this).apply {
             hint = "#해시태그 입력"
         }
 
@@ -162,29 +126,28 @@ class FrontOnlyActivity : AppCompatActivity() {
     }
 
     private fun updateHashtagsUI(hashtags: List<String>) {
-        hashtagContainer.removeAllViews()
+        binding.hashtagContainer.removeAllViews()
 
         hashtags.forEach { hashtag ->
-            val hashtagTextView = TextView(this).apply {
+            val hashtagTextView = android.widget.TextView(this).apply {
                 text = "#$hashtag"
-                setTextColor(resources.getColor(R.color.white))
+                setTextColor(resources.getColor(com.example.umc_closit.R.color.white))
                 setPadding(16, 8, 16, 8)
-                background = resources.getDrawable(R.drawable.bg_detail_hashtag, null)
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
+                background = resources.getDrawable(com.example.umc_closit.R.drawable.bg_detail_hashtag, null)
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
                     marginStart = 8
                 }
             }
 
-            // Add the hashtag to the container
-            hashtagContainer.addView(hashtagTextView)
+            binding.hashtagContainer.addView(hashtagTextView)
         }
     }
 
     // 아이콘 색상 변경
-    private fun setIconColor(view: View, color: Int) {
+    private fun setIconColor(view: android.view.View, color: Int) {
         val bg = view.background
         if (bg is GradientDrawable) {
             bg.setColor(color)
@@ -194,14 +157,9 @@ class FrontOnlyActivity : AppCompatActivity() {
     }
 
     // 이미지에서 색상 추출
-    private fun getTouchedColor(
-        bitmap: Bitmap,
-        imageView: ImageView,
-        touchX: Float,
-        touchY: Float
-    ): Int {
-        val ivWidth = imageView.width
-        val ivHeight = imageView.height
+    private fun getTouchedColor(bitmap: Bitmap, touchX: Float, touchY: Float): Int {
+        val ivWidth = binding.imageViewFrontOnly.width
+        val ivHeight = binding.imageViewFrontOnly.height
 
         val bmpWidth = bitmap.width
         val bmpHeight = bitmap.height
@@ -215,12 +173,6 @@ class FrontOnlyActivity : AppCompatActivity() {
         return bitmap.getPixel(pixelX, pixelY)
     }
 
-    // DP -> PX 변환
-    private fun dpToPx(dp: Int): Int {
-        val scale = resources.displayMetrics.density
-        return (dp * scale + 0.5f).toInt()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == TAGGING_REQUEST_CODE && resultCode == RESULT_OK) {
@@ -229,7 +181,7 @@ class FrontOnlyActivity : AppCompatActivity() {
                 originalBitmapPath = taggedPhotoPath
                 val bmp = BitmapFactory.decodeFile(taggedPhotoPath)
                 if (bmp != null) {
-                    imageViewFrontOnly.setImageBitmap(bmp)
+                    binding.imageViewFrontOnly.setImageBitmap(bmp)
                 }
             }
         }

@@ -1,41 +1,45 @@
-package com.example.umc_closit.Login
+package com.example.umc_closit.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.umc_closit.R
+import com.example.umc_closit.databinding.ActivityLoginBinding
+import com.example.umc_closit.ui.login.find.FindIDActivity
+import com.example.umc_closit.ui.login.find.FindPasswordActivity
 import com.example.umc_closit.ui.timeline.TimelineActivity
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityLoginBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // 회원가입 버튼 클릭 이벤트
-        val registerButton: Button = findViewById(R.id.btn_register)
-        registerButton.setOnClickListener {
+        binding.btnRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
-
         }
-        val loginButton: Button = findViewById(R.id.btn_login)
-        loginButton.setOnClickListener {
+
+        // 로그인 버튼 클릭 이벤트
+        binding.btnLogin.setOnClickListener {
             val intent = Intent(this, TimelineActivity::class.java)
             startActivity(intent)
             finish() // 현재 로그인 액티비티 종료
         }
-        val FindIDButton: Button = findViewById(R.id.btn_find_id)
-        FindIDButton.setOnClickListener {
+
+        // 아이디 찾기 버튼 클릭 이벤트
+        binding.btnFindId.setOnClickListener {
             val intent = Intent(this, FindIDActivity::class.java)
             startActivity(intent)
-
         }
-        val FindPasswordButton: Button = findViewById(R.id.btn_find_password)
-        FindPasswordButton.setOnClickListener {
+
+        // 비밀번호 찾기 버튼 클릭 이벤트
+        binding.btnFindPassword.setOnClickListener {
             val intent = Intent(this, FindPasswordActivity::class.java)
             startActivity(intent)
-
         }
     }
 }

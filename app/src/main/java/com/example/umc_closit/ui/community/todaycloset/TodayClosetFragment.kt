@@ -1,4 +1,4 @@
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.todaycloset
 
 import android.os.Bundle
 import android.view.LayoutInflater
