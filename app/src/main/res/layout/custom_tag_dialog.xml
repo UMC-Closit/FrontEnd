@@ -41,7 +41,6 @@
             android:backgroundTint="@color/transparent"
             android:textColor="@android:color/black" />
 
-        <!-- 확인 버튼 -->
         <Button
             android:id="@+id/btnConfirm"
             android:layout_width="0dp"

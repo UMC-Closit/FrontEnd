@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.databinding.ItemAddHighlightBinding
 import com.example.umc_closit.databinding.ItemHighlightBinding
-import com.example.umc_closit.data.HighlightItem
+import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 
 class HighlightAdapter(

@@ -80,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/header_background"
-        app:layout_constraintBottom_toTopOf="@id/btn_set_credentials"
+        app:layout_constraintBottom_toTopOf="@id/btn_next"
         android:padding="16dp">
 
         <LinearLayout
@@ -137,7 +137,16 @@
                 android:hint="email 입력"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:id="@+id/tv_error_email"
+                android:text="올바른 이메일 형식을 입력해주세요"
+                android:textSize="12sp"
+                android:paddingStart="5dp"
+                android:visibility="gone"
+                android:textColor="@color/error_red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <!-- 생년월일 입력 -->
             <TextView
@@ -145,6 +154,7 @@
                 android:textSize="14sp"
                 android:textColor="#9E9E9E"
                 android:layout_width="match_parent"
+                android:layout_marginTop="12dp"
                 android:layout_height="30dp"/>
             <EditText
                 android:id="@+id/et_birthdate"
@@ -154,7 +164,17 @@
                 android:hint="생년월일 입력"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tv_error_birthdate"
+                android:text="생년월일을 YYYY-MM-DD 형식으로 입력해주세요"
+                android:textSize="12sp"
+                android:paddingStart="5dp"
+                android:visibility="gone"
+                android:textColor="@color/error_red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </ScrollView>
 

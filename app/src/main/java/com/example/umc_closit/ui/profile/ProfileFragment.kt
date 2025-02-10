@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.umc_closit.R
-import com.example.umc_closit.data.HighlightItem
-import com.example.umc_closit.data.RecentItem
+import com.example.umc_closit.data.entities.HighlightItem
+import com.example.umc_closit.data.entities.RecentItem
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.history.HistoryActivity

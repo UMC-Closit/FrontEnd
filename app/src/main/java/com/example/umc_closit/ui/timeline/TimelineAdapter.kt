@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.entities.TimelineItem
 import com.example.umc_closit.databinding.ItemTimelineBinding
 import com.example.umc_closit.model.TimelineViewModel
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment

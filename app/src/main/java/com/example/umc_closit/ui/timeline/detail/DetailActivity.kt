@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.entities.TimelineItem
 import com.example.umc_closit.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {

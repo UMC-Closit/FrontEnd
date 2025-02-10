@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.entities.TimelineItem
 
 class TimelineViewModel : ViewModel() {
     private val _timelineItems = MutableLiveData<List<TimelineItem>>()

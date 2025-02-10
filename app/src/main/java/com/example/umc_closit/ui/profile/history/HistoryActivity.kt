@@ -5,7 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.entities.TimelineItem
 import com.example.umc_closit.databinding.ActivityHistoryBinding
 import com.example.umc_closit.model.TimelineViewModel
 import com.example.umc_closit.utils.DateUtils

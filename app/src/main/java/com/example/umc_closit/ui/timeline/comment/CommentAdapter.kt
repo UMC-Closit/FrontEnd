@@ -3,7 +3,7 @@ package com.example.umc_closit.ui.timeline.comment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.data.Comment
+import com.example.umc_closit.data.entities.Comment
 import com.example.umc_closit.databinding.ItemCommentBinding
 import com.example.umc_closit.utils.DateUtils
 import com.bumptech.glide.Glide
