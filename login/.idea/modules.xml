@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/umc_closit_login.iml" filepath="$PROJECT_DIR$/.idea/modules/umc_closit_login.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/umc_closit_login.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>

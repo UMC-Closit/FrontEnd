@@ -2,24 +2,57 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+
+    <!-- 카메라 권한 추가 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_main"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_main_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.UMC_Closit"
-        tools:targetApi="31">
+        android:theme="@style/Theme.UMC_Closit">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".ui.splash.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.login.RegisterActivity" />
+        <activity android:name=".ui.login.MakeIdActivity" />
+        <activity android:name=".ui.community.battle.NewBattleActivity" />
+        <activity android:name=".ui.community.battle.NewBattleDetailActivity" />
+        <activity android:name=".ui.community.challenge.NewChallengeActivity" />
+        <activity android:name=".ui.community.challenge.NewChallengeDetailActivity" />
+        <activity android:name=".ui.login.find.FindID2Activity" />
+        <activity android:name=".ui.login.find.FindIDActivity" />
+        <activity android:name=".ui.login.find.FindPassword2Activity" />
+        <activity android:name=".ui.login.find.FindPasswordActivity" />
+        <activity android:name=".ui.login.PasswordActivity" />
+        <activity android:name=".ui.timeline.detail.DetailActivity" />
+        <activity android:name=".ui.timeline.TimelineActivity" />
+        <activity android:name=".ui.profile.highlight.AddHighlightActivity" />
+        <activity android:name=".ui.timeline.notification.NotificationActivity"/>
+        <activity android:name=".ui.profile.history.HistoryActivity" />
+        <activity android:name=".ui.mission.FrontOnlyActivity"/>
+        <activity android:name=".ui.mission.MissionActivity"/>
+        <activity android:name=".ui.mission.PreviewActivity"/>
+        <activity android:name=".ui.mission.TaggingActivity"/>
+        <activity android:name=".ui.mission.BackOnlyActivity"/>
+
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.UMC_Closit">
         </activity>
     </application>
 

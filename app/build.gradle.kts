@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.example.umc_closit"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -51,4 +51,13 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    // Splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // ViewModel
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+
+    //camera
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
 }

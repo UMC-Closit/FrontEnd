@@ -3,7 +3,30 @@
     <style name="Base.Theme.UMC_Closit" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="S">@null</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@null</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="S">@null</item>
+        <item name="android:statusBarColor">@color/transparent</item> <!-- 상태바 색상 -->
+        <item name="android:navigationBarColor">@color/transparent</item>
     </style>
 
-    <style name="Theme.UMC_Closit" parent="Base.Theme.UMC_Closit" />
+    <style name="Theme.UMC_Closit" parent="Base.Theme.UMC_Closit" >
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="S">@null</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@null</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="S">@null</item>
+        <item name="android:statusBarColor">@color/transparent</item> <!-- 상태바 색상 -->
+        <item name="android:navigationBarColor">@color/transparent</item>
+    </style>
+
+    <style name="Theme.Splash" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="S">@null</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@null</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="S">@null</item>
+        <item name="android:statusBarColor">@color/transparent</item> <!-- 상태바 색상 -->
+        <item name="android:navigationBarColor">@color/transparent</item>
+    </style>
 </resources>

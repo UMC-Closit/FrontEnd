@@ -1,0 +1,151 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 뒤로 가기 버튼 -->
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@drawable/ic_backward_button"
+            android:contentDescription="뒤로 가기"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="16dp"/>
+
+        <!-- 페이지 Indicator -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="16dp">
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/indicator_active"
+                android:layout_margin="2dp"/>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/indicator_inactive"
+                android:layout_margin="2dp"/>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/indicator_inactive"
+                android:layout_margin="2dp"/>
+        </LinearLayout>
+
+        <!-- 회원가입 제목 -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="회원가입"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/btn_back"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="16dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ScrollView: 약관 부분 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header_background"
+        app:layout_constraintBottom_toTopOf="@id/btn_next"
+        android:padding="16dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="사용자 이용약관"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"/>
+
+            <!-- 약관 내용 -->
+            <TextView
+                android:id="@+id/txt_register1"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:text="약관 1"
+                android:background="@drawable/login_background" />
+
+            <CheckBox
+                android:id="@+id/chk_register1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="동의합니다" />
+
+            <TextView
+                android:id="@+id/txt_register2"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:text="약관 2"
+                android:background="@drawable/login_background" />
+
+            <CheckBox
+                android:id="@+id/chk_register2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="동의합니다" />
+            <TextView
+                android:id="@+id/txt_register3"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:text="약관 3"
+                android:background="@drawable/login_background" />
+
+            <CheckBox
+                android:id="@+id/chk_register3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="동의합니다" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 다음 버튼 -->
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Continue"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:backgroundTint="@color/black_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

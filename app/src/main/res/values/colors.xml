@@ -3,9 +3,16 @@
     <color name="black">#FF010101</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="black_button">#000000</color>
+
     <color name="transparent">#00000000</color>
 
     <color name="gray_dark">#797979</color>
     <color name="gray_normal">#D9D9D9</color>
     <color name="gray_bright">#E7E7E7</color>
+    <color name="gray">#B0B0B0</color>
+
+    <color name="light_gray">#D3D3D3</color>
+    <color name="white_profile_bg">#FAFAFA</color>
+    <color name="gray_profile_follow">#BABECD</color>
 </resources>
