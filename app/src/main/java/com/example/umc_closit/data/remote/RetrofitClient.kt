@@ -1,6 +1,6 @@
 package com.example.umc_closit.data.remote
 
-import com.example.umc_closit.data.BattleApiService
+import com.example.umc_closit.data.TodayClosetApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -18,6 +18,14 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(BattleApiService::class.java)
+    }
+
+    val todayClosetApiService: TodayClosetApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(TodayClosetApiService::class.java)
     }
 
     val authService: AuthService = retrofit.create(AuthService::class.java)

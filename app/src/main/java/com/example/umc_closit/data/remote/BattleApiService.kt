@@ -1,6 +1,8 @@
 // BattleApiService.kt
-package com.example.umc_closit.data
+package com.example.umc_closit.data.remote
 
+import com.example.umc_closit.data.BattlePostRequest
+import com.example.umc_closit.data.BattlePostResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Headers
