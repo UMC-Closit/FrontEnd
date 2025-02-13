@@ -21,7 +21,7 @@ object RetrofitClient {
     }
 
     val authService: AuthService = retrofit.create(AuthService::class.java)
-    // val timelineService: TimelineService = retrofit.create(TimelineService::class.java)
+    val timelineService: TimelineService = retrofit.create(TimelineService::class.java)
     val profileService: ProfileService = retrofit.create(ProfileService::class.java)
 
 }

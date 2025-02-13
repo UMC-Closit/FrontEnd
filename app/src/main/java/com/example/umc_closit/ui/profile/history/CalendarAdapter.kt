@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.TimelineItem
+import com.example.umc_closit.data.remote.PostPreview
 import com.example.umc_closit.databinding.ItemCalendarDayBinding
 import com.example.umc_closit.ui.profile.highlight.AddHighlightActivity
 import com.example.umc_closit.model.TimelineViewModel
@@ -64,8 +65,9 @@ class CalendarAdapter(
             val fullDateKey = "$currentYear-${String.format("%02d", currentMonth)}-${String.format("%02d", day.toInt())}"
             val timelineItemId = postThumbnails[fullDateKey]
 
-            val timelineItem: TimelineItem? = timelineViewModel.timelineItems.value?.find { it.id == timelineItemId }
-            val mainImageResId = timelineItem?.mainImageResId ?: R.drawable.img_history_calendar_default
+/*
+            val timelineItem: PostPreview? = timelineViewModel.timelineItems.value?.find { it.id == timelineItemId }
+            val mainImageResId = PostPreview?.mainImageResId ?: R.drawable.img_history_calendar_default
             val pointColor = timelineItem?.pointColor ?: "#D9D9D9"
 
             ivCalendar.setImageResource(mainImageResId)
@@ -76,6 +78,7 @@ class CalendarAdapter(
             } else {
                 ivCalendar.clearColorFilter()
             }
+*/
 
             // ✅ 크기 조정 유지
             val calculatedWidth = weekdayWidth

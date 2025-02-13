@@ -1,31 +1,35 @@
 package com.example.umc_closit.ui.timeline
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.TimelineItem
+import com.example.umc_closit.data.remote.LikeResponse
+import com.example.umc_closit.data.remote.PostPreview
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.TimelineService
 import com.example.umc_closit.databinding.ItemTimelineBinding
-import com.example.umc_closit.model.TimelineViewModel
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class TimelineAdapter(
     private val context: Context,
-    private var timelineItems: MutableList<TimelineItem>,
-    private val savedPosts: MutableList<TimelineItem>
+    private var timelineItems: MutableList<PostPreview>,
+    private val accessToken: String, // 로그인 유지된 토큰
+    private val userId: Int // 로그인한 사용자 ID
 ) : RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder>() {
 
-    private val timelineViewModel: TimelineViewModel = ViewModelProvider(context as AppCompatActivity).get(TimelineViewModel::class.java)
+    private val timelineService = RetrofitClient.timelineService
 
-    // ViewHolder 정의
     class TimelineViewHolder(val binding: ItemTimelineBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimelineViewHolder {
@@ -33,78 +37,76 @@ class TimelineAdapter(
         return TimelineViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TimelineViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TimelineViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val item = timelineItems[position]
+
         with(holder.binding) {
-            ivImageBig.setImageResource(item.mainImageResId)
-            ivImageSmall.setImageResource(item.overlayImageResId)
+            // 🔥 API에서 받은 이미지 로드
+            Glide.with(context).load(item.frontImage).into(ivImageBig)
+            Glide.with(context).load(item.backImage).into(ivImageSmall)
+            Glide.with(context).load(item.profileImage).transform(CircleCrop()).into(ivUserProfile)
 
-            // 유저 프로필 사진을 동그라미로
-            Glide.with(context)
-                .load(item.userProfileResId)  // 프로필 이미지
-                .transform(CircleCrop())  // 원형으로 자르기
-                .into(ivUserProfile)
+            // 좋아요/저장 상태 설정
+            ivLike.setImageResource(if (item.isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
+            ivSave.setImageResource(if (item.isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
 
-            // 게시글 상세 페이지로 이동
+            // 📌 게시글 상세 페이지로 이동
             ivImageBig.setOnClickListener {
                 val intent = Intent(context, DetailActivity::class.java)
-                intent.putExtra("timelineItem", item) // 게시글 데이터를 전달
+                intent.putExtra("timelineItem", item)
                 context.startActivity(intent)
             }
 
-            // 댓글 버튼 클릭 이벤트
+            // 📌 댓글 버튼 클릭 이벤트
             ivComment.setOnClickListener {
                 val commentFragment = CommentBottomSheetFragment.newInstance()
-                commentFragment.show((context as AppCompatActivity).supportFragmentManager, commentFragment.tag)
+                commentFragment.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, commentFragment.tag)
             }
 
-            // 초기 좋아요 및 저장 상태 설정 (ViewModel에서 가져오기)
-            val (isLiked, isSaved) = timelineViewModel.getPostStatus(item.id) ?: Pair(false, false)
-
-            ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
-            ivSave.setImageResource(if (isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
-
-            // 좋아요 버튼 클릭 이벤트
+            // 📌 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
-                val newLikeState = !isLiked // 현재 상태 반대로 변경
-                timelineViewModel.updatePostStatus(item.id, newLikeState, isSaved) // ViewModel 업데이트
+                timelineService.likePost("Bearer $accessToken", item.postId, userId)
+                    .enqueue(object : Callback<LikeResponse> {
+                        override fun onResponse(call: Call<LikeResponse>, response: Response<LikeResponse>) {
+                            if (response.isSuccessful) {
+                                response.body()?.let { result ->
+                                    if (result.isSuccess) {
+                                        // 서버 응답을 바탕으로 좋아요 상태 업데이트
+                                        val isLiked = result.result.isLiked
+                                        timelineItems[position] = item.copy(isLiked = isLiked)
+                                        notifyItemChanged(position)
 
-                ivLike.setImageResource(
-                    if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off
-                )
+                                        Toast.makeText(context, if (isLiked) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
 
-                Toast.makeText(context, if (newLikeState) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
-
-                notifyItemChanged(position) // UI 업데이트
+                        override fun onFailure(call: Call<LikeResponse>, t: Throwable) {
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
             }
 
-            // 저장 버튼 클릭 이벤트
+            // 📌 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
-                val newSaveState = !isSaved
-                timelineViewModel.updatePostStatus(item.id, isLiked, newSaveState)
-
-                ivSave.setImageResource(
-                    if (newSaveState) R.drawable.ic_save_on else R.drawable.ic_save_off
-                )
+                val newSaveState = !item.isSaved
+                timelineItems[position] = item.copy(isSaved = newSaveState)
+                notifyItemChanged(position)
 
                 Toast.makeText(context, if (newSaveState) "저장됨!" else "저장 취소", Toast.LENGTH_SHORT).show()
-
-                notifyItemChanged(position) // UI 업데이트
             }
 
-            // 유저 프로필 클릭 이벤트
+            // 📌 유저 프로필 클릭 이벤트
             ivUserProfile.setOnClickListener {
                 Toast.makeText(context, "유저 프로필 클릭됨", Toast.LENGTH_SHORT).show()
-                // 유저 프로필 창 구현은 사용자가 설정
-
             }
         }
     }
 
-    // updateTimelineItems 메서드 추가: LiveData 업데이트 시 호출
-    fun updateTimelineItems(updatedItems: List<TimelineItem>) {
+    fun updateTimelineItems(updatedItems: List<PostPreview>) {
         this.timelineItems = updatedItems.toMutableList()
-        notifyDataSetChanged()  // RecyclerView 갱신
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = timelineItems.size

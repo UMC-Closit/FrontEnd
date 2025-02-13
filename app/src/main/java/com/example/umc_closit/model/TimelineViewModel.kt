@@ -1,95 +1,53 @@
 package com.example.umc_closit.model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.TimelineItem
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.PostPreview
+import com.example.umc_closit.data.remote.TimelineResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class TimelineViewModel : ViewModel() {
-    private val _timelineItems = MutableLiveData<List<TimelineItem>>()
-    val timelineItems: LiveData<List<TimelineItem>> get() = _timelineItems
+    private val _timelineItems = MutableLiveData<List<PostPreview>?>()
+    val timelineItems: MutableLiveData<List<PostPreview>?> get() = _timelineItems
 
-    init {
-        // 초기 데이터 설정
-        _timelineItems.value = listOf(
-            TimelineItem(
-                id = 1,
-                mainImageResId = R.drawable.example_profile,
-                overlayImageResId = R.drawable.img_timeline_small_default,
-                userProfileResId = R.drawable.img_profile_default,
-                userName = "User1",
-                likeCount = 10,
-                commentCount = 5,
-                isLiked = false,
-                isSaved = true,
-                postText = "This is a sample post text",
-                hashtags = listOf("#Nature", "#Sunset"),
-                uploadDate = "2024-11-12T06:52:07.831513",
-                pointColor = "#FF5733"
-            ),
-            TimelineItem(
-                id = 2,
-                mainImageResId = R.drawable.example_profile,
-                overlayImageResId = R.drawable.example_profile,
-                userProfileResId = R.drawable.example_profile,
-                userName = "User2",
-                likeCount = 25,
-                commentCount = 3,
-                isLiked = true,
-                isSaved = false,
-                postText = "Another sample post",
-                hashtags = listOf("#Travel", "#Adventure"),
-                uploadDate = "2024-12-02T12:30:15.123456",
-                pointColor = "#4287f5"
-            ),
-            TimelineItem(
-                id = 3,
-                mainImageResId = R.drawable.example_profile,
-                overlayImageResId = R.drawable.example_profile,
-                userProfileResId = R.drawable.example_profile,
-                userName = "User2",
-                likeCount = 25,
-                commentCount = 3,
-                isLiked = true,
-                isSaved = false,
-                postText = "Another sample post",
-                hashtags = listOf("#Travel", "#Adventure"),
-                uploadDate = "2025-12-02T12:33:15.123456",
-                pointColor = "#4287f5"
-            ),
-            TimelineItem(
-                id = 4,
-                mainImageResId = R.drawable.example_profile,
-                overlayImageResId = R.drawable.example_profile,
-                userProfileResId = R.drawable.example_profile,
-                userName = "User2",
-                likeCount = 25,
-                commentCount = 3,
-                isLiked = true,
-                isSaved = false,
-                postText = "Another sample post",
-                hashtags = listOf("#Travel", "#Adventure"),
-                uploadDate = "2024-11-02T12:30:15.123456",
-                pointColor = "#4287f5"
-            ),
-        )
+    fun fetchTimelinePosts(token: String, page: Int = 0) {
+        RetrofitClient.timelineService.getTimelinePosts("Bearer $token", page = page)
+            .enqueue(object : Callback<TimelineResponse> {
+                override fun onResponse(call: Call<TimelineResponse>, response: Response<TimelineResponse>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            if (it.isSuccess) {
+                                _timelineItems.value = it.result.postPreviewList
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<TimelineResponse>, t: Throwable) {
+                    Log.e("TIMELINE_ERROR", "네트워크 오류: ${t.message}")
+                }
+            })
     }
 
-    // 좋아요 상태 변경
+    // 좋아요 상태 변경 (API 호출 없이 로컬에서 변경)
     fun toggleLike(postId: Int) {
         val updatedItems = _timelineItems.value?.map {
-            if (it.id == postId) {
-                it.copy(isLiked = !it.isLiked, likeCount = if (it.isLiked) it.likeCount - 1 else it.likeCount + 1)
+            if (it.userId == postId) {
+                it.copy(isLiked = !it.isLiked)
             } else it
         }
         _timelineItems.value = updatedItems
     }
 
-    // 저장 상태 변경
+    // 저장 상태 변경 (API 호출 없이 로컬에서 변경)
     fun toggleSave(postId: Int) {
         val updatedItems = _timelineItems.value?.map {
-            if (it.id == postId) {
+            if (it.userId == postId) {
                 it.copy(isSaved = !it.isSaved)
             } else it
         }
@@ -98,7 +56,7 @@ class TimelineViewModel : ViewModel() {
 
     // 게시글 상태 가져오기
     fun getPostStatus(postId: Int): Pair<Boolean, Boolean>? {
-        return _timelineItems.value?.find { it.id == postId }?.let {
+        return _timelineItems.value?.find { it.userId == postId }?.let {
             Pair(it.isLiked, it.isSaved)
         }
     }
@@ -106,14 +64,10 @@ class TimelineViewModel : ViewModel() {
     // 게시글 상태 업데이트
     fun updatePostStatus(postId: Int, isLiked: Boolean, isSaved: Boolean) {
         val updatedItems = _timelineItems.value?.map {
-            if (it.id == postId) {
+            if (it.userId == postId) {
                 it.copy(isLiked = isLiked, isSaved = isSaved)
             } else it
         }
         _timelineItems.value = updatedItems
-    }
-
-    fun getTimelineItemByDate(uploadDate: String): TimelineItem? {
-        return _timelineItems.value?.find { it.uploadDate.substring(0, 10) == uploadDate }
     }
 }
