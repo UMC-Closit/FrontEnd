@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_closit.Community.BattlePageAdapter
 import com.example.umc_closit.R
 import com.example.umc_closit.ui.community.challenge.ChallengeFragment
 
