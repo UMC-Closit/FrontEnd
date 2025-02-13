@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.BookmarkRequest
+import com.example.umc_closit.data.remote.BookmarkResponse
 import com.example.umc_closit.data.remote.LikeResponse
 import com.example.umc_closit.data.remote.PostPreview
 import com.example.umc_closit.data.remote.RetrofitClient
@@ -63,7 +65,7 @@ class TimelineAdapter(
                 commentFragment.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, commentFragment.tag)
             }
 
-            // 📌 좋아요 버튼 클릭 이벤트
+/*            // 📌 좋아요 버튼 클릭 이벤트(토큰 있는 버전)
             ivLike.setOnClickListener {
                 timelineService.likePost("Bearer $accessToken", item.postId, userId)
                     .enqueue(object : Callback<LikeResponse> {
@@ -86,16 +88,62 @@ class TimelineAdapter(
                             Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                         }
                     })
+            }*/
+
+            // 📌 좋아요 버튼 클릭 이벤트(토큰 없는 버전)
+            ivLike.setOnClickListener {
+                timelineService.likePost(item.postId, userId)
+                    .enqueue(object : Callback<LikeResponse> {
+                        override fun onResponse(call: Call<LikeResponse>, response: Response<LikeResponse>) {
+                            if (response.isSuccessful) {
+                                response.body()?.let { result ->
+                                    if (result.isSuccess) {
+                                        val isLiked = result.result.isLiked
+                                        timelineItems[position] = item.copy(isLiked = isLiked)
+                                        notifyItemChanged(position)
+
+                                        Toast.makeText(context, if (isLiked) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<LikeResponse>, t: Throwable) {
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
             }
+
 
             // 📌 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
                 val newSaveState = !item.isSaved
-                timelineItems[position] = item.copy(isSaved = newSaveState)
-                notifyItemChanged(position)
 
-                Toast.makeText(context, if (newSaveState) "저장됨!" else "저장 취소", Toast.LENGTH_SHORT).show()
+                if (newSaveState) {
+                    timelineService.savePost(BookmarkRequest(userId, item.postId))
+                        .enqueue(object : Callback<BookmarkResponse> {
+                            override fun onResponse(call: Call<BookmarkResponse>, response: Response<BookmarkResponse>) {
+                                if (response.isSuccessful && response.body()?.isSuccess == true) {
+                                    timelineItems[position] = item.copy(isSaved = true)
+                                    notifyItemChanged(position)
+                                    Toast.makeText(context, "저장됨!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<BookmarkResponse>, t: Throwable) {
+                                Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                } else {
+                    // 저장 취소 로직은 아직 완성 안되었으므로 토스트만 처리
+                    timelineItems[position] = item.copy(isSaved = false)
+                    notifyItemChanged(position)
+                    Toast.makeText(context, "저장 취소", Toast.LENGTH_SHORT).show()
+                }
             }
+
 
             // 📌 유저 프로필 클릭 이벤트
             ivUserProfile.setOnClickListener {

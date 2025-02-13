@@ -17,8 +17,9 @@ data class RegisterResponse(
 )
 
 data class RegisterResult(
-    val userId: Int,
-    val result: UserInfo?
+    val clositId: String,
+    val name: String,
+    val email: String
 )
 
 data class UserInfo(
@@ -39,9 +40,9 @@ data class LoginResponse(
 )
 
 data class LoginResult(
+    val clositId: String, // 서버에서 string으로 내려옴
     val accessToken: String,
-    val refreshToken: String,
-    val userId: Int
+    val refreshToken: String
 )
 
 
@@ -50,32 +51,4 @@ data class TokenResult(
     val refreshToken: String
 )
 
-data class FollowRequest(
-    val follower: Int,
-    val following: Int
-)
 
-data class FollowResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: FollowResult?
-)
-
-data class FollowResult(
-    val followerId: Int,
-    val followingId: Int,
-    val createdAt: String
-)
-
-data class UnfollowResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: TokenResult?
-)
-
-data class TokenResult(
-    val accessToken: String,
-    val refreshToken: String
-)

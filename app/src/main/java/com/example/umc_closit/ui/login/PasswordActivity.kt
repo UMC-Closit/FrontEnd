@@ -163,9 +163,7 @@ class PasswordActivity : AppCompatActivity() {
             profileImage = "android.resource://com.example.umc_closit/drawable/img_profile_default"
         )
 
-        // 요청 데이터 로그 출력
         Log.d("API_REQUEST", "보내는 데이터: $request")
-
 
         RetrofitClient.authService.registerUser(request).enqueue(object : Callback<RegisterResponse> {
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
@@ -176,6 +174,12 @@ class PasswordActivity : AppCompatActivity() {
                     Log.d("API_RESPONSE", "응답 본문: $result")
 
                     if (result != null && result.isSuccess) {
+                        val clositId = result.result?.clositId ?: ""
+                        val name = result.result?.name ?: ""
+                        val email = result.result?.email ?: ""
+
+                        Log.d("REGISTER_SUCCESS", "clositId: $clositId, name: $name, email: $email")
+
                         startActivity(Intent(this@PasswordActivity, LoginActivity::class.java))
                         finish()
                     } else {
@@ -193,6 +197,7 @@ class PasswordActivity : AppCompatActivity() {
             }
         })
     }
+
 
     // 비밀번호 유효성 검사 (최소 8자 이상)
     private fun isValidPassword(password: String): Boolean {
