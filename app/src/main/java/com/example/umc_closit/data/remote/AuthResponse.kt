@@ -18,6 +18,10 @@ data class RegisterResponse(
 
 data class RegisterResult(
     val userId: Int,
+    val result: UserInfo?
+)
+
+data class UserInfo(
     val name: String,
     val email: String
 )
@@ -68,6 +72,10 @@ data class UnfollowResponse(
     val isSuccess: Boolean,
     val code: String,
     val message: String,
-    val result: String?
+    val result: TokenResult?
 )
 
+data class TokenResult(
+    val accessToken: String,
+    val refreshToken: String
+)
