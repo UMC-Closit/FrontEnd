@@ -12,9 +12,9 @@
         android:layout_height="0dp"
         android:background="@drawable/bg_black_rounded_toolbar"
         android:elevation="2dp"
-        android:paddingVertical="10dp"
+        android:paddingTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.09"
+        app:layout_constraintHeight_percent="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -27,7 +27,7 @@
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_percent="0.9"
+            app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,8 +39,9 @@
             android:gravity="center"
             android:paddingStart="15dp"
             android:text="History"
+            android:fontFamily="@font/ibm_regular"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="26sp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_back"
             app:layout_constraintStart_toEndOf="@+id/iv_back"
             app:layout_constraintTop_toTopOf="@+id/iv_back" />

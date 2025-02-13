@@ -167,7 +167,7 @@ class PasswordActivity : AppCompatActivity() {
         Log.d("API_REQUEST", "보내는 데이터: $request")
 
 
-        RetrofitClient.instance.registerUser(request).enqueue(object : Callback<RegisterResponse> {
+        RetrofitClient.authService.registerUser(request).enqueue(object : Callback<RegisterResponse> {
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
                 Log.d("API_RESPONSE", "응답 코드: ${response.code()}")
 

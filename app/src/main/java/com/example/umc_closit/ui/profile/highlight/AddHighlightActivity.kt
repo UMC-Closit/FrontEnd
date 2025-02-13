@@ -40,10 +40,10 @@ class AddHighlightActivity : AppCompatActivity() {
         Log.d("AddHighlightActivity", "Received timelineItemId: $timelineItemId")
 
         // ✅ LiveData를 observe하여 해당 ID의 TimelineItem 찾기
-        timelineViewModel.timelineItems.observe(this) { timelineItems ->
+/*        timelineViewModel.timelineItems.observe(this) { timelineItems ->
             val timelineItem = timelineItems.find { it.id == timelineItemId }
             timelineItem?.let { updateUI(it) } ?: Log.e("AddHighlightActivity", "No TimelineItem found for ID: $timelineItemId")
-        }
+        }*/
 
         // ✅ 뒤로가기 버튼 클릭 리스너 설정
         binding.ivBack.setOnClickListener {
