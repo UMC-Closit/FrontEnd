@@ -60,8 +60,9 @@
 
     <ImageButton
         android:id="@+id/btn_upload"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
         android:layout_marginEnd="10dp"
         android:src="@drawable/upload"
         android:background="@null"
@@ -133,15 +134,16 @@
 
     <ImageButton
         android:id="@+id/btn_upload2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
         android:layout_marginEnd="10dp"
-        android:src="@drawable/upload"
         android:background="@null"
         android:contentDescription="Battle Upload Button"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view"
+        android:src="@drawable/upload"
         app:layout_constraintBottom_toBottomOf="@id/btn_battle"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view" />
     <!-- Scrollable Section -->
     <HorizontalScrollView
         android:id="@+id/horizontal_scroll_view2"

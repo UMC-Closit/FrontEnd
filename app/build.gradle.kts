@@ -60,4 +60,7 @@ dependencies {
 
     //camera
     implementation("androidx.exifinterface:exifinterface:1.3.6")
+
+    //layout
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
 }
