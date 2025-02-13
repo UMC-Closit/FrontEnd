@@ -85,26 +85,24 @@ class LoginActivity : AppCompatActivity() {
     private fun loginUser(email: String, password: String) {
         val request = LoginRequest(email, password)
 
-        RetrofitClient.instance.loginUser(request).enqueue(object : Callback<LoginResponse> {
+        RetrofitClient.authService.loginUser(request).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
                     val result = response.body()
                     Log.d("LOGIN_SUCCESS", "응답: $result")
 
                     if (result != null && result.isSuccess) {
-                        // 로그인 성공 → 토큰 저장
                         val accessToken = result.result?.accessToken
                         val refreshToken = result.result?.refreshToken
+                        val userId = result.result?.userId ?: -1 // 유저 ID 추가
 
-                        saveTokens(accessToken, refreshToken) // 🔥 토큰 저장
+                        saveTokens(accessToken, refreshToken, userId)
                         startActivity(Intent(this@LoginActivity, TimelineActivity::class.java))
                         finish()
                     } else {
-                        // 로그인 실패 메시지 출력
                         Toast.makeText(this@LoginActivity, "로그인 실패: ${result?.message}", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // 400 Bad Request 처리
                     if (response.code() == 400) {
                         Toast.makeText(this@LoginActivity, "이메일과 비밀번호를 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show()
                     } else {
@@ -121,17 +119,19 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    // SharedPreferences에 토큰 저장
-    private fun saveTokens(accessToken: String?, refreshToken: String?) {
+    // SharedPreferences에 토큰 + 유저 ID 저장
+    private fun saveTokens(accessToken: String?, refreshToken: String?, userId: Int) {
         val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putString("accessToken", accessToken)
             putString("refreshToken", refreshToken)
-            putBoolean("isLoggedIn", true) // 로그인 상태 저장
+            putInt("userId", userId)
+            putBoolean("isLoggedIn", true)
             apply()
         }
-        Log.d("TOKEN_STORAGE", "토큰 저장 완료: accessToken=$accessToken, refreshToken=$refreshToken")
+        Log.d("TOKEN_STORAGE", "토큰 및 유저 ID 저장 완료: accessToken=$accessToken, refreshToken=$refreshToken, userId=$userId")
     }
+
 
     // 자동 로그인 기능 추가
     private fun checkLoginStatus() {

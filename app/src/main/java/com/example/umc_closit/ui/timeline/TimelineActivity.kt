@@ -17,6 +17,11 @@ class TimelineActivity : AppCompatActivity() {
         binding = ActivityTimelineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ✅ SharedPreferences에서 로그인한 유저 ID 가져오기
+        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("userId", -1) // 기본값 -1
+
+
         // ✅ "showUploadFragment" 값이 true라면 UploadFragment 표시, 아니면 TimelineFragment 표시
         val fragment = if (intent.getBooleanExtra("showUploadFragment", false)) {
             UploadFragment()
@@ -39,9 +44,14 @@ class TimelineActivity : AppCompatActivity() {
                     true
                 }
 
-               R.id.menu_profile -> {
+                R.id.menu_profile -> {
+                    val profileFragment = ProfileFragment().apply {
+                        arguments = Bundle().apply {
+                            putInt("profileUserId", userId) // 본인 userId 넘기기
+                        }
+                    }
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, ProfileFragment())
+                        .replace(R.id.fragment_container, profileFragment)
                         .commit()
                     true
                 }
