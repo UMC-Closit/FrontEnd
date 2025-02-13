@@ -85,7 +85,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         }
 
         // 해시태그 버튼
-        binding.btnHashtag.setOnClickListener {
+            binding.btnHashtag.setOnClickListener {
             showHashtagDialog { newHashtag ->
                 addHashtag(newHashtag)
             }
