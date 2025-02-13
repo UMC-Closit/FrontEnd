@@ -3,7 +3,7 @@ package com.example.umc_closit.ui.profile.recent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.data.RecentItem
+import com.example.umc_closit.data.entities.RecentItem
 import com.example.umc_closit.databinding.ItemRecentBinding
 
 class RecentAdapter(

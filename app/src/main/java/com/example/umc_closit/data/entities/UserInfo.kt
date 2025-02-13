@@ -1,4 +1,4 @@
-package com.example.umc_closit.data
+package com.example.umc_closit.data.entities
 
 data class UserInfo(
     val userId: String,   // 사용자 ID

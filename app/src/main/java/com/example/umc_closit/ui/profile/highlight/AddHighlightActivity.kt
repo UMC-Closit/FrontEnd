@@ -6,14 +6,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.entities.TimelineItem
 import com.example.umc_closit.databinding.ActivityAddHighlightBinding
 import com.example.umc_closit.model.TimelineViewModel
 

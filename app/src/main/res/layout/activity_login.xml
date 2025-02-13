@@ -85,7 +85,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:background="@null"
-                    android:src="@drawable/eye" />
+                    android:src="@drawable/ic_eye" />
             </LinearLayout>
 
             <!-- 링크 -->

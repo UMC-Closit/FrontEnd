@@ -1,14 +1,13 @@
 package com.example.umc_closit.ui.profile.history
 
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.entities.TimelineItem
 import com.example.umc_closit.databinding.ItemCalendarDayBinding
 import com.example.umc_closit.ui.profile.highlight.AddHighlightActivity
 import com.example.umc_closit.model.TimelineViewModel

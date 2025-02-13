@@ -1,4 +1,4 @@
-package com.example.umc_closit.data
+package com.example.umc_closit.data.entities
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

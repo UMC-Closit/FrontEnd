@@ -5,13 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.databinding.ItemAddHighlightBinding
 import com.example.umc_closit.databinding.ItemHighlightBinding
-import com.example.umc_closit.data.HighlightItem
+import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 
 class HighlightAdapter(
     private var items: MutableList<HighlightItem>,
     private val onAddClick: () -> Unit,
-    private val screenWidth: Int // 화면 너비를 전달받음
+    private val screenWidth: Int, // 화면 너비
+    private val isMyProfile: Boolean // 본인 프로필 여부
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -19,7 +20,6 @@ class HighlightAdapter(
         private const val VIEW_TYPE_HIGHLIGHT = 1
     }
 
-    // "+" 버튼 ViewHolder
     class AddHighlightViewHolder(private val binding: ItemAddHighlightBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(onAddClick: () -> Unit, itemSize: Int) {
@@ -27,13 +27,12 @@ class HighlightAdapter(
                 width = itemSize
                 height = itemSize
             }
-            binding.ivAddHighlight.requestLayout() // 크기 갱신
+            binding.ivAddHighlight.requestLayout()
             binding.tvAddHighlightDate.text = getCurrentDate()
             binding.ivAddHighlight.setOnClickListener { onAddClick() }
         }
     }
 
-    // 하이라이트 ViewHolder
     class HighlightViewHolder(private val binding: ItemHighlightBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HighlightItem, itemSize: Int) {
@@ -43,47 +42,46 @@ class HighlightAdapter(
                 width = itemSize
                 height = itemSize
             }
-            binding.highlightImage.requestLayout() // 크기 갱신
+            binding.highlightImage.requestLayout()
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 0) VIEW_TYPE_ADD else VIEW_TYPE_HIGHLIGHT
+        return if (isMyProfile && position == 0) VIEW_TYPE_ADD else VIEW_TYPE_HIGHLIGHT
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == VIEW_TYPE_ADD) {
             val binding = ItemAddHighlightBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
             AddHighlightViewHolder(binding)
         } else {
             val binding = ItemHighlightBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
             HighlightViewHolder(binding)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val itemSize = (screenWidth * 0.14).toInt() // 화면 너비의 10%
+        val itemSize = (screenWidth * 0.14).toInt()
+
         if (holder is AddHighlightViewHolder) {
             holder.bind(onAddClick, itemSize)
         } else if (holder is HighlightViewHolder) {
-            val item = items[position - 1]
+            val itemPosition = if (isMyProfile) position - 1 else position
+            val item = items[itemPosition]
             holder.bind(item, itemSize)
         }
     }
 
-    override fun getItemCount(): Int = items.size + 1 // "+" 버튼 포함
+    override fun getItemCount(): Int {
+        return if (isMyProfile) items.size + 1 else items.size
+    }
 
-    // 데이터 추가 함수
     fun updateItems(newItem: HighlightItem) {
-        items.add(newItem) // 새로운 아이템 추가
-        notifyItemInserted(items.size) // RecyclerView에 변경 알림
+        items.add(newItem)
+        notifyItemInserted(items.size)
     }
 }

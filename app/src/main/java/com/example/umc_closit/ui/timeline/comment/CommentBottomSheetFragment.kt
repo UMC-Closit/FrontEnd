@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.umc_closit.data.Comment
+import com.example.umc_closit.data.entities.Comment
 import com.example.umc_closit.databinding.FragmentCommentBottomSheetBinding
 import com.example.umc_closit.utils.DateUtils
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
