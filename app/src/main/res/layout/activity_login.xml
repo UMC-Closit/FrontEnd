@@ -4,70 +4,67 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"> <!-- 배경을 검은색으로 변경 -->
+    android:background="@color/black">
 
     <!-- 상단 로고 -->
     <ImageView
         android:id="@+id/img_header"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:src="@drawable/logo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="fitCenter"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/container_card"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="50dp"/>
+        app:layout_constraintHeight_percent="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.7" />
 
     <!-- 흰색 둥근 컨테이너 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="8dp"
-        android:background="@drawable/bg_roundcorner"
-        app:cardBackgroundColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.52"
+        app:layout_constraintWidth_percent="1.0"
+        android:background="@drawable/bg_roundcorner">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="bottom"
-            android:padding="24dp">
+            android:padding="16dp"
+            app:layout_constraintHeight_percent="0.1">
 
-            <!-- 로그인 제목 -->
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
                 android:text="login"
                 android:textColor="#000"
-                android:textSize="24sp"
+                android:textSize="40sp"
                 android:textStyle="bold" />
 
-            <!-- ID 입력 -->
             <EditText
                 android:id="@+id/password_container"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:background="@drawable/edittext_background"
                 android:hint="ID 입력"
                 android:padding="12dp"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
 
-            <!-- 비밀번호 입력 -->
             <LinearLayout
                 android:id="@+id/et_id"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="512dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/edittext_background"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -75,8 +72,8 @@
 
                 <EditText
                     android:id="@+id/et_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="패스워드 입력"
                     android:inputType="textPassword"
@@ -150,19 +147,17 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- 로그인 버튼 -->
             <Button
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintDimensionRatio="6.5:1"
                 android:backgroundTint="@color/black"
                 android:text="login"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
-
         </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
