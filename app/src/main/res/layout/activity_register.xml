@@ -6,73 +6,78 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <!-- 상단 검은색 배경 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.24"
         android:background="@color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 뒤로 가기 버튼 -->
-        <ImageButton
+        <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.12"
+            app:layout_constraintDimensionRatio="1:1"
             android:background="@null"
-            android:src="@drawable/ic_backward_button"
-            android:contentDescription="뒤로 가기"
+            android:src="@drawable/ic_back"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="32dp"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp"
+            />
 
-        <!-- 페이지 Indicator -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/header_background"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="36dp"
+            android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp">
 
             <View
+                android:id="@+id/indicator_1"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:background="@drawable/indicator_active"
-                android:layout_margin="2dp"/>
+                tools:ignore="MissingConstraints" />
 
             <View
+                android:id="@+id/indicator_2"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:background="@drawable/indicator_inactive"
-                android:layout_margin="2dp"/>
+                app:layout_constraintStart_toEndOf="@id/indicator_1"
+                android:layout_marginStart="6dp"
+                tools:ignore="MissingConstraints" />
 
             <View
+                android:id="@+id/indicator_3"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:background="@drawable/indicator_inactive"
-                android:layout_margin="2dp"/>
-        </LinearLayout>
+                app:layout_constraintStart_toEndOf="@id/indicator_2"
+                android:layout_marginStart="6dp"
+                tools:ignore="MissingConstraints" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- 회원가입 제목 -->
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:text="회원가입"
             android:textColor="@color/white"
             android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/btn_back"
+            android:fontFamily="@font/noto_regular"
+            app:layout_constraintBottom_toBottomOf="@id/header_background"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="50dp"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ScrollView: 약관 부분 -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"

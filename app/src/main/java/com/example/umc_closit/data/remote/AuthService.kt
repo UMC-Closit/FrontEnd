@@ -8,7 +8,6 @@ interface AuthService {
     @POST("/api/auth/register")
     fun registerUser(@Body request: RegisterRequest): Call<RegisterResponse>
 
-    @POST("/api/auth/login")
+    @POST("api/auth/login")
     fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
-
 }

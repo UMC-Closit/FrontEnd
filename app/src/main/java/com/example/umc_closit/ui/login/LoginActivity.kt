@@ -92,11 +92,11 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("LOGIN_SUCCESS", "응답: $result")
 
                     if (result != null && result.isSuccess) {
-                        val accessToken = result.result?.accessToken
-                        val refreshToken = result.result?.refreshToken
-                        val userId = result.result?.userId ?: -1 // 유저 ID 추가
+                        val accessToken = result.result?.accessToken ?: ""
+                        val refreshToken = result.result?.refreshToken ?: ""
+                        val clositId = result.result?.clositId ?: ""
 
-                        saveTokens(accessToken, refreshToken, userId)
+                        saveTokens(accessToken, refreshToken, clositId)
                         startActivity(Intent(this@LoginActivity, TimelineActivity::class.java))
                         finish()
                     } else {
@@ -119,18 +119,19 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    // SharedPreferences에 토큰 + 유저 ID 저장
-    private fun saveTokens(accessToken: String?, refreshToken: String?, userId: Int) {
+
+    private fun saveTokens(accessToken: String?, refreshToken: String?, clositId: String?) {
         val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putString("accessToken", accessToken)
             putString("refreshToken", refreshToken)
-            putInt("userId", userId)
+            putString("clositId", clositId)
             putBoolean("isLoggedIn", true)
             apply()
         }
-        Log.d("TOKEN_STORAGE", "토큰 및 유저 ID 저장 완료: accessToken=$accessToken, refreshToken=$refreshToken, userId=$userId")
+        Log.d("TOKEN_STORAGE", "토큰 및 clositId 저장 완료: accessToken=$accessToken, refreshToken=$refreshToken, clositId=$clositId")
     }
+
 
 
     // 자동 로그인 기능 추가

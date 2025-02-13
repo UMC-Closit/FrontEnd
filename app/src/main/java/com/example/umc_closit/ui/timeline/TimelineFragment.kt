@@ -50,11 +50,8 @@ class TimelineFragment : Fragment() {
             adapter = timelineAdapter
         }
 
+        timelineViewModel.fetchTimelinePosts(userId)
 
-        // ✅ 타임라인 데이터 가져오기
-        accessToken?.let { token ->
-            timelineViewModel.fetchTimelinePosts(token)
-        }
 
         // ✅ LiveData 관찰하여 RecyclerView 업데이트
         timelineViewModel.timelineItems.observe(viewLifecycleOwner, Observer { timelineItems ->

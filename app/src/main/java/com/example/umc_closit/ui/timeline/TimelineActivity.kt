@@ -17,10 +17,9 @@ class TimelineActivity : AppCompatActivity() {
         binding = ActivityTimelineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ SharedPreferences에서 로그인한 유저 ID 가져오기
+        // ✅ SharedPreferences에서 로그인한 유저 clositId 가져오기
         val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("userId", -1) // 기본값 -1
-
+        val clositId = sharedPreferences.getString("clositId", "") ?: ""
 
         // ✅ "showUploadFragment" 값이 true라면 UploadFragment 표시, 아니면 TimelineFragment 표시
         val fragment = if (intent.getBooleanExtra("showUploadFragment", false)) {
@@ -32,7 +31,6 @@ class TimelineActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
-
 
         // BottomNavigationView 설정
         binding.btnvTimeline.setOnItemSelectedListener { item ->
@@ -47,7 +45,7 @@ class TimelineActivity : AppCompatActivity() {
                 R.id.menu_profile -> {
                     val profileFragment = ProfileFragment().apply {
                         arguments = Bundle().apply {
-                            putInt("profileUserId", userId) // 본인 userId 넘기기
+                            putString("profileUserClositId", clositId) // 본인 clositId 넘기기
                         }
                     }
                     supportFragmentManager.beginTransaction()
@@ -55,18 +53,21 @@ class TimelineActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
+
                 R.id.menu_community -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, CommunityFragment())
                         .commit()
                     true
                 }
+
                 R.id.menu_upload -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, UploadFragment())
                         .commit()
                     true
                 }
+
                 else -> false
             }
         }

@@ -33,8 +33,8 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private var loggedInUserId: Int = -1  // 멤버 변수로 선언
-    private var profileUserId: Int = -1  // 멤버 변수로 선언
+    private var loggedInUserClositId: String = ""  // 멤버 변수로 선언
+    private var profileUserClositId: String = ""  // 멤버 변수로 선언
 
     private var isFollowing = false
 
@@ -125,18 +125,18 @@ class ProfileFragment : Fragment() {
     }
 
     private fun toggleFollow() {
-        val followerId = loggedInUserId
-        val followingId = profileUserId
+        val followerClositId = loggedInUserClositId
+        val followingClositId = profileUserClositId
 
         if (isFollowing) {
-            unfollowUser(followerId, followingId)
+            unfollowUser(followerClositId, followingClositId)
         } else {
-            followUser(followerId, followingId)
+            followUser(followerClositId, followingClositId)
         }
     }
 
-    private fun followUser(followerId: Int, followingId: Int) {
-        val request = FollowRequest(follower = followerId, following = followingId)
+    private fun followUser(followerClositId: String, followingClositId: String) {
+        val request = FollowRequest(follower = followerClositId, following = followingClositId)
 
         RetrofitClient.profileService.followUser(request).enqueue(object : Callback<FollowResponse> {
             override fun onResponse(call: Call<FollowResponse>, response: Response<FollowResponse>) {
@@ -155,8 +155,8 @@ class ProfileFragment : Fragment() {
         })
     }
 
-    private fun unfollowUser(followerId: Int, followingId: Int) {
-        RetrofitClient.profileService.unfollowUser(followerId, followingId).enqueue(object : Callback<UnfollowResponse> {
+    private fun unfollowUser(followerClositId: String, followingClositId: String) {
+        RetrofitClient.profileService.unfollowUser(followerClositId, followingClositId).enqueue(object : Callback<UnfollowResponse> {
             override fun onResponse(call: Call<UnfollowResponse>, response: Response<UnfollowResponse>) {
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     isFollowing = false
@@ -189,16 +189,19 @@ class ProfileFragment : Fragment() {
 
 
     private fun isMyProfile(): Boolean {
-        return loggedInUserId != -1 && (profileUserId == -1 || loggedInUserId == profileUserId)
+        return loggedInUserClositId.isNotEmpty() && (profileUserClositId.isEmpty() || loggedInUserClositId == profileUserClositId)
     }
 
 
     private fun checkuser() {
         val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        loggedInUserId = sharedPreferences.getInt("userId", -1)
-        profileUserId = arguments?.getInt("profileUserId", -1) ?: -1
+        loggedInUserClositId = sharedPreferences.getString("clositId", "") ?: ""
+        profileUserClositId = arguments?.getString("profileUserClositId", "") ?: ""
 
-        Log.d("userinfo", "loggedInUserId: $loggedInUserId, profileUserId: $profileUserId, isMyProfile: ${isMyProfile()}")
+        Log.d(
+            "userinfo",
+            "loggedInUserClositId: $loggedInUserClositId, profileUserClositId: $profileUserClositId, isMyProfile: ${isMyProfile()}"
+        )
 
         if (isMyProfile()) {
             binding.viewFollowBtn.visibility = View.GONE
