@@ -22,6 +22,7 @@ class NewBattleDetailActivity : AppCompatActivity() {
     private lateinit var uploadButton: Button
     private lateinit var backButton: ImageView
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_battle_detail)
