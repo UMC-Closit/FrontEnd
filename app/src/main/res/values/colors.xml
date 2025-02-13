@@ -13,6 +13,13 @@
     <color name="gray_normal">#D9D9D9</color>
     <color name="gray_bright">#E7E7E7</color>
     <color name="gray">#B0B0B0</color>
+    <color name="bright_gray">#A9A9A9</color>
+    <color name="text_gray">#9E9E9E</color>
+
+
+    <color name="auth_gray_bright">#BABECD</color>
+    <color name="check_gray_bright">#FAFAFA</color>
+    <color name="auth_gray_dark">#797979</color>
 
     <color name="light_gray">#D3D3D3</color>
     <color name="white_profile_bg">#FAFAFA</color>

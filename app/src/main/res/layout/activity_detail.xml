@@ -175,37 +175,55 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- 문구 + 색상 아이콘 + 개인정보 버튼 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_piointcolor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintWidth_percent="0.92"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cl_frame">
+                android:id="@+id/layoutPointColor"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
 
+                app:layout_constraintHeight_percent="0.04"
+                app:layout_constraintTop_toBottomOf="@id/cl_frame"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/cl_frame">
+
+                <!-- 왼쪽 여백 -->
+                <View
+                    android:id="@+id/marginLeft3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.12" />
+
+                <!-- 오늘의 포인트 색상 텍스트 -->
                 <TextView
-                    android:id="@+id/tv_point_color"
+                    android:id="@+id/textTodayColor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="오늘의 포인트 색상"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/ibm_extralight"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintStart_toEndOf="@id/marginLeft3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-                <!-- 색상 표시 동그라미 -->
+                <!-- 색상 아이콘 -->
                 <View
-                    android:id="@+id/view_color_circle"
+                    android:id="@+id/viewColorIcon"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_detail_color_round"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_point_color"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintHeight_default="spread"
-                    app:layout_constraintStart_toEndOf="@id/tv_point_color"
-                    app:layout_constraintTop_toTopOf="@id/tv_point_color" />
+                    app:layout_constraintStart_toEndOf="@id/textTodayColor"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHeight_percent="0.8"
+                    app:layout_constraintDimensionRatio="1:1" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -216,7 +234,7 @@
                 android:paddingVertical="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cl_piointcolor"
+                app:layout_constraintTop_toBottomOf="@id/layoutPointColor"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <!-- 해시태그 영역과 + 버튼 -->
