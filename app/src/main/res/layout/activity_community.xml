@@ -6,13 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:paddingTop="12dp">
 
     <!-- Search Bar Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_container"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.9"
+        app:layout_constraintDimensionRatio="9:1"
         android:layout_margin="10dp"
         android:background="@drawable/lookup_background"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,8 +25,10 @@
         <!-- Search Icon -->
         <ImageView
             android:id="@+id/img_Search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintDimensionRatio="1:1"
             android:layout_marginStart="10dp"
             android:src="@drawable/search"
             android:contentDescription="Search Icon"
@@ -36,13 +41,14 @@
             android:id="@+id/et_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="무엇이든 검색하시오"
+            android:hint="search"
             android:background="@null"
-            android:padding="15dp"
+            android:fontFamily="@font/ibm_regular"
+            android:textColor="@color/gray_dark"
+            android:paddingStart="8dp"
             app:layout_constraintStart_toEndOf="@+id/img_Search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/search_container"
+            app:layout_constraintBottom_toBottomOf="@id/search_container"
             app:layout_constraintWidth_percent="0.8" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -61,6 +67,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="오늘의 옷장"
+            android:paddingStart="12dp"
+            android:fontFamily="@font/noto_light"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#000"
@@ -72,9 +80,10 @@
             android:id="@+id/btn_upload"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/upload"
             android:background="@null"
             android:contentDescription="Upload Button"
+            android:src="@drawable/upload"
+            app:layout_constraintBottom_toBottomOf="@id/btn_todaycloset"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/btn_todaycloset" />
     </androidx.constraintlayout.widget.ConstraintLayout>

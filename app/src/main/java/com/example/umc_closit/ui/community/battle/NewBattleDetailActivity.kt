@@ -1,5 +1,5 @@
 // NewBattleDetailActivity.kt
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.battle
 
 import android.os.Bundle
 import android.util.Log
