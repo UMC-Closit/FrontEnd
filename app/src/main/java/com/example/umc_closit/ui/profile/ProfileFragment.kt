@@ -13,16 +13,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.data.entities.RecentItem
-import com.example.umc_closit.data.remote.FollowRequest
-import com.example.umc_closit.data.remote.FollowResponse
+import com.example.umc_closit.data.remote.profile.FollowRequest
+import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.data.remote.UnfollowResponse
+import com.example.umc_closit.data.remote.profile.UnfollowResponse
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.login.LoginActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.history.HistoryActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
+import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -136,42 +137,61 @@ class ProfileFragment : Fragment() {
     }
 
     private fun followUser(followerClositId: String, followingClositId: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
+
         val request = FollowRequest(follower = followerClositId, following = followingClositId)
 
-        RetrofitClient.profileService.followUser(request).enqueue(object : Callback<FollowResponse> {
-            override fun onResponse(call: Call<FollowResponse>, response: Response<FollowResponse>) {
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
+        val apiCall = {
+            RetrofitClient.profileService.followUser(token, request)
+        }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response: FollowResponse ->
+                if (response.isSuccess) {
                     isFollowing = true
                     updateFollowButtonUI(isFollowing)
                     Toast.makeText(requireContext(), "팔로우 성공", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "팔로우 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
-
-            override fun onFailure(call: Call<FollowResponse>, t: Throwable) {
+            },
+            onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
 
     private fun unfollowUser(followerClositId: String, followingClositId: String) {
-        RetrofitClient.profileService.unfollowUser(followerClositId, followingClositId).enqueue(object : Callback<UnfollowResponse> {
-            override fun onResponse(call: Call<UnfollowResponse>, response: Response<UnfollowResponse>) {
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
+        val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
+
+        val apiCall = {
+            RetrofitClient.profileService.unfollowUser(token, followerClositId, followingClositId)
+        }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response: UnfollowResponse ->
+                if (response.isSuccess) {
                     isFollowing = false
                     updateFollowButtonUI(isFollowing)
                     Toast.makeText(requireContext(), "언팔로우 성공", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "언팔로우 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "언팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
-
-            override fun onFailure(call: Call<UnfollowResponse>, t: Throwable) {
+            },
+            onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
+
 
     private fun updateFollowButtonUI(following: Boolean) {
         val backgroundDrawable = binding.viewFollowBtn.background.mutate() as android.graphics.drawable.GradientDrawable

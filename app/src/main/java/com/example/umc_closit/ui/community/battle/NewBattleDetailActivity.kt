@@ -9,9 +9,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
-import com.example.umc_closit.data.BattlePostRequest
-import com.example.umc_closit.data.BattlePostResponse
+import com.example.umc_closit.data.remote.battle.BattlePostRequest
+import com.example.umc_closit.data.remote.battle.BattlePostResponse
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -50,48 +51,45 @@ class NewBattleDetailActivity : AppCompatActivity() {
 
     // 🟡 API 호출 로직
     private fun uploadBattlePost(title: String) {
+        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
+
         val request = BattlePostRequest(
-            postId = (System.currentTimeMillis() % 100000).toInt(), // 간단한 임시 ID
+            postId = (System.currentTimeMillis() % 100000).toInt(),
             title = title
         )
 
-        RetrofitClient.instance.uploadBattle(request).enqueue(object : Callback<BattlePostResponse> {
-            override fun onResponse(
-                call: Call<BattlePostResponse>,
-                response: Response<BattlePostResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val result = response.body()
-                    if (result?.isSuccess == true) {
-                        Toast.makeText(
-                            this@NewBattleDetailActivity,
-                            "업로드 성공! 배틀 ID: ${result.result?.battleId}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@NewBattleDetailActivity,
-                            "업로드 실패: ${result?.message ?: "알 수 없는 오류"}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+        val apiCall = {
+            RetrofitClient.instance.uploadBattle(token, request)
+        }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response: BattlePostResponse ->
+                if (response.isSuccess) {
+                    Toast.makeText(
+                        this,
+                        "업로드 성공! 배틀 ID: ${response.result?.battleId}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     Toast.makeText(
-                        this@NewBattleDetailActivity,
-                        "서버 오류: ${response.code()}",
+                        this,
+                        "업로드 실패: ${response.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            }
-
-            override fun onFailure(call: Call<BattlePostResponse>, t: Throwable) {
+            },
+            onFailure = { t ->
                 Toast.makeText(
-                    this@NewBattleDetailActivity,
+                    this,
                     "네트워크 실패: ${t.message}",
                     Toast.LENGTH_LONG
                 ).show()
                 Log.e("UPLOAD_ERROR", "네트워크 실패", t)
-            }
-        })
+            },
+            retryCall = apiCall,
+            context = this
+        )
     }
 }

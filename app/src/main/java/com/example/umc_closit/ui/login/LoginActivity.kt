@@ -7,8 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
-import com.example.umc_closit.data.remote.LoginRequest
-import com.example.umc_closit.data.remote.LoginResponse
+import com.example.umc_closit.data.remote.auth.LoginRequest
+import com.example.umc_closit.data.remote.auth.LoginResponse
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.ActivityLoginBinding
 import com.example.umc_closit.ui.login.find.FindIDActivity

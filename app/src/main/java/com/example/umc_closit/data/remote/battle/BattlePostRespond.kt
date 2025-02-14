@@ -1,5 +1,5 @@
 // BattlePostResponse.kt
-package com.example.umc_closit.data
+package com.example.umc_closit.data.remote.battle
 
 data class BattlePostResponse(
     val isSuccess: Boolean,

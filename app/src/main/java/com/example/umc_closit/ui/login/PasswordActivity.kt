@@ -8,12 +8,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.umc_closit.MainActivity
-import com.example.umc_closit.data.remote.RegisterRequest
-import com.example.umc_closit.data.remote.RegisterResponse
+import com.example.umc_closit.data.remote.auth.RegisterRequest
+import com.example.umc_closit.data.remote.auth.RegisterResponse
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.ActivityPasswordBinding
-import com.example.umc_closit.ui.timeline.TimelineActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

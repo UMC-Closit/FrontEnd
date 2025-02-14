@@ -1,4 +1,4 @@
-package com.example.umc_closit.data.remote
+package com.example.umc_closit.data.remote.auth
 
 import retrofit2.Call
 import retrofit2.http.Body
@@ -10,4 +10,9 @@ interface AuthService {
 
     @POST("api/auth/login")
     fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
+
+    @POST("/api/auth/refresh")
+    fun refreshToken(
+        @Body request: RefreshRequest
+    ): Call<RefreshResponse>
 }

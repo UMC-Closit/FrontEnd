@@ -1,4 +1,6 @@
-package com.example.umc_closit.data.remote
+package com.example.umc_closit.data.remote.profile
+
+import com.example.umc_closit.data.remote.auth.TokenResult
 
 data class ProfileUserResponse(
     val isSuccess: Boolean,
