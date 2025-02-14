@@ -19,8 +19,10 @@ import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.login.LoginActivity
+import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.history.HistoryActivity
+import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 import com.example.umc_closit.utils.TokenUtils
@@ -111,6 +113,19 @@ class ProfileFragment : Fragment() {
             val intent = Intent(requireContext(), HistoryActivity::class.java)
             startActivity(intent)
         }
+
+        // 내 정보 수정
+        binding.tvEditInfo.setOnClickListener {
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 저장된 게시글
+        binding.tvSavePosts.setOnClickListener {
+            val intent = Intent(requireContext(), SavedPostsActivity::class.java)
+            startActivity(intent)
+        }
+
 
         binding.tvLogout.setOnClickListener {
             logout()

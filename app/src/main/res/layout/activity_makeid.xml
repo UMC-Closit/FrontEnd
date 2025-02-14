@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    >
 
     <!-- 상단 검은색 배경 -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -199,6 +200,7 @@
                 android:hint="email 입력"
                 android:padding="12dp"
                 android:textSize="14sp"
+                android:inputType="textEmailAddress"
                 style="@style/EditTextDefaultStyle"
                 android:textColor="@color/auth_gray_dark"
                 android:layout_marginBottom="4dp"
@@ -271,12 +273,14 @@
     <Button
         android:id="@+id/btn_next"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Continue"
-        android:textSize="18sp"
+        android:layout_height="0dp"
+        android:text="continue"
+        android:textSize="16sp"
         android:textColor="@color/white"
         android:gravity="center"
+        android:fontFamily="@font/ibm_medium"
         android:backgroundTint="@color/black_button"
+        app:layout_constraintHeight_percent="0.06"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

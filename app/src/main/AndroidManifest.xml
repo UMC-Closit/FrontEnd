@@ -48,6 +48,8 @@
         <activity android:name=".ui.profile.highlight.AddHighlightActivity" />
         <activity android:name=".ui.timeline.notification.NotificationActivity"/>
         <activity android:name=".ui.profile.history.HistoryActivity" />
+        <activity android:name=".ui.profile.posts.SavedPostsActivity" />
+        <activity android:name=".ui.profile.edit.EditProfileActivity" />
         <activity android:name=".ui.mission.FrontOnlyActivity"/>
         <activity android:name=".ui.mission.MissionActivity"/>
         <activity android:name=".ui.mission.PreviewActivity"/>
