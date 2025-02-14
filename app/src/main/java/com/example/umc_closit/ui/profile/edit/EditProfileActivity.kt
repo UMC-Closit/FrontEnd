@@ -14,14 +14,14 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBack.setOnClickListener {
-            finish() // 추후 화면 연결
+        binding.ivBack.setOnClickListener {
+            onBackPressed() // 추후 화면 연결
         }
 
         // 변경하기 버튼, 추후 api 설정
         binding.btnUpdate.setOnClickListener {
-            val name = binding.nameEditText.text.toString()
-            val birth = binding.birthEditText.text.toString()
+            val name = binding.etName.text.toString()
+            val birth = binding.etBirth.text.toString()
             val id = binding.idEditText.text.toString()
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
