@@ -50,7 +50,7 @@ class TimelineFragment : Fragment() {
             adapter = timelineAdapter
         }
 
-        timelineViewModel.fetchTimelinePosts(userId)
+        timelineViewModel.fetchTimelinePosts(accessToken, userId, context = requireContext())
 
 
         // ✅ LiveData 관찰하여 RecyclerView 업데이트

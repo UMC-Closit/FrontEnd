@@ -1,4 +1,4 @@
-package com.example.umc_closit.data.remote
+package com.example.umc_closit.data.remote.auth
 
 data class RegisterRequest(
     val name: String,
@@ -51,4 +51,22 @@ data class TokenResult(
     val refreshToken: String
 )
 
+// refresh
 
+data class RefreshRequest(
+    val refreshToken: String
+)
+
+
+data class RefreshResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: RefreshResult?
+)
+
+data class RefreshResult(
+    val clositId: String,
+    val accessToken: String,
+    val refreshToken: String
+)

@@ -1,4 +1,4 @@
-package com.example.umc_closit.data.remote
+package com.example.umc_closit.data.remote.timeline
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

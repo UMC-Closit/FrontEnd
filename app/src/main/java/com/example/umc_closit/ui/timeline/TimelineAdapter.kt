@@ -3,6 +3,7 @@ package com.example.umc_closit.ui.timeline
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -10,15 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.umc_closit.R
-import com.example.umc_closit.data.remote.BookmarkRequest
-import com.example.umc_closit.data.remote.BookmarkResponse
-import com.example.umc_closit.data.remote.LikeResponse
-import com.example.umc_closit.data.remote.PostPreview
+import com.example.umc_closit.data.remote.timeline.BookmarkRequest
+import com.example.umc_closit.data.remote.timeline.BookmarkResponse
+import com.example.umc_closit.data.remote.timeline.LikeResponse
+import com.example.umc_closit.data.remote.timeline.PostPreview
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.data.remote.TimelineService
 import com.example.umc_closit.databinding.ItemTimelineBinding
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
+import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +41,7 @@ class TimelineAdapter(
     }
 
     override fun onBindViewHolder(holder: TimelineViewHolder, @SuppressLint("RecyclerView") position: Int) {
-        val item = timelineItems[position]
+        val item = timelineItems[position] ?: return
 
         with(holder.binding) {
             // 🔥 API에서 받은 이미지 로드
@@ -65,84 +66,72 @@ class TimelineAdapter(
                 commentFragment.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, commentFragment.tag)
             }
 
-/*            // 📌 좋아요 버튼 클릭 이벤트(토큰 있는 버전)
+
+            // 📌 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
-                timelineService.likePost("Bearer $accessToken", item.postId, userId)
-                    .enqueue(object : Callback<LikeResponse> {
-                        override fun onResponse(call: Call<LikeResponse>, response: Response<LikeResponse>) {
-                            if (response.isSuccessful) {
-                                response.body()?.let { result ->
-                                    if (result.isSuccess) {
-                                        // 서버 응답을 바탕으로 좋아요 상태 업데이트
-                                        val isLiked = result.result.isLiked
-                                        timelineItems[position] = item.copy(isLiked = isLiked)
-                                        notifyItemChanged(position)
+                val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
 
-                                        Toast.makeText(context, if (isLiked) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
+                val apiCall = {
+                    timelineService.likePost(token, item.postId, userId)
+                }
+
+                TokenUtils.handleTokenRefresh(
+                    call = apiCall(),
+                    onSuccess = { result: LikeResponse ->
+                        if (result.isSuccess) {
+                            val isLiked = result.result.isLiked
+                            timelineItems[position] = item.copy(isLiked = isLiked)
+                            notifyItemChanged(position)
+
+                            Toast.makeText(context, if (isLiked) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
                         }
-
-                        override fun onFailure(call: Call<LikeResponse>, t: Throwable) {
-                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    })
-            }*/
-
-            // 📌 좋아요 버튼 클릭 이벤트(토큰 없는 버전)
-            ivLike.setOnClickListener {
-                timelineService.likePost(item.postId, userId)
-                    .enqueue(object : Callback<LikeResponse> {
-                        override fun onResponse(call: Call<LikeResponse>, response: Response<LikeResponse>) {
-                            if (response.isSuccessful) {
-                                response.body()?.let { result ->
-                                    if (result.isSuccess) {
-                                        val isLiked = result.result.isLiked
-                                        timelineItems[position] = item.copy(isLiked = isLiked)
-                                        notifyItemChanged(position)
-
-                                        Toast.makeText(context, if (isLiked) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onFailure(call: Call<LikeResponse>, t: Throwable) {
-                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    })
+                    },
+                    onFailure = { t ->
+                        Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        Log.e("LIKE_ERROR", "네트워크 오류: ${t.message}")
+                    },
+                    retryCall = apiCall,
+                    context = context
+                )
             }
-
 
             // 📌 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
+                val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
+
                 val newSaveState = !item.isSaved
 
                 if (newSaveState) {
-                    timelineService.savePost(BookmarkRequest(userId, item.postId))
-                        .enqueue(object : Callback<BookmarkResponse> {
-                            override fun onResponse(call: Call<BookmarkResponse>, response: Response<BookmarkResponse>) {
-                                if (response.isSuccessful && response.body()?.isSuccess == true) {
-                                    timelineItems[position] = item.copy(isSaved = true)
-                                    notifyItemChanged(position)
-                                    Toast.makeText(context, "저장됨!", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                    val apiCall = {
+                        timelineService.savePost(token, BookmarkRequest(userId, item.postId))
+                    }
 
-                            override fun onFailure(call: Call<BookmarkResponse>, t: Throwable) {
-                                Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                    TokenUtils.handleTokenRefresh(
+                        call = apiCall(),
+                        onSuccess = { response: BookmarkResponse ->
+                            if (response.isSuccess) {
+                                timelineItems[position] = item.copy(isSaved = true)
+                                notifyItemChanged(position)
+                                Toast.makeText(context, "저장됨!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show()
                             }
-                        })
+                        },
+                        onFailure = { t ->
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        },
+                        retryCall = apiCall,
+                        context = context
+                    )
                 } else {
-                    // 저장 취소 로직은 아직 완성 안되었으므로 토스트만 처리
                     timelineItems[position] = item.copy(isSaved = false)
                     notifyItemChanged(position)
                     Toast.makeText(context, "저장 취소", Toast.LENGTH_SHORT).show()
                 }
             }
+
 
 
             // 📌 유저 프로필 클릭 이벤트

@@ -1,6 +1,9 @@
 package com.example.umc_closit.data.remote
 
-import com.example.umc_closit.data.BattleApiService
+import com.example.umc_closit.data.remote.battle.BattleApiService
+import com.example.umc_closit.data.remote.auth.AuthService
+import com.example.umc_closit.data.remote.profile.ProfileService
+import com.example.umc_closit.data.remote.timeline.TimelineService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
