@@ -2,6 +2,7 @@ package com.example.umc_closit.utils
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.example.umc_closit.data.remote.auth.RefreshRequest
 import com.example.umc_closit.data.remote.auth.RefreshResponse
 import com.example.umc_closit.data.remote.RetrofitClient
@@ -66,6 +67,7 @@ object TokenUtils {
                             apply()
                         }
 
+                        Log.d("TOKEN","어세스 토큰 재발급 완료")
                         // 새 토큰 저장 후 원래 API 재시도
                         handleTokenRefresh(
                             retryCall(),
@@ -95,7 +97,38 @@ object TokenUtils {
         context.startActivity(intent)
     }
 
+    private const val PREFS_NAME = "auth_prefs"
 
+    fun saveTokens(context: Context, accessToken: String, refreshToken: String, clositId: String) {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("accessToken", accessToken)
+            putString("refreshToken", refreshToken)
+            putString("clositId", clositId)
+            putBoolean("isLoggedIn", true)
+            apply()
+        }
+    }
+
+    fun getAccessToken(context: Context): String? {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences.getString("accessToken", null)
+    }
+
+    fun getUserId(context: Context): Int {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences.getInt("userId", -1)
+    }
+
+    fun isLoggedIn(context: Context): Boolean {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("isLoggedIn", false)
+    }
+
+    fun clearTokens(context: Context) {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().clear().apply()
+    }
 
 
 }
