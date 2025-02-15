@@ -1,5 +1,6 @@
 package com.example.umc_closit.ui.timeline
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -31,22 +32,32 @@ class TimelineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Notification 아이콘 클릭 이벤트
+        // 🔔 Notification 아이콘 클릭 이벤트
         binding.ivNotification.setOnClickListener {
             val intent = Intent(requireContext(), NotificationActivity::class.java)
             startActivity(intent)
         }
 
-        // RecyclerView 설정
-        timelineAdapter = TimelineAdapter(requireContext(), mutableListOf(), mutableListOf())
+        // ✅ SharedPreferences에서 accessToken 가져오기
+        val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val accessToken = sharedPreferences.getString("accessToken", "") ?: ""
+        val userId = sharedPreferences.getInt("userId", -1) // 기본값을 -1로 설정
+
+        // 🔥 RecyclerView 설정
+        val timelineAdapter = TimelineAdapter(requireContext(), mutableListOf(), accessToken, userId)
         binding.rvTimeline.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = timelineAdapter
         }
 
-        // LiveData 관찰
+        timelineViewModel.fetchTimelinePosts(accessToken, userId, context = requireContext())
+
+
+        // ✅ LiveData 관찰하여 RecyclerView 업데이트
         timelineViewModel.timelineItems.observe(viewLifecycleOwner, Observer { timelineItems ->
-            timelineAdapter.updateTimelineItems(timelineItems)
+            if (timelineItems != null) {
+                timelineAdapter.updateTimelineItems(timelineItems)
+            }
         })
     }
 

@@ -1,4 +1,4 @@
-package com.example.umc_closit.data.remote
+package com.example.umc_closit.data.remote.auth
 
 data class RegisterRequest(
     val name: String,
@@ -17,7 +17,12 @@ data class RegisterResponse(
 )
 
 data class RegisterResult(
-    val userId: Int,
+    val clositId: String,
+    val name: String,
+    val email: String
+)
+
+data class UserInfo(
     val name: String,
     val email: String
 )
@@ -35,9 +40,9 @@ data class LoginResponse(
 )
 
 data class LoginResult(
+    val clositId: String, // 서버에서 string으로 내려옴
     val accessToken: String,
-    val refreshToken: String,
-    val userId: Int
+    val refreshToken: String
 )
 
 
@@ -46,28 +51,22 @@ data class TokenResult(
     val refreshToken: String
 )
 
-data class FollowRequest(
-    val follower: Int,
-    val following: Int
+// refresh
+
+data class RefreshRequest(
+    val refreshToken: String
 )
 
-data class FollowResponse(
+
+data class RefreshResponse(
     val isSuccess: Boolean,
     val code: String,
     val message: String,
-    val result: FollowResult?
+    val result: RefreshResult?
 )
 
-data class FollowResult(
-    val followerId: Int,
-    val followingId: Int,
-    val createdAt: String
+data class RefreshResult(
+    val clositId: String,
+    val accessToken: String,
+    val refreshToken: String
 )
-
-data class UnfollowResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: String?
-)
-

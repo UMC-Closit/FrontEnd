@@ -61,8 +61,13 @@ dependencies {
     //camera
     implementation("androidx.exifinterface:exifinterface:1.3.6")
 
+
+    //layout
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
 }

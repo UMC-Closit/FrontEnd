@@ -24,7 +24,7 @@ class HistoryActivity : AppCompatActivity() {
         // 뒤로가기 버튼 설정
         binding.ivBack.setOnClickListener { onBackPressed() }
 
-        // 첫 게시글 업로드 날짜 가져오기 (가장 오래된 데이터 기준)
+/*        // 첫 게시글 업로드 날짜 가져오기 (가장 오래된 데이터 기준)
         timelineViewModel.timelineItems.observe(this) { timelineItems ->
             val firstUploadDate = getFirstUploadDate(timelineItems)
             getMonthsFromFirstUpload(firstUploadDate)
@@ -33,7 +33,7 @@ class HistoryActivity : AppCompatActivity() {
             mapTimelineItemsToCalendar(timelineItems)
 
             setupRecyclerView()
-        }
+        }*/
     }
 
     private fun getFirstUploadDate(items: List<TimelineItem>): Calendar {
@@ -59,7 +59,7 @@ class HistoryActivity : AppCompatActivity() {
 
 
 
-    private fun setupRecyclerView() {
+/*    private fun setupRecyclerView() {
         val sharedPool = RecyclerView.RecycledViewPool()
 
         timelineViewModel.timelineItems.observe(this) { timelineItems ->
@@ -75,7 +75,7 @@ class HistoryActivity : AppCompatActivity() {
                 )
             }
         }
-    }
+    }*/
 
     companion object {
         fun getMonthsFromFirstUpload(firstUploadDate: Calendar): List<Pair<Int, Int>> {

@@ -13,16 +13,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.data.entities.RecentItem
-import com.example.umc_closit.data.remote.FollowRequest
-import com.example.umc_closit.data.remote.FollowResponse
+import com.example.umc_closit.data.remote.profile.FollowRequest
+import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.data.remote.UnfollowResponse
+import com.example.umc_closit.data.remote.profile.UnfollowResponse
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.login.LoginActivity
+import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.history.HistoryActivity
+import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
+import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,8 +36,8 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private var loggedInUserId: Int = -1  // 멤버 변수로 선언
-    private var profileUserId: Int = -1  // 멤버 변수로 선언
+    private var loggedInUserClositId: String = ""  // 멤버 변수로 선언
+    private var profileUserClositId: String = ""  // 멤버 변수로 선언
 
     private var isFollowing = false
 
@@ -111,6 +114,19 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
+        // 내 정보 수정
+        binding.tvEditInfo.setOnClickListener {
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 저장된 게시글
+        binding.tvSavePosts.setOnClickListener {
+            val intent = Intent(requireContext(), SavedPostsActivity::class.java)
+            startActivity(intent)
+        }
+
+
         binding.tvLogout.setOnClickListener {
             logout()
         }
@@ -125,53 +141,72 @@ class ProfileFragment : Fragment() {
     }
 
     private fun toggleFollow() {
-        val followerId = loggedInUserId
-        val followingId = profileUserId
+        val followerClositId = loggedInUserClositId
+        val followingClositId = profileUserClositId
 
         if (isFollowing) {
-            unfollowUser(followerId, followingId)
+            unfollowUser(followerClositId, followingClositId)
         } else {
-            followUser(followerId, followingId)
+            followUser(followerClositId, followingClositId)
         }
     }
 
-    private fun followUser(followerId: Int, followingId: Int) {
-        val request = FollowRequest(follower = followerId, following = followingId)
+    private fun followUser(followerClositId: String, followingClositId: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
 
-        RetrofitClient.profileService.followUser(request).enqueue(object : Callback<FollowResponse> {
-            override fun onResponse(call: Call<FollowResponse>, response: Response<FollowResponse>) {
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
+        val request = FollowRequest(follower = followerClositId, following = followingClositId)
+
+        val apiCall = {
+            RetrofitClient.profileService.followUser(token, request)
+        }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response: FollowResponse ->
+                if (response.isSuccess) {
                     isFollowing = true
                     updateFollowButtonUI(isFollowing)
                     Toast.makeText(requireContext(), "팔로우 성공", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "팔로우 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
-
-            override fun onFailure(call: Call<FollowResponse>, t: Throwable) {
+            },
+            onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
 
-    private fun unfollowUser(followerId: Int, followingId: Int) {
-        RetrofitClient.profileService.unfollowUser(followerId, followingId).enqueue(object : Callback<UnfollowResponse> {
-            override fun onResponse(call: Call<UnfollowResponse>, response: Response<UnfollowResponse>) {
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
+    private fun unfollowUser(followerClositId: String, followingClositId: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
+
+        val apiCall = {
+            RetrofitClient.profileService.unfollowUser(token, followerClositId, followingClositId)
+        }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response: UnfollowResponse ->
+                if (response.isSuccess) {
                     isFollowing = false
                     updateFollowButtonUI(isFollowing)
                     Toast.makeText(requireContext(), "언팔로우 성공", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "언팔로우 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "언팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
-
-            override fun onFailure(call: Call<UnfollowResponse>, t: Throwable) {
+            },
+            onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
+
 
     private fun updateFollowButtonUI(following: Boolean) {
         val backgroundDrawable = binding.viewFollowBtn.background.mutate() as android.graphics.drawable.GradientDrawable
@@ -189,16 +224,19 @@ class ProfileFragment : Fragment() {
 
 
     private fun isMyProfile(): Boolean {
-        return loggedInUserId != -1 && (profileUserId == -1 || loggedInUserId == profileUserId)
+        return loggedInUserClositId.isNotEmpty() && (profileUserClositId.isEmpty() || loggedInUserClositId == profileUserClositId)
     }
 
 
     private fun checkuser() {
         val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        loggedInUserId = sharedPreferences.getInt("userId", -1)
-        profileUserId = arguments?.getInt("profileUserId", -1) ?: -1
+        loggedInUserClositId = sharedPreferences.getString("clositId", "") ?: ""
+        profileUserClositId = arguments?.getString("profileUserClositId", "") ?: ""
 
-        Log.d("userinfo", "loggedInUserId: $loggedInUserId, profileUserId: $profileUserId, isMyProfile: ${isMyProfile()}")
+        Log.d(
+            "userinfo",
+            "loggedInUserClositId: $loggedInUserClositId, profileUserClositId: $profileUserClositId, isMyProfile: ${isMyProfile()}"
+        )
 
         if (isMyProfile()) {
             binding.viewFollowBtn.visibility = View.GONE
