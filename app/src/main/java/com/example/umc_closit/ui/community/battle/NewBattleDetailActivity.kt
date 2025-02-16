@@ -1,6 +1,7 @@
 // NewBattleDetailActivity.kt
 package com.example.umc_closit.ui.community.battle
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -9,9 +10,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
-import com.example.umc_closit.data.remote.battle.BattlePostRequest
-import com.example.umc_closit.data.remote.battle.BattlePostResponse
+import com.example.umc_closit.data.BattlePostRequest
+import com.example.umc_closit.data.BattlePostResponse
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.ui.timeline.TimelineActivity
 import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -43,53 +45,52 @@ class NewBattleDetailActivity : AppCompatActivity() {
             val title = titleEditText.text.toString().trim()
             if (title.isNotEmpty()) {
                 uploadBattlePost(title)
+                val intent = Intent(this, TimelineActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // 🟡 API 호출 로직
+    /**
+     * 배틀 업로드 API 호출
+     */
     private fun uploadBattlePost(title: String) {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
+        val authToken = "Bearer ${TokenUtils.getAccessToken(this)}"
 
         val request = BattlePostRequest(
-            postId = (System.currentTimeMillis() % 100000).toInt(),
+            postId = (System.currentTimeMillis() % 100000).toInt(), // 간단한 임시 ID
             title = title
         )
 
-        val apiCall = {
-            RetrofitClient.instance.uploadBattle(token, request)
-        }
-
         TokenUtils.handleTokenRefresh(
-            call = apiCall(),
-            onSuccess = { response: BattlePostResponse ->
+            call = RetrofitClient.battleApiService.uploadBattle(authToken, request),
+            onSuccess = { response ->
                 if (response.isSuccess) {
                     Toast.makeText(
-                        this,
+                        this@NewBattleDetailActivity,
                         "업로드 성공! 배틀 ID: ${response.result?.battleId}",
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
                     Toast.makeText(
-                        this,
-                        "업로드 실패: ${response.message}",
+                        this@NewBattleDetailActivity,
+                        "업로드 실패: ${response.message ?: "알 수 없는 오류"}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
             },
-            onFailure = { t ->
-                Toast.makeText(
-                    this,
-                    "네트워크 실패: ${t.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-                Log.e("UPLOAD_ERROR", "네트워크 실패", t)
+            onFailure = { throwable ->
+                Log.e("BattleUpload", "API 호출 실패", throwable)
+                Toast.makeText(this@NewBattleDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
-            context = this
+            retryCall = {
+                val newAuthToken = "Bearer ${TokenUtils.getAccessToken(this)}"
+                RetrofitClient.battleApiService.uploadBattle(newAuthToken, request)
+            },
+            context = this@NewBattleDetailActivity
         )
     }
+
 }

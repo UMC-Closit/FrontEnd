@@ -28,7 +28,7 @@ data class UserInfo(
 )
 
 data class LoginRequest(
-    val email: String,
+    val clositId: String,
     val password: String
 )
 
@@ -51,6 +51,16 @@ data class TokenResult(
     val refreshToken: String
 )
 
+// 중복 확인
+
+data class CheckIdResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: Boolean
+)
+
+
 // refresh
 
 data class RefreshRequest(
@@ -69,4 +79,13 @@ data class RefreshResult(
     val clositId: String,
     val accessToken: String,
     val refreshToken: String
+)
+
+
+// quit
+data class QuitResponse<T>(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: T
 )

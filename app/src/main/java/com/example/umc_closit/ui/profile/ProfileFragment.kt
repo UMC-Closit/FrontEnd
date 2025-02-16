@@ -1,7 +1,10 @@
 package com.example.umc_closit.ui.profile
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,10 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.data.entities.RecentItem
+import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.profile.FollowRequest
 import com.example.umc_closit.data.remote.profile.FollowResponse
-import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
+import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.login.LoginActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
@@ -26,9 +30,6 @@ import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 import com.example.umc_closit.utils.TokenUtils
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class ProfileFragment : Fragment() {
 
@@ -126,10 +127,20 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
-
+        // 로그아웃
         binding.tvLogout.setOnClickListener {
             logout()
         }
+
+        // 탈퇴하기
+        binding.tvQuit.setOnClickListener {
+            val clositId = TokenUtils.getClositId(requireContext()) ?: ""
+            showQuitDialog(clositId) {
+                // 탈퇴 성공 후 처리
+            }
+        }
+
+
 
         binding.viewFollowBtn.setOnClickListener {
             toggleFollow()
@@ -257,6 +268,71 @@ class ProfileFragment : Fragment() {
         val intent = Intent(requireContext(), LoginActivity::class.java)
         startActivity(intent) // 로그인 화면으로 이동
         requireActivity().finishAffinity() // 현재 액티비티 종료 (모든 백 스택 제거)
+    }
+
+    private fun showQuitDialog(clositId: String, onSuccess: () -> Unit) {
+        val dialog = Dialog(requireContext())
+        val binding = DialogQuitBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명 처리
+
+        binding.etId.hint = clositId
+
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.btnConfirm.setOnClickListener {
+            val inputId = binding.etId.text.toString().trim()
+            if (inputId == clositId) {
+                binding.tvQuitError.visibility = View.GONE
+                deleteUser { success ->
+                    if (success) {
+                        TokenUtils.clearTokens(requireContext())
+                        onSuccess()
+                        startActivity(Intent(requireContext(), LoginActivity::class.java))
+                        requireActivity().finishAffinity()
+                    } else {
+                        Toast.makeText(requireContext(), "탈퇴 실패. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                dialog.dismiss()
+            } else {
+                binding.tvQuitError.visibility = View.VISIBLE
+            }
+        }
+
+        dialog.show()
+    }
+
+
+    private fun deleteUser(onResult: (Boolean) -> Unit) {
+        val token = TokenUtils.getAccessToken(requireContext())
+        if (token.isNullOrEmpty()) {
+            onResult(false)
+            return
+        }
+
+        val apiCall = {
+            RetrofitClient.authService.deleteUser("Bearer $token")
+        }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    onResult(true)
+                } else {
+                    onResult(false)
+                }
+            },
+            onFailure = {
+                onResult(false)
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
 
 
