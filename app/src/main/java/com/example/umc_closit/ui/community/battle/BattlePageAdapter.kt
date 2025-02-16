@@ -82,8 +82,6 @@ class BattlePageAdapter(
                 }
             }
 
-
-
             // 투표 버튼 클릭 이벤트
             tvLeftVote.setOnClickListener { sendVote(item.battleId, item.leftPostId, voteProgressBar) }
             tvRightVote.setOnClickListener { sendVote(item.battleId, item.rightPostId, voteProgressBar) }

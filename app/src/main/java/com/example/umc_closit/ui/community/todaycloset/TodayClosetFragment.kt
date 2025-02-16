@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
@@ -25,12 +26,12 @@ class TodayClosetFragment : Fragment() {
 
     private var _binding: FragmentTodayclosetBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: TodayClosetAdapter
 
-    // 페이징 변수
+    // 어댑터와 상태 변수 (클래스-level 변수)
+    private lateinit var adapter: TodayClosetAdapter
+    private var hasNext = true
     private var currentPage = 1
     private var isLoading = false
-    private var hasNext = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,29 +44,22 @@ class TodayClosetFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // RecyclerView (2줄 형태 리스트)
+        // RecyclerView 초기화
         adapter = TodayClosetAdapter()
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerTodaycloset.layoutManager = layoutManager
         binding.recyclerTodaycloset.adapter = adapter
+        binding.recyclerTodaycloset.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        // 첫 페이지 데이터 불러오기
+        // API 호출
         loadTodayClosets(currentPage)
 
-        // 무한 스크롤 리스너 추가
+        // 스크롤 페이징 처리
         binding.recyclerTodaycloset.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                if (!isLoading && hasNext) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
-                        firstVisibleItemPosition >= 0
-                    ) {
-                        loadTodayClosets(++currentPage)
-                    }
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                if (lastVisibleItem == adapter.itemCount - 1 && hasNext && !isLoading) {
+                    loadTodayClosets(currentPage + 1)
                 }
             }
         })
@@ -73,8 +67,8 @@ class TodayClosetFragment : Fragment() {
         // createButton 클릭 시 UploadFragment로 이동
         binding.createButton.setOnClickListener {
             parentFragmentManager.commit {
-                replace(R.id.fragment_container, UploadFragment()) // fragment_upload.xml을 로드하는 Fragment
-                addToBackStack(null) // 뒤로 가기 가능하도록 설정
+                replace(R.id.fragment_container, UploadFragment())
+                addToBackStack(null)
             }
         }
     }
@@ -83,13 +77,16 @@ class TodayClosetFragment : Fragment() {
      * 오늘의 옷장 API 호출
      */
     private fun loadTodayClosets(page: Int) {
+        isLoading = true
         val authToken = "Bearer ${TokenUtils.getAccessToken(requireContext())}"
 
         TokenUtils.handleTokenRefresh(
             call = RetrofitClient.todayClosetApiService.getTodayClosets(authToken, page),
             onSuccess = { response ->
+                isLoading = false
                 if (response.isSuccess) {
                     hasNext = response.result.hasNext
+                    currentPage = page
                     if (page == 1) {
                         adapter.submitList(response.result.todayClosets)
                     } else {
@@ -100,6 +97,7 @@ class TodayClosetFragment : Fragment() {
                 }
             },
             onFailure = { throwable ->
+                isLoading = false
                 Log.e("TodayCloset", "API 호출 실패", throwable)
                 Toast.makeText(requireContext(), "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
