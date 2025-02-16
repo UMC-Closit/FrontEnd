@@ -48,6 +48,10 @@ class TaggingActivity : AppCompatActivity() {
             true
         }
 
+        binding.ivBack.setOnClickListener{
+            finish()
+        }
+
         binding.btnSave.setOnClickListener {
             val savedFile = captureAndSaveTaggedImage()
             savedFile?.let {
@@ -118,11 +122,15 @@ class TaggingActivity : AppCompatActivity() {
     private fun captureAndSaveTaggedImage(): File? {
         val originalVisibility = binding.btnSave.visibility
         binding.btnSave.visibility = View.GONE
+        binding.toolbar.visibility = View.GONE
+        binding.tvHint.visibility = View.GONE
 
         val width = binding.taggingLayout.width
         val height = binding.taggingLayout.height
         if (width <= 0 || height <= 0) {
             binding.btnSave.visibility = originalVisibility
+            binding.toolbar.visibility = originalVisibility
+            binding.tvHint.visibility = originalVisibility
             return null
         }
 
@@ -139,6 +147,8 @@ class TaggingActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             binding.btnSave.visibility = originalVisibility
+            binding.toolbar.visibility = originalVisibility
+            binding.tvHint.visibility = originalVisibility
             null
         }
     }
