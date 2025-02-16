@@ -13,6 +13,8 @@ import retrofit2.Response
 
 object TokenUtils {
 
+    private var isRefreshing = false
+
     fun <T> handleTokenRefresh(
         call: Call<T>,
         onSuccess: (T) -> Unit,
@@ -46,29 +48,60 @@ object TokenUtils {
         val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         val refreshToken = sharedPreferences.getString("refreshToken", "") ?: ""
 
+        if (isRefreshing) {
+            Log.e("TOKEN_DEBUG", "⛔ 이미 토큰 재발급 중 → 요청 무시")
+            return
+        }
+
+        isRefreshing = true
+
+        Log.d("TOKEN_DEBUG", "🔄 AccessToken 만료 → RefreshToken 요청 시작")
+        Log.d("TOKEN_DEBUG", "📦 현재 보유 RefreshToken: $refreshToken")
+
         if (refreshToken.isEmpty()) {
-            // refreshToken 없으면 로그인으로
+            Log.e("TOKEN_DEBUG", "❌ RefreshToken 없음 → 로그인 이동")
             moveToLogin(context)
+            isRefreshing = false
             return
         }
 
         val request = RefreshRequest(refreshToken = refreshToken)
+        Log.d("TOKEN_DEBUG", "🚀 RefreshToken API 요청 보냄")
 
         RetrofitClient.authService.refreshToken(request)
             .enqueue(object : Callback<RefreshResponse> {
                 override fun onResponse(call: Call<RefreshResponse>, response: Response<RefreshResponse>) {
+                    Log.d("TOKEN_DEBUG", "🌐 RefreshToken API 응답 수신")
+                    Log.d("TOKEN_DEBUG", "HTTP 코드: ${response.code()}")
+                    Log.d("TOKEN_DEBUG", "응답 바디: ${response.body()}")
+                    Log.d("TOKEN_DEBUG", "에러 바디: ${response.errorBody()?.string()}")
+
                     if (response.isSuccessful) {
                         val newAccessToken = response.body()?.result?.accessToken ?: ""
                         val newRefreshToken = response.body()?.result?.refreshToken ?: ""
 
+                        // 1. 새로 발급받은 토큰 로그
+                        Log.d("TOKEN_DEBUG", "✅ 재발급 성공 → AccessToken: $newAccessToken")
+                        Log.d("TOKEN_DEBUG", "✅ 재발급 성공 → RefreshToken: $newRefreshToken")
+
                         with(sharedPreferences.edit()) {
                             putString("accessToken", newAccessToken)
                             putString("refreshToken", newRefreshToken)
-                            apply()
+                            commit() // apply() 대신 즉시 저장
                         }
 
-                        Log.d("TOKEN","어세스 토큰 재발급 완료")
-                        // 새 토큰 저장 후 원래 API 재시도
+
+                        Log.d("TOKEN_DEBUG", "💾 새 토큰 SharedPreferences 저장 완료")
+
+                        // 2. 저장 후 바로 SharedPreferences에서 꺼내서 확인
+                        val savedAccessToken = sharedPreferences.getString("accessToken", null)
+                        val savedRefreshToken = sharedPreferences.getString("refreshToken", null)
+
+                        Log.d("TOKEN_DEBUG", "🔍 SharedPreferences 저장 확인 → AccessToken: $savedAccessToken")
+                        Log.d("TOKEN_DEBUG", "🔍 SharedPreferences 저장 확인 → RefreshToken: $savedRefreshToken")
+
+                        Log.d("TOKEN_DEBUG", "🔄 원래 API 재시도 시작")
+
                         handleTokenRefresh(
                             retryCall(),
                             onSuccess,
@@ -77,16 +110,19 @@ object TokenUtils {
                             context
                         )
                     } else {
-                        // refreshToken도 만료 → 로그인 이동
+                        Log.e("TOKEN_DEBUG", "❌ 재발급 실패 → 로그인 이동")
                         moveToLogin(context)
                     }
                 }
 
                 override fun onFailure(call: Call<RefreshResponse>, t: Throwable) {
+                    Log.e("TOKEN_DEBUG", "🌐 RefreshToken API 요청 실패: ${t.message}")
+                    isRefreshing = false
                     onFailure(t)
                 }
             })
     }
+
 
     fun moveToLogin(context: Context) {
         val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
@@ -118,6 +154,11 @@ object TokenUtils {
     fun getUserId(context: Context): Int {
         val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return sharedPreferences.getInt("userId", -1)
+    }
+
+    fun getClositId(context: Context): String? {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences.getString("clositId", "")
     }
 
     fun isLoggedIn(context: Context): Boolean {
