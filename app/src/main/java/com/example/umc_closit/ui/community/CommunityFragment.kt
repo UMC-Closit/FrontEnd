@@ -41,7 +41,7 @@ class CommunityFragment : Fragment() {
             fragmentTransaction.commit()
         }
 
-        // imgDetail1 버튼 클릭 시 NewBattleActivity 실행
+        // imgDetail1 버튼 클릭 시 DetailActivity 실행
         binding.imgDetail1.setOnClickListener {
             val intent = Intent(requireContext(), DetailActivity::class.java)
             startActivity(intent)
