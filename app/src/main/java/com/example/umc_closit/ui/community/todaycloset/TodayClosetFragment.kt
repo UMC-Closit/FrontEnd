@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
-
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
@@ -34,12 +33,6 @@ class TodayClosetFragment : Fragment() {
     private var currentPage = 1
     private var isLoading = false
     private var hasNext = true
-
-    // 어댑터와 상태 변수 (클래스-level 변수)
-    private lateinit var adapter: TodayClosetAdapter
-    private var hasNext = true
-    private var currentPage = 1
-    private var isLoading = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,23 +69,6 @@ class TodayClosetFragment : Fragment() {
         // 첫 페이지 데이터 불러오기
         loadTodayClosets(currentPage)
 
-        // 무한 스크롤 리스너 추가
-        binding.recyclerTodaycloset.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                if (!isLoading && hasNext) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
-                        firstVisibleItemPosition >= 0
-                    ) {
-                        loadTodayClosets(++currentPage)
-                    }
-                }
-            }
-        })
 
         // createButton 클릭 시 UploadFragment로 이동
         binding.createButton.setOnClickListener {

@@ -20,9 +20,6 @@ data class VoteResult(
     @SerializedName("createdAt") val createdAt: String
 )
 
-data class VoteRequest(
-    @SerializedName("postId") val postId: Long
-)
 
 // 좋아요 응답 데이터
 data class LikeResponse(

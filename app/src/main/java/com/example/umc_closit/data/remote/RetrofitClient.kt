@@ -7,7 +7,6 @@ import com.example.umc_closit.data.remote.auth.AuthService
 import com.example.umc_closit.data.remote.profile.ProfileService
 import com.example.umc_closit.data.remote.timeline.TimelineService
 import okhttp3.OkHttpClient
-import com.example.umc_closit.data.TodayClosetApiService
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
