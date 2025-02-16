@@ -1,0 +1,103 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginStart="15dp"
+    android:padding="8dp"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start"> <!-- 왼쪽 정렬 -->
+
+        <!-- 왼쪽 정렬된 텍스트뷰 추가 -->
+        <TextView
+            android:id="@+id/my_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="배틀게시판"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:gravity="start"
+            android:textAlignment="viewStart"
+            android:layout_marginEnd="140dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- 좋아요 버튼 -->
+        <ImageView
+            android:id="@+id/iv_like"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_like_off"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- 댓글 버튼 -->
+        <ImageView
+            android:id="@+id/iv_comment"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_comment" />
+
+    </LinearLayout>
+
+    <!-- 포함된 레이아웃을 감싸는 새로운 LinearLayout 추가 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <!-- 왼쪽 네모 -->
+        <include
+            android:id="@+id/left_item"
+            layout="@layout/item_card"/>
+
+        <!-- 오른쪽 네모 -->
+        <include
+            android:id="@+id/right_item"
+            layout="@layout/item_card"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- 좌측 투표 버튼 -->
+        <ImageButton
+            android:id="@+id/btn_left_vote"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_circle_black" />
+
+        <!-- 우측 투표 버튼 -->
+        <ImageButton
+            android:id="@+id/btn_right_vote"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_circle_white" />
+
+        <!-- 투표 비율 ProgressBar -->
+        <ProgressBar
+            android:id="@+id/vote_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="64dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100"
+            android:progress="50"/>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

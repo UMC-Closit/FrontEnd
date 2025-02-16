@@ -1,0 +1,109 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".MainActivity"
+    android:paddingTop="12dp">
+
+    <!-- Search Bar Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.9"
+        app:layout_constraintDimensionRatio="9:1"
+        android:layout_margin="10dp"
+        android:background="@drawable/lookup_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Search Icon -->
+        <ImageView
+            android:id="@+id/img_Search"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintDimensionRatio="1:1"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/search"
+            android:contentDescription="Search Icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Search Input -->
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="search"
+            android:background="@null"
+            android:fontFamily="@font/ibm_regular"
+            android:textColor="@color/gray_dark"
+            android:paddingStart="8dp"
+            app:layout_constraintStart_toEndOf="@+id/img_Search"
+            app:layout_constraintTop_toTopOf="@id/search_container"
+            app:layout_constraintBottom_toBottomOf="@id/search_container"
+            app:layout_constraintWidth_percent="0.8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Horizontal Scroll Section 1 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/section_todaycloset"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btn_todaycloset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오늘의 옷장"
+            android:paddingStart="12dp"
+            android:fontFamily="@font/noto_light"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:background="@android:color/transparent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_upload"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:contentDescription="Upload Button"
+            android:src="@drawable/upload"
+            app:layout_constraintBottom_toBottomOf="@id/btn_todaycloset"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_todaycloset" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Horizontal Scroll View for Images -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/horizontal_scroll_area"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/section_todaycloset"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_todaycloset"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

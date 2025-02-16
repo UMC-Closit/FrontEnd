@@ -1,0 +1,65 @@
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/ll_history_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 월 선택 -->
+    <TextView
+        android:id="@+id/tv_month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="3dp"
+        android:text="January 2025"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="@+id/ll_history_container"
+        app:layout_constraintStart_toStartOf="@id/ll_history_container"/>
+
+    <!-- 색상 표시 동그라미 -->
+    <View
+        android:id="@+id/view_color_circle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_history_pointcolor"
+        app:layout_constraintBottom_toBottomOf="@id/tv_month"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintHeight_default="spread"
+        app:layout_constraintStart_toEndOf="@id/tv_month"
+        app:layout_constraintTop_toTopOf="@id/tv_month" />
+
+    <!-- 요일 표시 -->
+    <LinearLayout
+        android:id="@+id/ll_weekdays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="4dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_month">
+
+        <TextView android:id="@+id/tv_sun" android:text="Sun" style="@style/WeekdayTextStyle"/>
+        <TextView android:id="@+id/tv_mon" android:text="Mon" style="@style/WeekdayTextStyle"/>
+        <TextView android:id="@+id/tv_tue" android:text="Tue" style="@style/WeekdayTextStyle"/>
+        <TextView android:id="@+id/tv_wed" android:text="Wed" style="@style/WeekdayTextStyle"/>
+        <TextView android:id="@+id/tv_thu" android:text="Thu" style="@style/WeekdayTextStyle"/>
+        <TextView android:id="@+id/tv_fri" android:text="Fri" style="@style/WeekdayTextStyle"/>
+        <TextView android:id="@+id/tv_sat" android:text="Sat" style="@style/WeekdayTextStyle"/>
+    </LinearLayout>
+
+    <!-- 캘린더 RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        app:spanCount="7"
+        tools:listitem="@layout/item_calendar_day"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/ll_weekdays"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="135dp"
+    android:layout_height="240dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    android:background="#EFEFF0">
+
+    <RelativeLayout
+        android:layout_width="135dp"
+        android:layout_height="240dp"
+        android:padding="8dp">
+
+        <!-- 작은 이미지 -->
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="45dp"
+            android:layout_height="80dp"
+            android:background="@color/gray"
+            android:scaleType="centerCrop"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:backgroundTint="#C4C4C4"
+            app:cornerRadius="16dp"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

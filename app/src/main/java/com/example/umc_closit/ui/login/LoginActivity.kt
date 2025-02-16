@@ -13,6 +13,7 @@ import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.ActivityLoginBinding
 import com.example.umc_closit.ui.login.find.FindIDActivity
 import com.example.umc_closit.ui.login.find.FindPasswordActivity
+import com.example.umc_closit.ui.mission.MissionActivity
 import com.example.umc_closit.ui.timeline.TimelineActivity
 import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
@@ -30,6 +31,11 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnLogin.setOnClickListener{
+            startActivity(Intent(this, MissionActivity::class.java))
+        }
+
+        /*
         checkLoginStatus() // 로그인 체크
 
 
@@ -129,5 +135,8 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, TimelineActivity::class.java))
             finish()
         }
+
+         */
     }
+
 }
