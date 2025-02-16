@@ -97,18 +97,25 @@ class LoginActivity : AppCompatActivity() {
                         val refreshToken = result.result?.refreshToken ?: ""
                         val clositId = result.result?.clositId ?: ""
 
+                        // 토큰 및 Closit ID 저장
                         TokenUtils.saveTokens(this@LoginActivity, accessToken, refreshToken, clositId)
+
+                        // 로그인 성공 후 타임라인 이동
                         startActivity(Intent(this@LoginActivity, TimelineActivity::class.java))
+                        Log.d("TOKEN_DEBUG", "로그인 성공 후 AccessToken: $accessToken")
+                        Log.d("TOKEN_DEBUG", "로그인 성공 후 RefreshToken: $refreshToken")
                         finish()
                     } else {
                         Toast.makeText(this@LoginActivity, "로그인 실패: ${result?.message}", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    if (response.code() == 400) {
-                        Toast.makeText(this@LoginActivity, "이메일과 비밀번호를 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Log.e("LOGIN_ERROR", "서버 오류: ${response.code()}, 메시지: ${response.errorBody()?.string()}")
-                        Toast.makeText(this@LoginActivity, "서버 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    when (response.code()) {
+                        400 -> Toast.makeText(this@LoginActivity, "이메일과 비밀번호를 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        404 -> Toast.makeText(this@LoginActivity, "존재하지 않는 회원입니다.", Toast.LENGTH_SHORT).show()
+                        else -> {
+                            Log.e("LOGIN_ERROR", "서버 오류: ${response.code()}, 메시지: ${response.errorBody()?.string()}")
+                            Toast.makeText(this@LoginActivity, "서버 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
@@ -119,6 +126,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+
 
     // 자동 로그인 기능 추가
     private fun checkLoginStatus() {

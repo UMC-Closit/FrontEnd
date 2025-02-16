@@ -2,13 +2,16 @@ package com.example.umc_closit.ui.splash
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.ui.login.LoginActivity
 import com.example.umc_closit.databinding.ActivitySplashBinding
+import com.example.umc_closit.utils.TokenUtils
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashBinding
@@ -45,6 +48,12 @@ class SplashActivity : AppCompatActivity() {
             playTogether(fadeIn, scaleX, scaleY, moveUp)
             start()
         }
+
+        val accessToken = TokenUtils.getAccessToken(this)
+        val refreshToken = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE).getString("refreshToken", "")
+        Log.d("TOKEN_DEBUG", "앱 실행 후 AccessToken: $accessToken")
+        Log.d("TOKEN_DEBUG", "앱 실행 후 RefreshToken: $refreshToken")
+
 
         // 3초 후 MainActivity로 이동
         Handler(Looper.getMainLooper()).postDelayed({
