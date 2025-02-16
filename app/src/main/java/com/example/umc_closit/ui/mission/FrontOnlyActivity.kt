@@ -16,7 +16,7 @@ import com.example.umc_closit.databinding.ActivityFrontOnlyBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import com.example.umc_closit.data.entities.post.TagData
+import com.example.umc_closit.data.remote.post.TagData
 
 class FrontOnlyActivity : AppCompatActivity() {
 

@@ -5,8 +5,12 @@ import com.example.umc_closit.data.remote.auth.AuthService
 import com.example.umc_closit.data.remote.battle.BattleApiService
 import com.example.umc_closit.data.remote.profile.ProfileService
 import com.example.umc_closit.data.remote.timeline.TimelineService
+<<<<<<< Updated upstream
 import com.example.umc_closit.utils.TokenUtils
 import okhttp3.Interceptor
+=======
+import com.example.umc_closit.data.remote.post.PostService
+>>>>>>> Stashed changes
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
@@ -44,4 +48,13 @@ object RetrofitClient {
     val battleService: BattleApiService by lazy {
         retrofit.create(BattleApiService::class.java)
     }
+<<<<<<< Updated upstream
+=======
+    val todayClosetApiService: TodayClosetApiService by lazy {
+        retrofit.create(TodayClosetApiService::class.java)
+    }
+    val postService: PostService by lazy {
+        retrofit.create(PostService::class.java)
+    }
+>>>>>>> Stashed changes
 }

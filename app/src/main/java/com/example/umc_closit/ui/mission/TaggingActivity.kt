@@ -16,7 +16,7 @@ import com.example.umc_closit.databinding.ActivityTaggingBinding
 import com.example.umc_closit.databinding.CustomTagDialogBinding
 import java.io.File
 import java.io.FileOutputStream
-import com.example.umc_closit.data.entities.post.TagData
+import com.example.umc_closit.data.remote.post.TagData
 
 class TaggingActivity : AppCompatActivity() {
 
