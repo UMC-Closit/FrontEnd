@@ -31,8 +31,12 @@ class UploadFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnUpload.setOnClickListener{
+            val intent = Intent(requireContext(), MissionActivity::class.java)
+            startActivity(intent)
+        }
         //observeTimelineData() // ✅ ViewModel 데이터 감지
-        setupUploadButton()
+        //setupUploadButton()
     }
 
 /*    private fun observeTimelineData() {
@@ -45,7 +49,7 @@ class UploadFragment : Fragment() {
         }
     }*/
 
-    private fun setupViewPager() {
+/*    private fun setupViewPager() {
         uploadAdapter = UploadAdapter(photoList)
 
         val displayMetrics = resources.displayMetrics
@@ -82,5 +86,5 @@ class UploadFragment : Fragment() {
                 Toast.makeText(requireContext(), "업로드할 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
             }
         }
-    }
+    }*/
 }

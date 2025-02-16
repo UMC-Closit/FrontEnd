@@ -221,9 +221,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="히스토리"
+                android:paddingVertical="5dp"
                 android:fontFamily="@font/noto_regular"
                 android:textSize="13sp"
                 android:textColor="@color/black"
+                android:includeFontPadding="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -232,6 +234,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="내 정보 수정"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
                 android:fontFamily="@font/noto_regular"
                 android:textSize="13sp"
                 android:textColor="@color/black"
@@ -243,6 +247,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="게시물 저장"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
                 android:fontFamily="@font/noto_regular"
                 android:textSize="13sp"
                 android:textColor="@color/black"
@@ -254,11 +260,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="로그아웃"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
                 android:fontFamily="@font/noto_regular"
                 android:textSize="13sp"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="@id/tv_savePosts"
                 app:layout_constraintTop_toBottomOf="@id/tv_savePosts" />
+
+            <TextView
+                android:id="@+id/tv_quit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="탈퇴하기"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/error_red"
+                app:layout_constraintStart_toStartOf="@id/tv_logout"
+                app:layout_constraintTop_toBottomOf="@id/tv_logout" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

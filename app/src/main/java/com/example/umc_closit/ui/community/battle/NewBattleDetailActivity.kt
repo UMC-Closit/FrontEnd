@@ -60,7 +60,7 @@ class NewBattleDetailActivity : AppCompatActivity() {
         )
 
         val apiCall = {
-            RetrofitClient.instance.uploadBattle(token, request)
+            RetrofitClient.battleService.uploadBattle(token, request)
         }
 
         TokenUtils.handleTokenRefresh(
