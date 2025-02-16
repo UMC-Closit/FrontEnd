@@ -32,4 +32,8 @@ object RetrofitClient {
     // val timelineService: TimelineService = retrofit.create(TimelineService::class.java)
     val profileService: ProfileService = retrofit.create(ProfileService::class.java)
 
+    val battleApiService: BattleApiService by lazy {
+        retrofit.create(BattleApiService::class.java)
+    }
+
 }
