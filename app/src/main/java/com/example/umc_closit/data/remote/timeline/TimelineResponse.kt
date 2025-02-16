@@ -75,3 +75,43 @@ data class BookmarkResult(
     val postId: Int,
     val userId: Int
 )
+
+// notification
+data class NotificationResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: NotificationResult
+)
+
+data class NotificationResult(
+    val notiPreviewDTOList: List<NotificationItem>,
+    val listSize: Int,
+    val hasNext: Boolean,
+    val first: Boolean,
+    val last: Boolean
+)
+
+data class NotificationItem(
+    val notificationId: Int,
+    val clositId: String,
+    val userName: String,
+    val imageUrl: String,
+    val content: String,
+    val type: String,
+    val read: Boolean
+)
+
+data class NotificationReadResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: NotificationItem
+)
+
+data class NotificationDeleteResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: String
+)

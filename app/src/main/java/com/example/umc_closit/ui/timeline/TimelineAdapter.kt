@@ -44,7 +44,7 @@ class TimelineAdapter(
         val item = timelineItems[position] ?: return
 
         with(holder.binding) {
-            // 🔥 API에서 받은 이미지 로드
+            // API에서 받은 이미지 로드
             Glide.with(context).load(item.frontImage).into(ivImageBig)
             Glide.with(context).load(item.backImage).into(ivImageSmall)
             Glide.with(context).load(item.profileImage).transform(CircleCrop()).into(ivUserProfile)
@@ -53,21 +53,21 @@ class TimelineAdapter(
             ivLike.setImageResource(if (item.isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
             ivSave.setImageResource(if (item.isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
 
-            // 📌 게시글 상세 페이지로 이동
+            // 게시글 상세 페이지로 이동
             ivImageBig.setOnClickListener {
                 val intent = Intent(context, DetailActivity::class.java)
                 intent.putExtra("timelineItem", item)
                 context.startActivity(intent)
             }
 
-            // 📌 댓글 버튼 클릭 이벤트
+            // 댓글 버튼 클릭 이벤트
             ivComment.setOnClickListener {
                 val commentFragment = CommentBottomSheetFragment.newInstance()
                 commentFragment.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, commentFragment.tag)
             }
 
 
-            // 📌 좋아요 버튼 클릭 이벤트
+            // 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
                 val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
@@ -96,7 +96,7 @@ class TimelineAdapter(
                 )
             }
 
-            // 📌 저장 버튼 클릭 이벤트
+            // 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
                 val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                 val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
@@ -134,7 +134,7 @@ class TimelineAdapter(
 
 
 
-            // 📌 유저 프로필 클릭 이벤트
+            // 유저 프로필 클릭 이벤트
             ivUserProfile.setOnClickListener {
                 Toast.makeText(context, "유저 프로필 클릭됨", Toast.LENGTH_SHORT).show()
             }
@@ -142,9 +142,11 @@ class TimelineAdapter(
     }
 
     fun updateTimelineItems(updatedItems: List<PostPreview>) {
-        this.timelineItems = updatedItems.toMutableList()
+        this.timelineItems.clear()
+        this.timelineItems.addAll(updatedItems)
         notifyDataSetChanged()
     }
+
 
     override fun getItemCount(): Int = timelineItems.size
 }

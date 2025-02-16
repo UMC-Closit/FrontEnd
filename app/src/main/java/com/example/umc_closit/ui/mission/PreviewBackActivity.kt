@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.databinding.ActivityPreviewBinding
+import com.example.umc_closit.databinding.ActivityPreviewBackBinding
 
-class PreviewActivity : AppCompatActivity() {
+class PreviewBackActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityPreviewBinding
+    private lateinit var binding: ActivityPreviewBackBinding
 
     private var mainPhotoPath: String? = null
     private var smallPhotoPath: String? = null
@@ -17,18 +17,18 @@ class PreviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // 🚀 View Binding 초기화
-        binding = ActivityPreviewBinding.inflate(layoutInflater)
+        binding = ActivityPreviewBackBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
-
+        val backPhotoPath = intent.getStringExtra("backPhotoPath")
 
         binding.ivBack.setOnClickListener {
             onBackPressed()
         }
 
-        mainPhotoPath = frontPhotoPath
-
+        mainPhotoPath = backPhotoPath
+        //smallPhotoPath = backPhotoPath
 
         loadImages()
 
@@ -40,15 +40,15 @@ class PreviewActivity : AppCompatActivity() {
          */
 
         binding.btnRetake.setOnClickListener {
-            val intent = Intent(this, MissionActivity::class.java)
+            val intent = Intent(this, MissionBackActivity::class.java)
             startActivity(intent)
             finish()
         }
 
         binding.btnNext.setOnClickListener {
-            val intent = Intent(this, MissionBackActivity::class.java).apply {
+            val intent = Intent(this, FrontOnlyActivity::class.java).apply {
                 putExtra("frontPhotoPath", frontPhotoPath)
-
+                putExtra("backPhotoPath", backPhotoPath)
             }
             startActivity(intent)
         }
@@ -59,13 +59,13 @@ class PreviewActivity : AppCompatActivity() {
             val bitmap = rotateBitmapIfNeeded(path)
             binding.imageViewMain.setImageBitmap(bitmap)
         }
-    /*
-        smallPhotoPath?.let { path ->
-            val bitmap = rotateBitmapIfNeeded(path)
-            binding.imageViewSmall.setImageBitmap(bitmap)
-        }
+        /*
+            smallPhotoPath?.let { path ->
+                val bitmap = rotateBitmapIfNeeded(path)
+                binding.imageViewSmall.setImageBitmap(bitmap)
+            }
 
-    */
+        */
     }
 
     /*

@@ -52,7 +52,9 @@
         <activity android:name=".ui.profile.edit.EditProfileActivity" />
         <activity android:name=".ui.mission.FrontOnlyActivity"/>
         <activity android:name=".ui.mission.MissionActivity"/>
+        <activity android:name=".ui.mission.MissionBackActivity"/>
         <activity android:name=".ui.mission.PreviewActivity"/>
+        <activity android:name=".ui.mission.PreviewBackActivity"/>
         <activity android:name=".ui.mission.TaggingActivity"/>
         <activity android:name=".ui.mission.BackOnlyActivity"/>
 
