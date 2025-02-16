@@ -3,17 +3,20 @@ package com.example.umc_closit.ui.mission
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
 import com.example.umc_closit.databinding.ActivityFrontOnlyBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import com.example.umc_closit.data.entities.post.TagData
 
 class FrontOnlyActivity : AppCompatActivity() {
 
@@ -26,6 +29,13 @@ class FrontOnlyActivity : AppCompatActivity() {
     private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
     private var originalBitmap: Bitmap? = null
+
+    var pointColor: Int? = null
+
+    var ifTagged = false
+
+    // 새 태그 데이터를 저장할 멤버 변수 추가
+    private var receivedTagList: ArrayList<TagData>? = null
 
     companion object {
         private const val TAGGING_REQUEST_CODE = 1001
@@ -85,7 +95,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         }
 
         // 해시태그 버튼
-        binding.btnHashtag.setOnClickListener {
+            binding.btnHashtag.setOnClickListener {
             showHashtagDialog { newHashtag ->
                 addHashtag(newHashtag)
             }
@@ -95,6 +105,17 @@ class FrontOnlyActivity : AppCompatActivity() {
         binding.btnContinue.setOnClickListener {
             val intent = Intent(this, BackOnlyActivity::class.java).apply {
                 putExtra("backPhotoPath", backPhotoPath)
+
+                if (ifTagged) {
+                    putParcelableArrayListExtra("frontTagList", receivedTagList ?: arrayListOf())
+                }
+
+                // 해시태그 리스트 전달 (없으면 빈 리스트)
+                putStringArrayListExtra("hashtags", ArrayList(hashtagsFlow.value))
+
+                //  포인트 색상 전달 (없으면 기본값 -1)
+                putExtra("pointColor", pointColor ?: -1)
+
             }
             startActivity(intent)
         }
@@ -151,6 +172,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         val bg = view.background
         if (bg is GradientDrawable) {
             bg.setColor(color)
+            pointColor = color
         } else {
             view.setBackgroundColor(color)
         }
@@ -173,17 +195,51 @@ class FrontOnlyActivity : AppCompatActivity() {
         return bitmap.getPixel(pixelX, pixelY)
     }
 
+    private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
+        val tagView = android.widget.TextView(this).apply {
+            text = tagText
+            setTextColor(Color.WHITE)
+            textSize = 14f
+            setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
+            val leftPad = dpToPx(30)
+            val pad = dpToPx(8)
+            setPadding(leftPad, pad, pad, pad)
+        }
+
+        val layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        val parentWidth = binding.imageAndTag.width.toFloat()
+        val parentHeight = binding.imageAndTag.height.toFloat()
+
+        layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+        layoutParams.leftMargin = (parentWidth * xRatio).toInt()
+        layoutParams.topMargin = (parentHeight * yRatio).toInt()
+
+        binding.imageAndTag.addView(tagView, layoutParams)
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        val scale = resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == TAGGING_REQUEST_CODE && resultCode == RESULT_OK) {
-            val taggedPhotoPath = data?.getStringExtra("taggedPhotoPath")
-            if (!taggedPhotoPath.isNullOrEmpty()) {
-                originalBitmapPath = taggedPhotoPath
-                val bmp = BitmapFactory.decodeFile(taggedPhotoPath)
-                if (bmp != null) {
-                    binding.imageViewFrontOnly.setImageBitmap(bmp)
+
+            val tagList = data?.getParcelableArrayListExtra<TagData>("tagList")
+            if (tagList != null) {
+                ifTagged = true
+                receivedTagList = tagList
+                for (tag in tagList) {
+                    addTagView(tag.tagText, tag.xRatio, tag.yRatio)
                 }
             }
+
         }
     }
 }

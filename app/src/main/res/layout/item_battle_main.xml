@@ -73,11 +73,9 @@
             android:layout_centerVertical="true"
             android:textSize="13sp"
             android:textColor="@android:color/white"
-            android:padding="10dp"
+            android:padding="3dp"
             android:background="@drawable/bg_left_vote"
             android:gravity="center"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="4dp"
             android:text="유저ID" />
 
         <!-- 우측 투표 (battleId) -->
@@ -89,31 +87,34 @@
             android:layout_centerVertical="true"
             android:textSize="13sp"
             android:textColor="@android:color/black"
-            android:padding="10dp"
+            android:padding="3dp"
             android:background="@drawable/bg_right_vote"
             android:gravity="center"
-            android:layout_marginStart="4dp"
             android:text="유저ID" />
 
 
-        <!-- 투표 비율 ProgressBar -->
+        <!-- 투표 비율 ProgressBar (양쪽 투표 TextView에 맞춤) -->
         <ProgressBar
             android:id="@+id/vote_progress_bar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="12dp"
             android:layout_centerVertical="true"
-            android:layout_marginStart="64dp"
-            android:layout_marginEnd="64dp"
-            style="?android:attr/progressBarStyleHorizontal" android:max="100"
+
+            android:layout_toEndOf="@id/tv_left_vote"
+            android:layout_toStartOf="@id/tv_right_vote"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100"
             android:progress="50"/>
 
+        <!-- vs 표시 (ProgressBar 위에) -->
         <TextView
             android:id="@+id/tv_vs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/vote_progress_bar"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="0dp"
             android:text="vs"
             android:textAlignment="center"
             android:textColor="@android:color/black"

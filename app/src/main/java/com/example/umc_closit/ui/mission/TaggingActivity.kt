@@ -16,11 +16,14 @@ import com.example.umc_closit.databinding.ActivityTaggingBinding
 import com.example.umc_closit.databinding.CustomTagDialogBinding
 import java.io.File
 import java.io.FileOutputStream
+import com.example.umc_closit.data.entities.post.TagData
 
 class TaggingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTaggingBinding
     private var originalBitmap: Bitmap? = null
+
+    val tagList = mutableListOf<TagData>() // 태그 데이터 저장 리스트
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,22 +44,35 @@ class TaggingActivity : AppCompatActivity() {
             if (event.action == MotionEvent.ACTION_UP) {
                 val localX = event.x
                 val localY = event.y
+
+                val imageViewWidth = binding.imageViewTag.width.toFloat()
+                val imageViewHeight = binding.imageViewTag.height.toFloat()
+
+                val xRatio = event.x / imageViewWidth  // X 좌표 비율
+                val yRatio = event.y / imageViewHeight // Y 좌표 비율
+
                 showTagDialog { tagText ->
-                    addTagView(tagText, localX, localY)
+                    addTagView(tagText, xRatio, yRatio)
                 }
             }
             true
         }
 
-        binding.btnSave.setOnClickListener {
-            val savedFile = captureAndSaveTaggedImage()
-            savedFile?.let {
+        binding.ivBack.setOnClickListener{
+            finish()
+        }
+
+            binding.btnSave.setOnClickListener {
+                val tagArrayList = ArrayList(tagList) // Intent로 넘기기 위해 ArrayList로 변환
                 val resultIntent = intent.apply {
-                    putExtra("taggedPhotoPath", it.absolutePath)
+                    putParcelableArrayListExtra("tagList", tagArrayList)
                 }
                 setResult(RESULT_OK, resultIntent)
                 finish()
-            }
+        }
+
+        tagList?.forEach { tag ->
+            addTagView(tag.tagText, tag.xRatio, tag.yRatio)
         }
     }
 
@@ -82,7 +98,9 @@ class TaggingActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun addTagView(tagText: String, localX: Float, localY: Float) {
+    private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
+        tagList.add(TagData(xRatio, yRatio, tagText)) // 태그 데이터 저장
+
         val tagView = android.widget.TextView(this).apply {
             text = tagText
             setTextColor(Color.WHITE)
@@ -91,56 +109,25 @@ class TaggingActivity : AppCompatActivity() {
             val leftPad = dpToPx(30)
             val pad = dpToPx(8)
             setPadding(leftPad, pad, pad, pad)
-            id = View.generateViewId() // ✅ ConstraintLayout에서 동적 뷰 추가를 위해 ID 생성
+            id = View.generateViewId()
         }
 
-        // ✅ `imageViewTag` 내에서 상대적인 위치를 계산
-        val imageViewX = binding.imageViewTag.x
-        val imageViewY = binding.imageViewTag.y
-
-        val finalX = imageViewX + localX
-        val finalY = imageViewY + localY
-
-        // ✅ ConstraintLayout.LayoutParams 적용
-        val params = ConstraintLayout.LayoutParams(
+        val layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.WRAP_CONTENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
-        params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
-        params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
-        params.leftMargin = finalX.toInt()
-        params.topMargin = finalY.toInt()
 
-        // ✅ ConstraintLayout에 추가
-        binding.taggingLayout.addView(tagView, params)
-    }
+        // `imageAndTag` 크기를 기준으로 실제 위치 계산
+        val parentWidth = binding.imageAndTag.width.toFloat()
+        val parentHeight = binding.imageAndTag.height.toFloat()
 
-    private fun captureAndSaveTaggedImage(): File? {
-        val originalVisibility = binding.btnSave.visibility
-        binding.btnSave.visibility = View.GONE
+        layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+        layoutParams.leftMargin = (parentWidth * xRatio).toInt()
+        layoutParams.topMargin = (parentHeight * yRatio).toInt()
 
-        val width = binding.taggingLayout.width
-        val height = binding.taggingLayout.height
-        if (width <= 0 || height <= 0) {
-            binding.btnSave.visibility = originalVisibility
-            return null
-        }
+        binding.imageAndTag.addView(tagView, layoutParams)
 
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        binding.taggingLayout.draw(canvas)
-
-        val file = File(filesDir, "tagged_${System.currentTimeMillis()}.jpg")
-        return try {
-            FileOutputStream(file).use { fos ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos)
-            }
-            file
-        } catch (e: Exception) {
-            e.printStackTrace()
-            binding.btnSave.visibility = originalVisibility
-            null
-        }
     }
 
     private fun dpToPx(dp: Int): Int {

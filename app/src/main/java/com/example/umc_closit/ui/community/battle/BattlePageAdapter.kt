@@ -14,9 +14,16 @@ import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.BattleItem
 import com.example.umc_closit.databinding.ItemBattleMainBinding
 import com.example.umc_closit.data.BattleViewModel
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.battle.LikeResponse
+import com.example.umc_closit.data.remote.battle.VoteResponse
+import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.utils.TokenUtils
+
 import com.example.umc_closit.data.VoteResponse
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,10 +55,12 @@ class BattlePageAdapter(
 
         with(holder.binding) {
             // 좌측 battleID 표시
-            tvLeftVote.text = "Left: ${item.battleId}"
+            tvLeftVote.text = "유저ID ${item.leftPostId}"
 
             // 우측 battleID 표시
-            tvRightVote.text = "Right: ${item.battleId}"
+            tvRightVote.text = "유저ID ${item.rightPostId}"
+
+           
 
             // 댓글 클릭 시 CommentBottomSheetFragment 호출
             ivComment.setOnClickListener {
@@ -69,19 +78,15 @@ class BattlePageAdapter(
             ivLike.setOnClickListener {
                 val newLikeState = !isLiked
                 battleViewModel.updateLikeStatus(item.id, newLikeState)
-                ivLike.setImageResource(
-                    if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off
-                )
+                ivLike.setImageResource(if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off)
 
-//                if (newLikeState) {
-//                    // 좋아요 추가 API
-//                    apiService.addBattleLike(item.battleId).enqueue(createLikeCallback("좋아요!"))
-//                } else {
-//                    // 좋아요 취소 API (battleLikeId 반드시 확인)
-//                    apiService.removeBattleLike(item.battleId, item.battleLikeId)
-//                        .enqueue(createLikeCallback("좋아요 취소!"))
-//                }
-                notifyItemChanged(position) // RecyclerView 갱신
+                if (newLikeState) {
+                    apiService.addBattleLike(item.battleId).enqueue(createLikeCallback("좋아요!"))
+                } else {
+                    apiService.removeBattleLike(item.battleLikeId)
+                        .enqueue(createLikeCallback("좋아요 취소!"))
+
+                }
             }
 
 
@@ -92,32 +97,51 @@ class BattlePageAdapter(
     }
 
     /**
-     * 투표 요청 처리
+     * 투표 요청 처리 (TokenUtils 적용)
      */
     private fun sendVote(battleId: Long, postId: Long, progressBar: ProgressBar) {
-        apiService.voteBattle(battleId, mapOf("postId" to postId)).enqueue(object : Callback<VoteResponse> {
-            override fun onResponse(call: Call<VoteResponse>, response: Response<VoteResponse>) {
-                response.body()?.let {
-                    if (it.isSuccess) {
-                        val total = it.result.firstVotingRate + it.result.secondVotingRate
-                        val progress = if (total > 0) it.result.firstVotingRate * 100 / total else 50
-                        animateProgress(progressBar, progress)
+        val authToken = "Bearer ${TokenUtils.getAccessToken(context)}"
+        val requestBody = mapOf("postId" to postId)
 
-                        // 투표 결과 Toast
-                        Toast.makeText(
-                            context,
-                            "투표: ${it.result.firstVotingRate}% vs ${it.result.secondVotingRate}%",
-                            Toast.LENGTH_SHORT
-                        ).show()
+        TokenUtils.handleTokenRefresh(
+            call = apiService.voteBattle(authToken, requestBody),
+            onSuccess = { voteResponse: VoteResponse ->
+                if (voteResponse.isSuccess) {
+                    val total = (voteResponse.result?.firstVotingRate ?: 0) +
+                            (voteResponse.result?.secondVotingRate ?: 0)
+                    val progress = if (total > 0) {
+                        (voteResponse.result?.firstVotingRate ?: 0) * 100 / total
+                    } else {
+                        50
                     }
-                }
-            }
 
-            override fun onFailure(call: Call<VoteResponse>, t: Throwable) {
-                Log.e("Vote", "투표 실패: ${t.localizedMessage}")
-            }
-        })
+                    animateProgress(progressBar, progress)
+                    Toast.makeText(
+                        context,
+                        "투표: ${voteResponse.result?.firstVotingRate}% vs ${voteResponse.result?.secondVotingRate}%",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "투표 실패: ${voteResponse.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            onFailure = { throwable ->
+                Log.e("Vote", "API 호출 실패", throwable)
+                Toast.makeText(context, "네트워크 오류", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = {
+                val newAuthToken = "Bearer ${TokenUtils.getAccessToken(context)}"
+                apiService.voteBattle(newAuthToken, requestBody)
+            },
+            context = context
+        )
     }
+
+
 
     /**
      * ProgressBar 애니메이션
@@ -133,17 +157,26 @@ class BattlePageAdapter(
     /**
      * 좋아요 요청 처리
      */
-    private fun createLikeCallback(message: String) = object : Callback<Void> {
-        override fun onResponse(call: Call<Void>, response: Response<Void>) {
-            if (response.isSuccessful) {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    private fun createLikeCallback(message: String): Callback<LikeResponse> {
+        return object : Callback<LikeResponse> {
+            override fun onResponse(call: Call<LikeResponse>, response: Response<LikeResponse>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null && body.isSuccess) {
+                        Toast.makeText(context, "$message 성공: ${body.result}", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "$message 실패: ${body?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-        }
 
-        override fun onFailure(call: Call<Void>, t: Throwable) {
-            Log.e("Like", "$message 실패: ${t.localizedMessage}")
+            override fun onFailure(call: Call<LikeResponse>, t: Throwable) {
+                Toast.makeText(context, "$message 실패: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
+
     override fun getItemCount(): Int = battleItems.size
 }
+

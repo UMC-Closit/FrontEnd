@@ -7,13 +7,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.R
-import com.example.umc_closit.data.remote.LoginRequest
-import com.example.umc_closit.data.remote.LoginResponse
+import com.example.umc_closit.data.remote.auth.LoginRequest
+import com.example.umc_closit.data.remote.auth.LoginResponse
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.ActivityLoginBinding
 import com.example.umc_closit.ui.login.find.FindIDActivity
 import com.example.umc_closit.ui.login.find.FindPasswordActivity
 import com.example.umc_closit.ui.timeline.TimelineActivity
+import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -92,11 +93,11 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("LOGIN_SUCCESS", "응답: $result")
 
                     if (result != null && result.isSuccess) {
-                        val accessToken = result.result?.accessToken
-                        val refreshToken = result.result?.refreshToken
-                        val userId = result.result?.userId ?: -1 // 유저 ID 추가
+                        val accessToken = result.result?.accessToken ?: ""
+                        val refreshToken = result.result?.refreshToken ?: ""
+                        val clositId = result.result?.clositId ?: ""
 
-                        saveTokens(accessToken, refreshToken, userId)
+                        TokenUtils.saveTokens(this@LoginActivity, accessToken, refreshToken, clositId)
                         startActivity(Intent(this@LoginActivity, TimelineActivity::class.java))
                         finish()
                     } else {
@@ -119,24 +120,9 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    // SharedPreferences에 토큰 + 유저 ID 저장
-    private fun saveTokens(accessToken: String?, refreshToken: String?, userId: Int) {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putString("accessToken", accessToken)
-            putString("refreshToken", refreshToken)
-            putInt("userId", userId)
-            putBoolean("isLoggedIn", true)
-            apply()
-        }
-        Log.d("TOKEN_STORAGE", "토큰 및 유저 ID 저장 완료: accessToken=$accessToken, refreshToken=$refreshToken, userId=$userId")
-    }
-
-
     // 자동 로그인 기능 추가
     private fun checkLoginStatus() {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        val isLoggedIn = TokenUtils.isLoggedIn(this)
 
         if (isLoggedIn) {
             Log.d("AUTO_LOGIN", "자동 로그인 진행 중...")

@@ -25,5 +25,12 @@
         <item name="android:layout_weight">1</item>
     </style>
 
+    <style name="EditTextDefaultStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColorHint">@color/auth_gray_dark</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/noto_regular</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
 
 </resources>

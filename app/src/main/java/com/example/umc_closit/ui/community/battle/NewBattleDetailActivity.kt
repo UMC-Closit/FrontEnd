@@ -1,6 +1,7 @@
 // NewBattleDetailActivity.kt
-package com.example.umc_closit.Community
+package com.example.umc_closit.ui.community.battle
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -12,6 +13,8 @@ import com.example.umc_closit.R
 import com.example.umc_closit.data.BattlePostRequest
 import com.example.umc_closit.data.BattlePostResponse
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.ui.timeline.TimelineActivity
+import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,56 +45,52 @@ class NewBattleDetailActivity : AppCompatActivity() {
             val title = titleEditText.text.toString().trim()
             if (title.isNotEmpty()) {
                 uploadBattlePost(title)
+                val intent = Intent(this, TimelineActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // 🟡 API 호출 로직
+    /**
+     * 배틀 업로드 API 호출
+     */
     private fun uploadBattlePost(title: String) {
+        val authToken = "Bearer ${TokenUtils.getAccessToken(this)}"
+
         val request = BattlePostRequest(
             postId = (System.currentTimeMillis() % 100000).toInt(), // 간단한 임시 ID
             title = title
         )
 
-        RetrofitClient.instance.uploadBattle(request).enqueue(object : Callback<BattlePostResponse> {
-            override fun onResponse(
-                call: Call<BattlePostResponse>,
-                response: Response<BattlePostResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val result = response.body()
-                    if (result?.isSuccess == true) {
-                        Toast.makeText(
-                            this@NewBattleDetailActivity,
-                            "업로드 성공! 배틀 ID: ${result.result?.battleId}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@NewBattleDetailActivity,
-                            "업로드 실패: ${result?.message ?: "알 수 없는 오류"}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+        TokenUtils.handleTokenRefresh(
+            call = RetrofitClient.battleApiService.uploadBattle(authToken, request),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    Toast.makeText(
+                        this@NewBattleDetailActivity,
+                        "업로드 성공! 배틀 ID: ${response.result?.battleId}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     Toast.makeText(
                         this@NewBattleDetailActivity,
-                        "서버 오류: ${response.code()}",
+                        "업로드 실패: ${response.message ?: "알 수 없는 오류"}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            }
-
-            override fun onFailure(call: Call<BattlePostResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@NewBattleDetailActivity,
-                    "네트워크 실패: ${t.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-                Log.e("UPLOAD_ERROR", "네트워크 실패", t)
-            }
-        })
+            },
+            onFailure = { throwable ->
+                Log.e("BattleUpload", "API 호출 실패", throwable)
+                Toast.makeText(this@NewBattleDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = {
+                val newAuthToken = "Bearer ${TokenUtils.getAccessToken(this)}"
+                RetrofitClient.battleApiService.uploadBattle(newAuthToken, request)
+            },
+            context = this@NewBattleDetailActivity
+        )
     }
+
 }

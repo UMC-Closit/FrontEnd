@@ -13,3 +13,4 @@ data class BattleResult(
     val deadline: String,
     val createdAt: String
 )
+

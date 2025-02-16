@@ -9,6 +9,7 @@ data class BattleItem(
     val leftPostId: Long,
     val rightPostId: Long,
     val battleLikeId: Long,
-    var isLiked: Boolean = false // 좋아요 상태
+//    var isLiked: Boolean = false // 좋아요 상태
+
 )
 

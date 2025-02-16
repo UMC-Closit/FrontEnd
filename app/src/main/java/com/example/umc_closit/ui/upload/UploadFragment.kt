@@ -31,11 +31,11 @@ class UploadFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        observeTimelineData() // ✅ ViewModel 데이터 감지
+        //observeTimelineData() // ✅ ViewModel 데이터 감지
         setupUploadButton()
     }
 
-    private fun observeTimelineData() {
+/*    private fun observeTimelineData() {
         timelineViewModel.timelineItems.observe(viewLifecycleOwner) { timelineItems ->
             photoList.clear()
             timelineItems.forEach { item ->
@@ -43,7 +43,7 @@ class UploadFragment : Fragment() {
             }
             setupViewPager()
         }
-    }
+    }*/
 
     private fun setupViewPager() {
         uploadAdapter = UploadAdapter(photoList)

@@ -40,7 +40,7 @@
 
             <!-- 두 번째 이미지 (겹쳐짐) -->
             <ImageView
-                android:id="@+id/iv_image_small"
+                android:id="@+id/img_back"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"

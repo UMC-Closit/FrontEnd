@@ -56,19 +56,26 @@
 
 
     <!-- 중앙 메인 이미지 -->
-    <ImageView
-        android:id="@+id/imageViewBackOnly"
-        android:layout_height="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/imageAndTag"
         android:layout_width="0dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/image_background"
-        android:clipToOutline="true"
+        android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.6"
-        app:layout_constraintDimensionRatio="270:480"
+        app:layout_constraintWidth_percent="0.65"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" >
+        <ImageView
+            android:id="@+id/imageViewBackOnly"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/image_background"
+            android:clipToOutline="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <!-- 문구 + 색상 아이콘 + 개인정보 버튼 -->
@@ -78,9 +85,9 @@
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layout_constraintHeight_percent="0.04"
-        app:layout_constraintTop_toBottomOf="@id/imageViewBackOnly"
+        app:layout_constraintTop_toBottomOf="@id/imageAndTag"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/imageViewBackOnly">
+        app:layout_constraintEnd_toEndOf="@id/imageAndTag">
 
         <!-- 왼쪽 여백 -->
         <View

@@ -5,7 +5,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.Community.NewBattleDetailActivity
+import com.example.umc_closit.ui.community.battle.NewBattleDetailActivity
 import com.example.umc_closit.databinding.ItemBattleBinding
 
 class BattleAdapter(

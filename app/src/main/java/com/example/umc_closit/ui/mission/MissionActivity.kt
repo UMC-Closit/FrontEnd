@@ -3,11 +3,11 @@ package com.example.umc_closit.ui.mission
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mission.camera.CameraPreviewCallback
+import com.example.mission.camera.CameraFrontCallback
 import com.example.mission.camera.CameraPreviewManager
 import com.example.umc_closit.databinding.ActivityMissionBinding
 
-class MissionActivity : AppCompatActivity(), CameraPreviewCallback {
+class MissionActivity : AppCompatActivity(), CameraFrontCallback {
 
     private lateinit var binding: ActivityMissionBinding
     private lateinit var cameraPreviewManager: CameraPreviewManager
@@ -28,23 +28,22 @@ class MissionActivity : AppCompatActivity(), CameraPreviewCallback {
         cameraPreviewManager = CameraPreviewManager(
             context = this,
             surfaceView = binding.surfaceView,
-            surfaceViewSecond = binding.surfaceViewSecond,
-            captureButton = binding.btnCapturePhoto
+            captureButton = binding.btnCapturePhoto,
+            cameraType = CameraPreviewManager.CameraType.FRONT // 전면 카메라만 사용
         )
 
         // 콜백 설정 및 초기화
-        cameraPreviewManager.callback = this
+        cameraPreviewManager.frontCallback = this
         cameraPreviewManager.initialize()
     }
 
-    // 두 장이 모두 찍혔을 때 PreviewActivity로 이동
-    override fun onBothPhotosCaptured(frontPhotoPath: String, backPhotoPath: String) {
+    override fun onFrontPhotoCaptured(frontPhotoPath: String) {
         val intent = Intent(this, PreviewActivity::class.java).apply {
             putExtra("frontPhotoPath", frontPhotoPath)
-            putExtra("backPhotoPath", backPhotoPath)
         }
         startActivity(intent)
     }
+
 
     // 권한 요청 응답 처리
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -21,20 +21,23 @@ class PreviewActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
-        val backPhotoPath = intent.getStringExtra("backPhotoPath")
+
 
         binding.ivBack.setOnClickListener {
             onBackPressed()
         }
 
         mainPhotoPath = frontPhotoPath
-        smallPhotoPath = backPhotoPath
+
 
         loadImages()
 
+        /*
         binding.imageViewSmall.setOnClickListener {
             swapImages()
         }
+
+         */
 
         binding.btnRetake.setOnClickListener {
             val intent = Intent(this, MissionActivity::class.java)
@@ -43,9 +46,9 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         binding.btnNext.setOnClickListener {
-            val intent = Intent(this, FrontOnlyActivity::class.java).apply {
+            val intent = Intent(this, MissionBackActivity::class.java).apply {
                 putExtra("frontPhotoPath", frontPhotoPath)
-                putExtra("backPhotoPath", backPhotoPath)
+
             }
             startActivity(intent)
         }
@@ -56,13 +59,16 @@ class PreviewActivity : AppCompatActivity() {
             val bitmap = rotateBitmapIfNeeded(path)
             binding.imageViewMain.setImageBitmap(bitmap)
         }
-
+    /*
         smallPhotoPath?.let { path ->
             val bitmap = rotateBitmapIfNeeded(path)
             binding.imageViewSmall.setImageBitmap(bitmap)
         }
+
+    */
     }
 
+    /*
     private fun swapImages() {
         val temp = mainPhotoPath
         mainPhotoPath = smallPhotoPath
@@ -70,4 +76,6 @@ class PreviewActivity : AppCompatActivity() {
 
         loadImages()
     }
+
+     */
 }

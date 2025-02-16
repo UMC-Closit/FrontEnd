@@ -76,4 +76,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // SSE
+    implementation("com.launchdarkly:okhttp-eventsource:2.5.0")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.4")
+
+
 }
