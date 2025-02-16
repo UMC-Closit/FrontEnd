@@ -92,12 +92,14 @@
             android:gravity="center"
             android:text="유저ID" />
 
+
         <!-- 투표 비율 ProgressBar (양쪽 투표 TextView에 맞춤) -->
         <ProgressBar
             android:id="@+id/vote_progress_bar"
             android:layout_width="0dp"
             android:layout_height="12dp"
             android:layout_centerVertical="true"
+
             android:layout_toEndOf="@id/tv_left_vote"
             android:layout_toStartOf="@id/tv_right_vote"
             android:layout_marginStart="8dp"

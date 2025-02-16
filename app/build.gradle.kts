@@ -9,6 +9,10 @@ android {
     compileSdk = 35
     viewBinding.isEnabled = true
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.example.umc_closit"
         minSdk = 24
@@ -47,6 +51,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //card view
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")

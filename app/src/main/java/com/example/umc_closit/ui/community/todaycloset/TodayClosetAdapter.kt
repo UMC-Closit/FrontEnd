@@ -20,6 +20,7 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
         val frontImage: ImageView = view.findViewById(R.id.img_front)
         val viewCount: TextView = view.findViewById(R.id.tv_view_count)
         val backImage: ImageView = view.findViewById(R.id.img_back)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,6 +42,7 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
             .load(item.backImage)
             .placeholder(R.drawable.ic_placeholder)
             .into(holder.backImage)
+
 
         // 조회수 표시
         holder.viewCount.text = "조회수: ${item.viewCount}"

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
@@ -18,6 +19,7 @@ import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.FragmentTodayclosetBinding
 import com.example.umc_closit.ui.upload.UploadFragment
 import com.example.umc_closit.utils.TokenUtils
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,6 +28,12 @@ class TodayClosetFragment : Fragment() {
 
     private var _binding: FragmentTodayclosetBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: TodayClosetAdapter
+
+    // 페이징 변수
+    private var currentPage = 1
+    private var isLoading = false
+    private var hasNext = true
 
     // 어댑터와 상태 변수 (클래스-level 변수)
     private lateinit var adapter: TodayClosetAdapter
@@ -46,6 +54,7 @@ class TodayClosetFragment : Fragment() {
 
         // RecyclerView 초기화
         adapter = TodayClosetAdapter()
+
         binding.recyclerTodaycloset.adapter = adapter
         binding.recyclerTodaycloset.layoutManager = GridLayoutManager(requireContext(), 2)
 
@@ -60,6 +69,27 @@ class TodayClosetFragment : Fragment() {
                 val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
                 if (lastVisibleItem == adapter.itemCount - 1 && hasNext && !isLoading) {
                     loadTodayClosets(currentPage + 1)
+                }
+            }
+        })
+
+        // 첫 페이지 데이터 불러오기
+        loadTodayClosets(currentPage)
+
+        // 무한 스크롤 리스너 추가
+        binding.recyclerTodaycloset.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if (!isLoading && hasNext) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
+                        firstVisibleItemPosition >= 0
+                    ) {
+                        loadTodayClosets(++currentPage)
+                    }
                 }
             }
         })
@@ -107,6 +137,7 @@ class TodayClosetFragment : Fragment() {
             },
             context = requireContext()
         )
+
     }
 
     override fun onDestroyView() {

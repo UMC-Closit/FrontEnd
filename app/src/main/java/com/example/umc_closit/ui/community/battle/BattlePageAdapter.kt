@@ -19,6 +19,11 @@ import com.example.umc_closit.data.remote.battle.LikeResponse
 import com.example.umc_closit.data.remote.battle.VoteResponse
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.utils.TokenUtils
+
+import com.example.umc_closit.data.VoteResponse
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -55,6 +60,8 @@ class BattlePageAdapter(
             // 우측 battleID 표시
             tvRightVote.text = "유저ID ${item.rightPostId}"
 
+           
+
             // 댓글 클릭 시 CommentBottomSheetFragment 호출
             ivComment.setOnClickListener {
                 CommentBottomSheetFragment.newInstance().show(
@@ -81,6 +88,7 @@ class BattlePageAdapter(
 
                 }
             }
+
 
             // 투표 버튼 클릭 이벤트
             tvLeftVote.setOnClickListener { sendVote(item.battleId, item.leftPostId, voteProgressBar) }
@@ -171,3 +179,4 @@ class BattlePageAdapter(
 
     override fun getItemCount(): Int = battleItems.size
 }
+
