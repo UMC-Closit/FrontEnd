@@ -20,5 +20,9 @@ class FindID2Activity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
+        // 뒤로 가기 버튼
+        binding.btnBack.setOnClickListener {
+            onBackPressed()
+        }
     }
 }

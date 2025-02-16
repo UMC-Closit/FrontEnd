@@ -19,5 +19,9 @@ class FindPasswordActivity : AppCompatActivity() {
             val intent = Intent(this, FindPassword2Activity::class.java)
             startActivity(intent)
         }
+        // 뒤로 가기 버튼
+        binding.btnBack.setOnClickListener {
+            onBackPressed()
+        }
     }
 }

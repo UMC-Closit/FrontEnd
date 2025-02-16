@@ -1,5 +1,5 @@
 // BattlePostRequest.kt
-package com.example.umc_closit.data.remote.battle
+package com.example.umc_closit.data
 
 data class BattlePostRequest(
     val postId: Int,    // 게시글 ID
