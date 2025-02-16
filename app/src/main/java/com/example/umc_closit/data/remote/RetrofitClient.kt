@@ -1,6 +1,7 @@
 package com.example.umc_closit.data.remote
 
 
+import ChallengeApiService
 import android.content.Context
 import com.example.umc_closit.data.TodayClosetApiService
 import com.example.umc_closit.data.remote.auth.AuthService
@@ -45,6 +46,13 @@ object RetrofitClient {
     }
     val todayClosetApiService: TodayClosetApiService by lazy {
         retrofit.create(TodayClosetApiService::class.java)
+    }
+
+    val challengeApiService: ChallengeApiService by lazy {
+        retrofit.create(ChallengeApiService::class.java)
+    }
+    fun <T> createService(serviceClass: Class<T>): T {
+        return retrofit.create(serviceClass)
     }
 }
 
