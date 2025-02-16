@@ -59,13 +59,13 @@ class PreviewActivity : AppCompatActivity() {
             val bitmap = rotateBitmapIfNeeded(path)
             binding.imageViewMain.setImageBitmap(bitmap)
         }
-    /*
-        smallPhotoPath?.let { path ->
-            val bitmap = rotateBitmapIfNeeded(path)
-            binding.imageViewSmall.setImageBitmap(bitmap)
-        }
+        /*
+            smallPhotoPath?.let { path ->
+                val bitmap = rotateBitmapIfNeeded(path)
+                binding.imageViewSmall.setImageBitmap(bitmap)
+            }
 
-    */
+        */
     }
 
     /*
