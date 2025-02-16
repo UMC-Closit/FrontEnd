@@ -28,7 +28,7 @@ data class UserInfo(
 )
 
 data class LoginRequest(
-    val email: String,
+    val clositId: String,
     val password: String
 )
 
