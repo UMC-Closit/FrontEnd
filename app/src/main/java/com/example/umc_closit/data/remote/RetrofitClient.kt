@@ -1,14 +1,14 @@
 package com.example.umc_closit.data.remote
 
+
 import android.content.Context
+import com.example.umc_closit.data.TodayClosetApiService
 import com.example.umc_closit.data.remote.auth.AuthService
-import com.example.umc_closit.data.remote.battle.BattleApiService
 import com.example.umc_closit.data.remote.profile.ProfileService
 import com.example.umc_closit.data.remote.timeline.TimelineService
-import com.example.umc_closit.utils.TokenUtils
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
+import com.example.umc_closit.data.TodayClosetApiService
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -41,7 +41,12 @@ object RetrofitClient {
         retrofit.create(ProfileService::class.java)
     }
 
-    val battleService: BattleApiService by lazy {
+    val battleApiService: BattleApiService by lazy {
         retrofit.create(BattleApiService::class.java)
     }
+    val todayClosetApiService: TodayClosetApiService by lazy {
+        retrofit.create(TodayClosetApiService::class.java)
+    }
 }
+
+
