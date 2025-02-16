@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:text="Notification"
             android:textColor="@color/black"
+            android:fontFamily="@font/noto_regular"
             android:textSize="20sp"
             android:paddingStart="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_back"
@@ -71,11 +72,26 @@
                 android:paddingStart="16dp"
                 android:paddingVertical="8dp" />
 
+            <TextView
+                android:id="@+id/tv_new_none"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="새로운 알림이 없습니다."
+                android:textColor="@color/gray_dark"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:gravity="center"
+                android:fontFamily="@font/noto_regular"
+                android:paddingStart="16dp"
+                android:paddingVertical="8dp" />
+
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_new"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:listitem="@layout/item_notification"
+
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:layout_marginBottom="16dp"/>
@@ -88,6 +104,19 @@
                 android:text="Last"
                 android:textColor="@color/gray_dark"
                 android:textSize="16sp"
+                android:paddingStart="16dp"
+                android:paddingVertical="8dp" />
+
+            <TextView
+                android:id="@+id/tv_last_none"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="이전에 조회한 알림이 없습니다."
+                android:textColor="@color/gray_dark"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:gravity="center"
+                android:fontFamily="@font/noto_regular"
                 android:paddingStart="16dp"
                 android:paddingVertical="8dp" />
 
