@@ -11,7 +11,6 @@ import retrofit2.http.*
 interface BattleApiService {
     // 배틀 업로드 API
     fun uploadBattle(
-        @Header("Authorization") token: String,  // 인증 헤더 추가
         @Body request: BattlePostRequest
     ): Call<BattlePostResponse>
 
@@ -20,7 +19,6 @@ interface BattleApiService {
     @Headers("Content-Type: application/json")
     @POST("/api/auth/communities/battle/vote")
     fun voteBattle(
-        @Header("Authorization") token: String,
         @Body requestBody: Map<String, Long>
     ): Call<VoteResponse>
 

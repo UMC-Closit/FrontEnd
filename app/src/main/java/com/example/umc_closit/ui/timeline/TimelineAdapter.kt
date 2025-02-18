@@ -69,11 +69,9 @@ class TimelineAdapter(
 
             // 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
-                val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
 
                 val apiCall = {
-                    timelineService.likePost(token, item.postId, userId)
+                    timelineService.likePost(item.postId, userId)
                 }
 
                 TokenUtils.handleTokenRefresh(
@@ -98,14 +96,12 @@ class TimelineAdapter(
 
             // 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
-                val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
 
                 val newSaveState = !item.isSaved
 
                 if (newSaveState) {
                     val apiCall = {
-                        timelineService.savePost(token, BookmarkRequest(userId, item.postId))
+                        timelineService.savePost(BookmarkRequest(userId, item.postId))
                     }
 
                     TokenUtils.handleTokenRefresh(

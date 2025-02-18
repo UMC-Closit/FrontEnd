@@ -34,7 +34,6 @@ data class TodayClosetItem(
 interface TodayClosetApiService {
     @GET("/api/auth/communities/todayclosets")
     fun getTodayClosets(
-        @Header("Authorization") token: String,  // 인증 헤더 추가
         @Query("page") page: Int
     ): Call<TodayClosetResponse>
 }
