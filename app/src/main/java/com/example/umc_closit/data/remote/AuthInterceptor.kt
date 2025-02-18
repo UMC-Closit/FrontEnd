@@ -22,7 +22,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         }
 
         val token = TokenUtils.getAccessToken(context) ?: ""
-        Log.d("TOKEN_DEBUG", "🔍 요청에 사용된 AccessToken: $token") // ★ 여기에 추가
+        Log.d("TOKEN_DEBUG", "🔍 일괄 요청에 사용된 AccessToken: $token") // ★ 여기에 추가
         val newRequest = request.newBuilder()
             .addHeader("Authorization", "Bearer $token")
             .build()

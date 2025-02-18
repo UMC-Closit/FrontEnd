@@ -5,6 +5,7 @@ import android.content.Context
 import com.example.umc_closit.data.TodayClosetApiService
 import com.example.umc_closit.data.remote.auth.AuthService
 import com.example.umc_closit.data.remote.profile.ProfileService
+import com.example.umc_closit.data.remote.profile.history.HistoryService
 import com.example.umc_closit.data.remote.timeline.TimelineService
 import okhttp3.OkHttpClient
 
@@ -45,6 +46,10 @@ object RetrofitClient {
     }
     val todayClosetApiService: TodayClosetApiService by lazy {
         retrofit.create(TodayClosetApiService::class.java)
+    }
+
+    val historyService: HistoryService by lazy {
+        retrofit.create(HistoryService::class.java)
     }
 }
 

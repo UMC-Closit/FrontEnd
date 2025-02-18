@@ -57,15 +57,14 @@ class NewBattleDetailActivity : AppCompatActivity() {
      * 배틀 업로드 API 호출
      */
     private fun uploadBattlePost(title: String) {
-        val authToken = "Bearer ${TokenUtils.getAccessToken(this)}"
 
         val request = BattlePostRequest(
             postId = (System.currentTimeMillis() % 100000).toInt(), // 간단한 임시 ID
             title = title
         )
-
+        
         TokenUtils.handleTokenRefresh(
-            call = RetrofitClient.battleApiService.uploadBattle(authToken, request),
+            call = RetrofitClient.battleApiService.uploadBattle(request),
             onSuccess = { response ->
                 if (response.isSuccess) {
                     Toast.makeText(
@@ -87,7 +86,7 @@ class NewBattleDetailActivity : AppCompatActivity() {
             },
             retryCall = {
                 val newAuthToken = "Bearer ${TokenUtils.getAccessToken(this)}"
-                RetrofitClient.battleApiService.uploadBattle(newAuthToken, request)
+                RetrofitClient.battleApiService.uploadBattle(request)
             },
             context = this@NewBattleDetailActivity
         )
