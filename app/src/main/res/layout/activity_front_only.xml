@@ -77,48 +77,73 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 문구 + 색상 아이콘 -->
-    <LinearLayout
+    <View
+        android:id="@+id/margin8"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/imageAndTag"
+        app:layout_constraintHeight_percent="0.015"
+        />
+
+    <ImageView
+        android:id="@+id/addItem"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/btn_add_item"
+        app:layout_constraintHeight_percent="0.03"
+        app:layout_constraintTop_toBottomOf="@id/margin8"
+        app:layout_constraintLeft_toLeftOf="@id/imageAndTag"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutPointColor"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.04"
-        android:layout_marginTop="16dp"
-        android:weightSum="10"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintEnd_toEndOf="@id/imageAndTag"
-        app:layout_constraintTop_toBottomOf="@id/imageAndTag"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/addItem"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <View
             android:id="@+id/marginLeft3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.7"
-            android:background="@color/transparent"/>
+            android:background="@color/transparent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="0.18" />
 
-        <!-- 왼쪽 텍스트 (오늘의 포인트 색상) -->
+        <!-- 오늘의 포인트 색상 텍스트 -->
         <TextView
             android:id="@+id/textTodayColor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="오늘의 포인트 색상"
+            android:paddingEnd="10dp"
             android:textColor="@android:color/black"
-            android:font="@font/ibm_extralight"
+            android:fontFamily="@font/ibm_extralight"
             android:textSize="16sp"
-            android:layout_marginEnd="10sp" />
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toEndOf="@id/marginLeft3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- 색상 아이콘 -->
         <View
             android:id="@+id/viewColorIcon"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_shape"
-            android:layout_weight="1.15"/>
+            android:layout_height="0dp"
+            android:background="@drawable/bg_detail_color_round"
+            app:layout_constraintStart_toEndOf="@id/textTodayColor"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.8"
+            app:layout_constraintDimensionRatio="1:1" />
 
-    </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <View
         android:id="@+id/margin4"

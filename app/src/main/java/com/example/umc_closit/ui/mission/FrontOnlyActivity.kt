@@ -1,9 +1,11 @@
 package com.example.umc_closit.ui.mission
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
@@ -17,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import com.example.umc_closit.data.remote.post.TagData
+import com.example.umc_closit.databinding.CustomTagDialogBinding
 
 class FrontOnlyActivity : AppCompatActivity() {
 
@@ -69,6 +72,13 @@ class FrontOnlyActivity : AppCompatActivity() {
             isColorExtractMode = !isColorExtractMode
         }
 
+        binding.addItem.setOnClickListener{
+            val intent = Intent(this, TaggingActivity::class.java).apply {
+                putExtra("photoPath", frontPhotoPath)
+            }
+            startActivityForResult(intent, TAGGING_REQUEST_CODE)
+        }
+
         binding.imageViewFrontOnly.setOnTouchListener { view, event ->
             if (isColorExtractMode) {
                 if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
@@ -76,13 +86,6 @@ class FrontOnlyActivity : AppCompatActivity() {
                         val color = getTouchedColor(bmp, event.x, event.y)
                         setIconColor(binding.viewColorIcon, color)
                     }
-                }
-            } else {
-                if (event.action == MotionEvent.ACTION_UP) {
-                    val intent = Intent(this, TaggingActivity::class.java).apply {
-                        putExtra("photoPath", frontPhotoPath)
-                    }
-                    startActivityForResult(intent, TAGGING_REQUEST_CODE)
                 }
             }
             true
@@ -130,21 +133,25 @@ class FrontOnlyActivity : AppCompatActivity() {
 
     // 해시태그 입력 다이얼로그
     private fun showHashtagDialog(onHashtagSaved: (String) -> Unit) {
-        val editText = android.widget.EditText(this).apply {
-            hint = "#해시태그 입력"
-        }
 
-        AlertDialog.Builder(this)
-            .setTitle("해시태그 입력")
-            .setView(editText)
-            .setPositiveButton("확인") { _, _ ->
-                val input = editText.text.toString()
-                if (input.isNotBlank()) {
-                    onHashtagSaved(input)
-                }
+        val dialog = Dialog(this)
+        val binding = CustomTagDialogBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        binding.btnConfirm.setOnClickListener {
+            val input = binding.etHashtag.text.toString().trim()
+            if (input.isNotEmpty()) {
+                onHashtagSaved(input)
+                dialog.dismiss()
             }
-            .setNegativeButton("취소", null)
-            .show()
+        }
+        dialog.show()
+
     }
 
     private fun updateHashtagsUI(hashtags: List<String>) {
