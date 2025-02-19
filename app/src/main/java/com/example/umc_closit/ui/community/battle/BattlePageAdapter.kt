@@ -57,10 +57,12 @@ class BattlePageAdapter(
 
             // 댓글 클릭 시 CommentBottomSheetFragment 호출
             ivComment.setOnClickListener {
-                CommentBottomSheetFragment.newInstance().show(
+/*                CommentBottomSheetFragment.newInstance().show(
                     (context as AppCompatActivity).supportFragmentManager,
                     "comment"
                 )
+                수진 -> 지우 : CommentBottomSheetFragment를 수정하는 과정에서 해당 파트가 오류가 나 임시 주석 처리했습니다!
+                */
             }
 
             // 좋아요 상태 반영

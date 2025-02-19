@@ -61,4 +61,23 @@ interface TimelineService {
         @Path("notification_id") notificationId: Int
     ): Call<NotificationDeleteResponse>
 
+    // comments
+    @GET("/api/auth/posts/{post_id}/comments")
+    fun getComments(
+        @Path("post_id") postId: Int,
+        @Query("page") page: Int
+    ): Call<CommentListResponse>
+
+    @POST("/api/auth/posts/{post_id}/comments")
+    fun postComment(
+        @Path("post_id") postId: Int,
+        @Body content: CommentRequest
+    ): Call<CommentCreateResponse>
+
+    @DELETE("/api/auth/posts/{post_id}/comments/{comment_id}")
+    fun deleteComment(
+        @Path("post_id") postId: Int,
+        @Path("comment_id") commentId: Int
+    ): Call<CommentDeleteResponse>
+
 }

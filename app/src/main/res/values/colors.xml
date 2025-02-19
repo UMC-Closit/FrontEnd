@@ -20,6 +20,8 @@
     <color name="menu_inactive">#2E2E2E</color>
     <color name="menu_active">#BABECD</color>
 
+    <color name="pink_point">#F63F99</color>
+
     <color name="auth_gray_bright">#BABECD</color>
     <color name="check_gray_bright">#FAFAFA</color>
     <color name="auth_gray_dark">#797979</color>

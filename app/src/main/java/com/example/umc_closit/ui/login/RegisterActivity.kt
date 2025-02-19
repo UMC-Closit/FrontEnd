@@ -17,6 +17,9 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 약관 내용 불러오기
+        loadTerms()
+
         // 다음 버튼 클릭 이벤트
         binding.btnNext.setOnClickListener {
             val intent = Intent(this, MakeIdActivity::class.java)
@@ -28,14 +31,14 @@ class RegisterActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-
         // 초기 버튼 비활성화 & 회색 설정
         binding.btnNext.isEnabled = false
         binding.btnNext.backgroundTintList = ContextCompat.getColorStateList(this, R.color.gray_dark)
 
         setupCheckListeners()
-
     }
+
+    private lateinit var allCheckListener: CompoundButton.OnCheckedChangeListener
 
     private fun setupCheckListeners() {
         val checkBoxes = listOf(binding.chkRegister1, binding.chkRegister2, binding.chkRegister3)
@@ -44,22 +47,40 @@ class RegisterActivity : AppCompatActivity() {
             validateChecks()
         }
 
-        // 모든 체크박스에 리스너 등록
+        allCheckListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            checkBoxes.forEach { it.isChecked = isChecked }
+        }
+
         checkBoxes.forEach { it.setOnCheckedChangeListener(checkListener) }
+
+        binding.chkRegisterAll.setOnCheckedChangeListener(allCheckListener)
     }
 
     private fun validateChecks() {
-        val allChecked = binding.chkRegister1.isChecked &&
-                binding.chkRegister2.isChecked &&
-                binding.chkRegister3.isChecked
+        val allRequiredChecked = binding.chkRegister1.isChecked && binding.chkRegister2.isChecked
+        val allChecked = allRequiredChecked && binding.chkRegister3.isChecked
 
-        binding.btnNext.isEnabled = allChecked
+        binding.btnNext.isEnabled = allRequiredChecked
 
-        // 버튼 색상 변경
-        if (allChecked) {
-            binding.btnNext.backgroundTintList = ContextCompat.getColorStateList(this, R.color.black)
-        } else {
-            binding.btnNext.backgroundTintList = ContextCompat.getColorStateList(this, R.color.gray_dark)
-        }
+        val colorRes = if (allRequiredChecked) R.color.black else R.color.gray_dark
+        binding.btnNext.backgroundTintList = ContextCompat.getColorStateList(this, colorRes)
+
+        // 모든 약관 동의 체크박스 상태 변경
+        binding.chkRegisterAll.setOnCheckedChangeListener(null) // 무한루프 방지
+        binding.chkRegisterAll.isChecked = allChecked
+        binding.chkRegisterAll.setOnCheckedChangeListener(allCheckListener)
+    }
+
+
+
+    // assets 폴더에서 약관 텍스트 읽어와서 표시하는 함수
+    private fun loadTerms() {
+        binding.txtRegister1.text = loadTextFromAssets("terms_of_service.txt")
+        binding.txtRegister2.text = loadTextFromAssets("privacy_policy.txt")
+        binding.txtRegister3.text = loadTextFromAssets("marketing_agreement.txt")
+    }
+
+    private fun loadTextFromAssets(fileName: String): String {
+        return assets.open(fileName).bufferedReader().use { it.readText() }
     }
 }
