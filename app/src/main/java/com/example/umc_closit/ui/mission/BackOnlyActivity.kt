@@ -123,8 +123,6 @@ class BackOnlyActivity : AppCompatActivity() {
         })
 
         binding.btnUpload.setOnClickListener {
-            Log.d("Upload", "Front Image Path: $frontPhotoPath")
-            Log.d("Upload", "Back Image Path: $backPhotoPath")
 
             if (frontPhotoPath.isNullOrEmpty() || backPhotoPath.isNullOrEmpty()) {
                 Toast.makeText(this, "이미지 경로를 확인하세요.", Toast.LENGTH_SHORT).show()

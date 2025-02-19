@@ -23,25 +23,12 @@ interface PostService {
         @Path("post_id") postId: Int
     ): Response<PostDeleteResponse>
 
-    @POST("/api/auth/posts")
-    suspend fun uploadPost(
-        @Body postRequest: PostRequest
-    ): Response<PostUploadResponse>
-
     @Multipart
     @POST("/api/auth/posts")
     suspend fun uploadPost(
         @Part("request") request: RequestBody,
         @Part frontImage: MultipartBody.Part,
-        @Part backImage: MultipartBody.Part,
-        /*@Part("hashtags") hashtags: List<String>,
-        @Part("frontItemtags") frontItemtags: List<ItemTag>,
-        @Part("backItemtags") backItemtags: List<ItemTag>,
-        @Part("pointColor") pointColor: String,
-        @Part("visibility") visibility: String,
-        @Part("mission") mission: Boolean
-
-         */
+        @Part backImage: MultipartBody.Part
     ): Response<PostUploadResponse>
 }
 
