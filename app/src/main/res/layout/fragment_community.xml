@@ -5,18 +5,19 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="20dp"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
     <!-- Search Bar Container -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.9"
+        app:layout_constraintDimensionRatio="9:1"
         android:layout_margin="10dp"
         android:background="@drawable/lookup_background"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="5dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -24,60 +25,79 @@
         <!-- Search Icon -->
         <ImageView
             android:id="@+id/img_Search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintDimensionRatio="1:1"
             android:layout_marginStart="10dp"
             android:src="@drawable/search"
-            android:contentDescription="Search Icon" />
+            android:contentDescription="Search Icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Search Input -->
         <EditText
             android:id="@+id/et_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="무엇이든 검색하시오"
+            android:hint="search"
             android:background="@null"
-            android:padding="15dp" />
-    </LinearLayout>
+            android:fontFamily="@font/ibm_regular"
+            android:textColor="@color/gray_dark"
+            android:paddingStart="8dp"
+            app:layout_constraintStart_toEndOf="@+id/img_Search"
+            app:layout_constraintTop_toTopOf="@id/search_container"
+            app:layout_constraintBottom_toBottomOf="@id/search_container"
+            app:layout_constraintWidth_percent="0.8" />
 
-    <!-- Title -->
-    <Button
-        android:id="@+id/btn_todaycloset"
-        android:layout_width="wrap_content"
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_today_title"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:gravity="bottom"
-        android:text="오늘의 옷장"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#000"
-        android:background="@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_container" />
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/search_container">
 
+        <TextView
+            android:id="@+id/btn_todaycloset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:includeFontPadding="false"
+            android:text="오늘의 옷장"
+            android:fontFamily="@font/noto_regular"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageButton
-        android:id="@+id/btn_upload"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="1:1"
-        android:layout_marginEnd="10dp"
-        android:src="@drawable/upload"
-        android:background="@null"
-        android:contentDescription="Upload Button"
-        app:layout_constraintTop_toBottomOf="@id/search_container"
-        app:layout_constraintBottom_toBottomOf="@id/btn_todaycloset"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageButton
+            android:id="@+id/btn_upload"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHeight_default="spread"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_community_upload"
+            android:background="@null"
+            android:contentDescription="Upload Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_todaycloset"
+            app:layout_constraintBottom_toBottomOf="@id/btn_todaycloset" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!-- Scrollable Section -->
     <HorizontalScrollView
         android:id="@+id/horizontal_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/btn_todaycloset"
->
+        app:layout_constraintTop_toBottomOf="@id/cl_today_title"
+        >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -118,38 +138,49 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <Button
-        android:id="@+id/btn_battle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:text="배틀 게시판"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#000"
-        android:background="@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view" />
 
-    <ImageButton
-        android:id="@+id/btn_upload2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="1:1"
-        android:layout_marginEnd="10dp"
-        android:background="@null"
-        android:contentDescription="Battle Upload Button"
-        android:src="@drawable/upload"
-        app:layout_constraintBottom_toBottomOf="@id/btn_battle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_batttle_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view">
+
+        <TextView
+            android:id="@+id/btn_battle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="배틀 게시판"
+            android:layout_marginTop="30dp"
+            android:includeFontPadding="false"
+            android:fontFamily="@font/noto_regular"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:background="@android:color/transparent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cl_batttle_title" />
+
+        <ImageButton
+            android:id="@+id/btn_upload2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHeight_default="spread"
+            android:layout_marginEnd="10dp"
+            android:background="@null"
+            android:contentDescription="Battle Upload Button"
+            android:src="@drawable/ic_community_upload"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btn_battle"
+            app:layout_constraintBottom_toBottomOf="@id/btn_battle"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <!-- Scrollable Section -->
     <HorizontalScrollView
         android:id="@+id/horizontal_scroll_view2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/btn_battle"
+        app:layout_constraintTop_toBottomOf="@id/cl_batttle_title"
         >
 
         <LinearLayout

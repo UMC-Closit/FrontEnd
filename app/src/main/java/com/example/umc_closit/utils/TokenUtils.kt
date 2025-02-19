@@ -13,7 +13,7 @@ import retrofit2.Response
 
 object TokenUtils {
 
-    private var isRefreshing = false
+    // private var isRefreshing = false
 
     fun <T> handleTokenRefresh(
         call: Call<T>,
@@ -48,12 +48,12 @@ object TokenUtils {
         val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         val refreshToken = sharedPreferences.getString("refreshToken", "") ?: ""
 
-        if (isRefreshing) {
+/*        if (isRefreshing) {
             Log.e("TOKEN_DEBUG", "⛔ 이미 토큰 재발급 중 → 요청 무시")
             return
         }
 
-        isRefreshing = true
+        isRefreshing = true*/
 
         Log.d("TOKEN_DEBUG", "🔄 AccessToken 만료 → RefreshToken 요청 시작")
         Log.d("TOKEN_DEBUG", "📦 현재 보유 RefreshToken: $refreshToken")
@@ -61,7 +61,7 @@ object TokenUtils {
         if (refreshToken.isEmpty()) {
             Log.e("TOKEN_DEBUG", "❌ RefreshToken 없음 → 로그인 이동")
             moveToLogin(context)
-            isRefreshing = false
+            //isRefreshing = false
             return
         }
 
@@ -117,7 +117,7 @@ object TokenUtils {
 
                 override fun onFailure(call: Call<RefreshResponse>, t: Throwable) {
                     Log.e("TOKEN_DEBUG", "🌐 RefreshToken API 요청 실패: ${t.message}")
-                    isRefreshing = false
+                    //isRefreshing = false
                     onFailure(t)
                 }
             })
