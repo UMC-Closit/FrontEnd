@@ -123,8 +123,27 @@ class BackOnlyActivity : AppCompatActivity() {
         })
 
         binding.btnUpload.setOnClickListener {
-            val frontImagePart = FileUtils.createImagePart("frontImage", frontPhotoPath ?: "")
-            val backImagePart = FileUtils.createImagePart("backImage", backPhotoPath ?: "")
+            Log.d("Upload", "Front Image Path: $frontPhotoPath")
+            Log.d("Upload", "Back Image Path: $backPhotoPath")
+
+            if (frontPhotoPath.isNullOrEmpty() || backPhotoPath.isNullOrEmpty()) {
+                Toast.makeText(this, "이미지 경로를 확인하세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val frontImagePart = try {
+                FileUtils.createImagePart("frontImage", frontPhotoPath)
+            } catch (e: IllegalArgumentException) {
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val backImagePart = try {
+                FileUtils.createImagePart("backImage", backPhotoPath)
+            } catch (e: IllegalArgumentException) {
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             val frontItemtags = frontTagList?.map { tag ->
                 ItemTag(
@@ -174,6 +193,7 @@ class BackOnlyActivity : AppCompatActivity() {
                     originalBitmap?.let { bmp ->
                         val color = getTouchedColor(bmp, event.x, event.y)
                         setIconColor(binding.viewColorIcon, color)
+                        pointColor = color
                     }
                     isColorExtractMode = false
                 }
@@ -195,6 +215,7 @@ class BackOnlyActivity : AppCompatActivity() {
             showHashtagDialog(
                 currentHashtag = null,
                 onHashtagSaved = { newHashtag ->
+                    hashtags.add(newHashtag)
                     addHashtagToContainer(newHashtag)
                 }
             )
@@ -204,16 +225,6 @@ class BackOnlyActivity : AppCompatActivity() {
             showPrivacyOptions(it)
         }
 
-        /*
-        binding.btnUpload.setOnClickListener {
-            uploadPost()
-            Toast.makeText(this, "미션 완료!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, TimelineActivity::class.java)
-            intent.putExtra("showUploadFragment", true)
-            startActivity(intent)
-        }
-
-         */
     }
 
     // 드롭다운 메뉴를 표시하는 함수
@@ -355,110 +366,6 @@ class BackOnlyActivity : AppCompatActivity() {
         val requestFile = RequestBody.create("image/*".toMediaType(), file)
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
     }
-
-    /*
-    private fun uploadPost() {
-        // visibility 가져오기
-        val visibility = when (tvPrivacyStatus?.text?.toString()) {
-            "전체공개" -> "PUBLIC"
-            "친구공개" -> "FRIENDS"
-            "나만보기" -> "PRIVATE"
-            else -> "PUBLIC"
-        }
-
-
-        val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
-        val backPhotoPath = intent.getStringExtra("backPhotoPath")
-        Log.d("Upload", "Front Image Path: $frontPhotoPath")
-        Log.d("Upload", "Back Image Path: $backPhotoPath")
-
-        // Multipart 요청을 위한 Part 생성
-        val frontImagePart = createMultipart("frontImage", frontPhotoPath ?: "")
-        val backImagePart = createMultipart("backImage", backPhotoPath ?: "")
-
-        val hashtagsParts = hashtags
-        val pointColorString = "#${Integer.toHexString(pointColor)}"
-
-        // frontTagList와 backTagList를 ItemTag 리스트로 변환
-        val frontItemtags = frontTagList?.map { tag ->
-            ItemTag(x = (tag.xRatio * 100).toInt(), y = (tag.yRatio * 100).toInt(), content = tag.tagText)
-        } ?: emptyList()
-
-        val backItemtags = backTagList?.map { tag ->
-            ItemTag(x = (tag.xRatio * 100).toInt(), y = (tag.yRatio * 100).toInt(), content = tag.tagText)
-        } ?: emptyList()
-
-        // CoroutineScope로 API 호출
-        lifecycleScope.launch {
-            try {
-                val response = postService.uploadPost(
-                    frontImage = frontImagePart,
-                    backImage = backImagePart,
-                    hashtags = hashtagsParts,
-                    frontItemtags = frontItemtags,
-                    backItemtags = backItemtags,
-                    pointColor = pointColorString,
-                    visibility = visibility,
-                    mission = true
-                )
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
-                    Toast.makeText(this@BackOnlyActivity, "게시글 업로드 성공!", Toast.LENGTH_SHORT).show()
-
-                    // 타임라인 화면으로 이동
-                    val intent = Intent(this@BackOnlyActivity, TimelineActivity::class.java)
-                    intent.putExtra("showUploadFragment", true)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this@BackOnlyActivity, "업로드 실패: ${response.body()?.message}", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@BackOnlyActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-
-        /*
-        // API 요청 데이터 생성
-        val postRequest = PostRequest(
-            frontImage = frontPhotoPath ?: "",
-            backImage = backPhotoPath ?: "",
-            hashtags = hashtags,
-            frontItemtags = frontItemtags,
-            backItemtags = backItemtags,
-            pointColor = "#${Integer.toHexString(pointColor)}",
-            visibility = visibility,
-            mission = true
-        )
-
-        // API 호출
-        postService.uploadPost(postRequest).enqueue(object : Callback<PostUploadResponse> {
-            override fun onResponse(
-                call: Call<PostUploadResponse>,
-                response: Response<PostUploadResponse>
-            ) {
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
-                    Toast.makeText(this@BackOnlyActivity, "게시글 업로드 성공!", Toast.LENGTH_SHORT).show()
-
-                    // 타임라인 화면으로 이동
-                    val intent = Intent(this@BackOnlyActivity, TimelineActivity::class.java)
-                    intent.putExtra("showUploadFragment", true)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this@BackOnlyActivity, "업로드 실패: ${response.body()?.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            override fun onFailure(call: Call<PostUploadResponse>, t: Throwable) {
-                Toast.makeText(this@BackOnlyActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_LONG).show()
-            }
-
-        })
-
-         */
-    }
-
-     */
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

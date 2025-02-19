@@ -32,13 +32,6 @@ class PreviewActivity : AppCompatActivity() {
 
         loadImages()
 
-        /*
-        binding.imageViewSmall.setOnClickListener {
-            swapImages()
-        }
-
-         */
-
         binding.btnRetake.setOnClickListener {
             val intent = Intent(this, MissionActivity::class.java)
             startActivity(intent)
@@ -59,23 +52,7 @@ class PreviewActivity : AppCompatActivity() {
             val bitmap = rotateBitmapIfNeeded(path)
             binding.imageViewMain.setImageBitmap(bitmap)
         }
-        /*
-            smallPhotoPath?.let { path ->
-                val bitmap = rotateBitmapIfNeeded(path)
-                binding.imageViewSmall.setImageBitmap(bitmap)
-            }
 
-        */
     }
 
-    /*
-    private fun swapImages() {
-        val temp = mainPhotoPath
-        mainPhotoPath = smallPhotoPath
-        smallPhotoPath = temp
-
-        loadImages()
-    }
-
-     */
 }

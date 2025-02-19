@@ -104,6 +104,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         // BackOnlyActivity로 이동
         binding.btnContinue.setOnClickListener {
             val intent = Intent(this, BackOnlyActivity::class.java).apply {
+                putExtra("frontPhotoPath", frontPhotoPath)
                 putExtra("backPhotoPath", backPhotoPath)
 
                 if (ifTagged) {

@@ -30,6 +30,7 @@ import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 import com.example.umc_closit.utils.TokenUtils
+import com.example.umc_closit.ui.mission.MissionActivity
 
 class ProfileFragment : Fragment() {
 
@@ -117,7 +118,7 @@ class ProfileFragment : Fragment() {
 
         // 내 정보 수정
         binding.tvEditInfo.setOnClickListener {
-            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            val intent = Intent(requireContext(), MissionActivity::class.java)
             startActivity(intent)
         }
 
