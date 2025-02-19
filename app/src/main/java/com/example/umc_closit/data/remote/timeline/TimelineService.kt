@@ -12,6 +12,7 @@ import retrofit2.http.Query
 
 interface TimelineService {
 
+    // timeline
     @GET("api/auth/posts")
     fun getPosts(
         @Query("follower") follower: Boolean = false,
@@ -21,17 +22,29 @@ interface TimelineService {
         @Query("size") size: Int = 10
     ): Call<TimelineResponse>
 
+    // like
     @POST("/api/auth/posts/{post_id}/likes")
-    fun likePost(
-        @Path("post_id") postId: Int,
-        @Query("user_id") userId: Int
+    fun addLike(
+        @Path("post_id") postId: Int
     ): Call<LikeResponse>
 
-    @POST("api/auth/bookmarks")
-    fun savePost(
-        @Body request: BookmarkRequest
-    ): Call<BookmarkResponse>
+    @DELETE("/api/auth/posts/{post_id}/likes")
+    fun removeLike(
+        @Path("post_id") postId: Int
+    ): Call<LikeResponse>
 
+    // bookmark
+    @POST("/api/auth/bookmarks")
+    fun addBookmark(
+        @Body request: BookmarkRequest
+    ): Call<BookmarkCreateResponse>
+
+    @DELETE("/api/auth/bookmarks/{post_id}")
+    fun removeBookmark(
+        @Path("post_id") postId: Int
+    ): Call<BookmarkDeleteResponse>
+
+    // notification
     @PATCH("/api/auth/notifications")
     fun getNotifications(
         @Query("page") page: Int

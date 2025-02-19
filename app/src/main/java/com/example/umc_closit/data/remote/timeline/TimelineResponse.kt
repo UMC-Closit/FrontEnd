@@ -54,26 +54,34 @@ data class LikeResponse(
 data class LikeResult(
     val isLiked: Boolean,
     val postId: Int,
-    val userId: Int
+    val clositId: String
 )
 
 // save
 data class BookmarkRequest(
-    val userId: Int,
     val postId: Int
 )
 
-data class BookmarkResponse(
+data class BookmarkCreateResponse(
     val isSuccess: Boolean,
     val code: String,
     val message: String,
-    val result: BookmarkResult
+    val result: BookmarkCreateResult
 )
 
-data class BookmarkResult(
+data class BookmarkCreateResult(
+    val clositId: String,
+    val userName: String,
     val bookmarkId: Int,
     val postId: Int,
-    val userId: Int
+    val createdAt: String
+)
+
+data class BookmarkDeleteResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: String
 )
 
 // notification

@@ -51,6 +51,7 @@ object RetrofitClient {
 
     val historyService: HistoryService by lazy {
         retrofit.create(HistoryService::class.java)
+    }
 
     val challengeApiService: ChallengeApiService by lazy {
         retrofit.create(ChallengeApiService::class.java)
