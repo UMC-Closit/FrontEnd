@@ -23,12 +23,13 @@ interface PostService {
         @Path("post_id") postId: Int
     ): Response<PostDeleteResponse>
 
+
     @Multipart
     @POST("/api/auth/posts")
     suspend fun uploadPost(
         @Part("request") request: RequestBody,
         @Part frontImage: MultipartBody.Part,
-        @Part backImage: MultipartBody.Part
+        @Part backImage: MultipartBody.Part,
     ): Response<PostUploadResponse>
 }
 
