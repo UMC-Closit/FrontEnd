@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
@@ -18,10 +19,30 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.data.entities.post.TagData
+import com.example.umc_closit.data.remote.post.TagData
 import com.example.umc_closit.databinding.ActivityBackOnlyBinding
 import com.example.umc_closit.ui.mission.FrontOnlyActivity.Companion
 import com.example.umc_closit.ui.timeline.TimelineActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.umc_closit.data.remote.post.PostRequest
+import com.example.umc_closit.data.remote.post.ItemTag
+import com.example.umc_closit.data.remote.post.PostService
+import com.example.umc_closit.data.remote.RetrofitClient
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import com.example.umc_closit.model.PostViewModel
+import com.example.umc_closit.utils.FileUtils
+import com.example.umc_closit.utils.JsonUtils
 
 class BackOnlyActivity : AppCompatActivity() {
 
@@ -35,7 +56,11 @@ class BackOnlyActivity : AppCompatActivity() {
     private var pointColor: Int = -1
     private var frontTagList: ArrayList<TagData>? = null
 
+    private var backTagList: ArrayList<TagData>? = null
 
+    private lateinit var postService: PostService
+
+    private val viewModel: PostViewModel by viewModels()
 
     companion object {
         private const val TAGGING_REQUEST_CODE = 1001
@@ -43,13 +68,14 @@ class BackOnlyActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityBackOnlyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        postService = RetrofitClient.postService
 
         hashtags = intent.getStringArrayListExtra("hashtags") ?: arrayListOf()
         pointColor = intent.getIntExtra("pointColor", -1)
         frontTagList = intent.getParcelableArrayListExtra("frontTagList") ?: arrayListOf()
-
-        binding = ActivityBackOnlyBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.ivBack.setOnClickListener {
             finish()
@@ -82,12 +108,90 @@ class BackOnlyActivity : AppCompatActivity() {
             isColorExtractMode = !isColorExtractMode
         }
 
+        // ViewModel의 업로드 결과 관찰
+        viewModel.uploadResult.observe(this, Observer { result ->
+            result.onSuccess { response ->
+                Toast.makeText(this, "게시글 업로드 성공! ID: ${response.result.postId}", Toast.LENGTH_SHORT).show()
+                // 업로드 성공 시 타임라인으로 이동
+                val intent = Intent(this, TimelineActivity::class.java)
+                intent.putExtra("showUploadFragment", true)
+                startActivity(intent)
+                finish()
+            }.onFailure { error ->
+                Toast.makeText(this, "업로드 실패: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        })
+
+        binding.btnUpload.setOnClickListener {
+
+            if (frontPhotoPath.isNullOrEmpty() || backPhotoPath.isNullOrEmpty()) {
+                Toast.makeText(this, "이미지 경로를 확인하세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val frontImagePart = try {
+                FileUtils.createImagePart("frontImage", frontPhotoPath)
+            } catch (e: IllegalArgumentException) {
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val backImagePart = try {
+                FileUtils.createImagePart("backImage", backPhotoPath)
+            } catch (e: IllegalArgumentException) {
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val frontItemtags = frontTagList?.map { tag ->
+                ItemTag(
+                    x = (tag.xRatio * 100).toInt(),
+                    y = (tag.yRatio * 100).toInt(),
+                    content = tag.tagText
+                )
+            } ?: emptyList()
+
+            val backItemtags = backTagList?.map { tag ->
+                ItemTag(
+                    x = (tag.xRatio * 100).toInt(),
+                    y = (tag.yRatio * 100).toInt(),
+                    content = tag.tagText
+                )
+            } ?: emptyList()
+
+            val visibility = when (tvPrivacyStatus?.text?.toString()) {
+                "전체공개" -> "PUBLIC"
+                "친구공개" -> "FRIENDS"
+                "나만보기" -> "PRIVATE"
+                else -> "PUBLIC"
+            }
+
+            val requestObject = mapOf(
+                "hashtags" to hashtags,
+                "frontItemtags" to frontItemtags,
+                "backItemtags" to backItemtags,
+                "pointColor" to "#${Integer.toHexString(pointColor)}",
+                "visibility" to visibility,
+                "mission" to true
+            )
+
+            val requestBody = JsonUtils.createRequestBody(requestObject)
+
+            viewModel.uploadPost(
+                requestBody = requestBody,
+                frontImagePart = frontImagePart,
+                backImagePart = backImagePart
+            )
+        }
+
+
         binding.imageViewBackOnly.setOnTouchListener { _, event ->
             if (isColorExtractMode) {
                 if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
                     originalBitmap?.let { bmp ->
                         val color = getTouchedColor(bmp, event.x, event.y)
                         setIconColor(binding.viewColorIcon, color)
+                        pointColor = color
                     }
                     isColorExtractMode = false
                 }
@@ -102,11 +206,14 @@ class BackOnlyActivity : AppCompatActivity() {
             true
         }
 
+
+
         // 해시태그 버튼 클릭
         binding.btnHashtag.setOnClickListener {
             showHashtagDialog(
                 currentHashtag = null,
                 onHashtagSaved = { newHashtag ->
+                    hashtags.add(newHashtag)
                     addHashtagToContainer(newHashtag)
                 }
             )
@@ -116,12 +223,6 @@ class BackOnlyActivity : AppCompatActivity() {
             showPrivacyOptions(it)
         }
 
-        binding.btnUpload.setOnClickListener {
-            Toast.makeText(this, "미션 완료!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, TimelineActivity::class.java)
-            intent.putExtra("showUploadFragment", true)
-            startActivity(intent)
-        }
     }
 
     // 드롭다운 메뉴를 표시하는 함수
@@ -258,11 +359,18 @@ class BackOnlyActivity : AppCompatActivity() {
         return (dp * scale + 0.5f).toInt()
     }
 
+    private fun createMultipart(partName: String, filePath: String): MultipartBody.Part {
+        val file = File(filePath)
+        val requestFile = RequestBody.create("image/*".toMediaType(), file)
+        return MultipartBody.Part.createFormData(partName, file.name, requestFile)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == BackOnlyActivity.TAGGING_REQUEST_CODE && resultCode == RESULT_OK) {
             val tagList = data?.getParcelableArrayListExtra<TagData>("tagList")
             if (tagList != null) {
+                backTagList = tagList
                 for (tag in tagList) {
                     addTagView(tag.tagText, tag.xRatio, tag.yRatio)
                 }

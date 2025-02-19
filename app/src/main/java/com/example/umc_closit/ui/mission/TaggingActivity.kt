@@ -16,7 +16,7 @@ import com.example.umc_closit.databinding.ActivityTaggingBinding
 import com.example.umc_closit.databinding.CustomTagDialogBinding
 import java.io.File
 import java.io.FileOutputStream
-import com.example.umc_closit.data.entities.post.TagData
+import com.example.umc_closit.data.remote.post.TagData
 
 class TaggingActivity : AppCompatActivity() {
 
@@ -62,13 +62,13 @@ class TaggingActivity : AppCompatActivity() {
             finish()
         }
 
-            binding.btnSave.setOnClickListener {
-                val tagArrayList = ArrayList(tagList) // Intent로 넘기기 위해 ArrayList로 변환
-                val resultIntent = intent.apply {
-                    putParcelableArrayListExtra("tagList", tagArrayList)
-                }
-                setResult(RESULT_OK, resultIntent)
-                finish()
+        binding.btnSave.setOnClickListener {
+            val tagArrayList = ArrayList(tagList) // Intent로 넘기기 위해 ArrayList로 변환
+            val resultIntent = intent.apply {
+                putParcelableArrayListExtra("tagList", tagArrayList)
+            }
+            setResult(RESULT_OK, resultIntent)
+            finish()
         }
 
         tagList?.forEach { tag ->

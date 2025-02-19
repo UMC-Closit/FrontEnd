@@ -214,9 +214,9 @@ class CameraPreviewManager(
         val deviceOrientation = ORIENTATIONS.get(rotation)
 
         val jpegOrientation = if (lensFacing == CameraCharacteristics.LENS_FACING_FRONT) {
-            (sensorOrientation - deviceOrientation + 270) % 360
+            (sensorOrientation - deviceOrientation + 90) % 360
         } else {
-            (sensorOrientation + deviceOrientation + 360) % 360
+            (sensorOrientation + deviceOrientation + 270) % 360
         }
 
         try {

@@ -27,9 +27,9 @@ object RotateBitmap {
 
         // 사진 각도 이상할시 조정
         val rotationDegrees = when (orientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> 270f
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
             ExifInterface.ORIENTATION_ROTATE_180 -> 90f
-            ExifInterface.ORIENTATION_ROTATE_270 -> 90f
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
             else -> 0f
         }
 

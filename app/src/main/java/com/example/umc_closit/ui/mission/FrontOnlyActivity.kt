@@ -16,7 +16,7 @@ import com.example.umc_closit.databinding.ActivityFrontOnlyBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import com.example.umc_closit.data.entities.post.TagData
+import com.example.umc_closit.data.remote.post.TagData
 
 class FrontOnlyActivity : AppCompatActivity() {
 
@@ -95,7 +95,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         }
 
         // 해시태그 버튼
-            binding.btnHashtag.setOnClickListener {
+        binding.btnHashtag.setOnClickListener {
             showHashtagDialog { newHashtag ->
                 addHashtag(newHashtag)
             }
@@ -104,6 +104,7 @@ class FrontOnlyActivity : AppCompatActivity() {
         // BackOnlyActivity로 이동
         binding.btnContinue.setOnClickListener {
             val intent = Intent(this, BackOnlyActivity::class.java).apply {
+                putExtra("frontPhotoPath", frontPhotoPath)
                 putExtra("backPhotoPath", backPhotoPath)
 
                 if (ifTagged) {
