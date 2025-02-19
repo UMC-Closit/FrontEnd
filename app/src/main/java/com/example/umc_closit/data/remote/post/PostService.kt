@@ -1,6 +1,7 @@
 package com.example.umc_closit.data.remote.post
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
@@ -30,14 +31,17 @@ interface PostService {
     @Multipart
     @POST("/api/auth/posts")
     suspend fun uploadPost(
+        @Part("request") request: RequestBody,
         @Part frontImage: MultipartBody.Part,
         @Part backImage: MultipartBody.Part,
-        @Part("hashtags") hashtags: List<String>,
+        /*@Part("hashtags") hashtags: List<String>,
         @Part("frontItemtags") frontItemtags: List<ItemTag>,
         @Part("backItemtags") backItemtags: List<ItemTag>,
         @Part("pointColor") pointColor: String,
         @Part("visibility") visibility: String,
         @Part("mission") mission: Boolean
+
+         */
     ): Response<PostUploadResponse>
 }
 

@@ -41,6 +41,8 @@ import java.io.File
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.example.umc_closit.model.PostViewModel
+import com.example.umc_closit.utils.FileUtils
+import com.example.umc_closit.utils.JsonUtils
 
 class BackOnlyActivity : AppCompatActivity() {
 
@@ -66,15 +68,14 @@ class BackOnlyActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityBackOnlyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         postService = RetrofitClient.postService
 
         hashtags = intent.getStringArrayListExtra("hashtags") ?: arrayListOf()
         pointColor = intent.getIntExtra("pointColor", -1)
         frontTagList = intent.getParcelableArrayListExtra("frontTagList") ?: arrayListOf()
-
-        binding = ActivityBackOnlyBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.ivBack.setOnClickListener {
             finish()
@@ -122,8 +123,8 @@ class BackOnlyActivity : AppCompatActivity() {
         })
 
         binding.btnUpload.setOnClickListener {
-            val frontImagePart = createMultipart("frontImage", frontPhotoPath ?: "")
-            val backImagePart = createMultipart("backImage", backPhotoPath ?: "")
+            val frontImagePart = FileUtils.createImagePart("frontImage", frontPhotoPath ?: "")
+            val backImagePart = FileUtils.createImagePart("backImage", backPhotoPath ?: "")
 
             val frontItemtags = frontTagList?.map { tag ->
                 ItemTag(
@@ -148,15 +149,21 @@ class BackOnlyActivity : AppCompatActivity() {
                 else -> "PUBLIC"
             }
 
+            val requestObject = mapOf(
+                "hashtags" to hashtags,
+                "frontItemtags" to frontItemtags,
+                "backItemtags" to backItemtags,
+                "pointColor" to "#${Integer.toHexString(pointColor)}",
+                "visibility" to visibility,
+                "mission" to true
+            )
+
+            val requestBody = JsonUtils.createRequestBody(requestObject)
+
             viewModel.uploadPost(
-                frontImage = frontImagePart,
-                backImage = backImagePart,
-                hashtags = hashtags,
-                frontItemtags = frontItemtags,
-                backItemtags = backItemtags,
-                pointColor = "#${Integer.toHexString(pointColor)}",
-                visibility = visibility,
-                mission = true
+                requestBody = requestBody,
+                frontImagePart = frontImagePart,
+                backImagePart = backImagePart
             )
         }
 
@@ -349,6 +356,7 @@ class BackOnlyActivity : AppCompatActivity() {
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
     }
 
+    /*
     private fun uploadPost() {
         // visibility 가져오기
         val visibility = when (tvPrivacyStatus?.text?.toString()) {
@@ -449,6 +457,8 @@ class BackOnlyActivity : AppCompatActivity() {
 
          */
     }
+
+     */
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
