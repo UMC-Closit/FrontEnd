@@ -1,28 +1,24 @@
 package com.example.umc_closit.ui.profile.history
 
 import android.content.Intent
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ItemCalendarDayBinding
 import com.example.umc_closit.ui.profile.highlight.AddHighlightActivity
-import com.example.umc_closit.model.TimelineViewModel
 import java.util.Calendar
 
 class CalendarAdapter(
     private val year: Int,
     private val month: Int,
     private val postThumbnails: Map<String, Int>,
-    private val viewModelStoreOwner: ViewModelStoreOwner,
-    private val weekdayWidth: Int,
-    private val isMonthSelected: Boolean // ✅ 선택된 월인지 여부 전달
+    private val postColors: Map<String, String>,
+    private val weekdayWidth: Int
 ) : RecyclerView.Adapter<CalendarAdapter.CalendarViewHolder>() {
-
-    private val timelineViewModel: TimelineViewModel by lazy {
-        ViewModelProvider(viewModelStoreOwner).get(TimelineViewModel::class.java)
-    }
 
     class CalendarViewHolder(val binding: ItemCalendarDayBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -55,29 +51,50 @@ class CalendarAdapter(
             if (day.isEmpty()) {
                 tvDay.text = ""
                 ivCalendar.setImageResource(android.R.color.transparent)
+                ivCalendar.clearColorFilter()
                 return
             }
 
             tvDay.text = day
-            val fullDateKey = "$currentYear-${String.format("%02d", currentMonth)}-${String.format("%02d", day.toInt())}"
+            val fullDateKey =
+                "$currentYear-${String.format("%02d", currentMonth)}-${String.format("%02d", day.toInt())}"
             val timelineItemId = postThumbnails[fullDateKey]
 
-/*
-            val timelineItem: PostPreview? = timelineViewModel.timelineItems.value?.find { it.id == timelineItemId }
-            val mainImageResId = PostPreview?.mainImageResId ?: R.drawable.img_history_calendar_default
-            val pointColor = timelineItem?.pointColor ?: "#D9D9D9"
+            // 색상 파싱 안전하게 처리
+            val pointColorHex = postColors[fullDateKey]?.let { color ->
+                when {
+                    color.startsWith("#") && color.length == 7 -> color // 정상 hex
+                    color.length == 6 && color.matches(Regex("[0-9A-Fa-f]{6}")) -> "#$color" // # 없는 정상 hex
+                    else -> {
+                        Log.e("HISTORY", "잘못된 색상 코드: $color -> null 처리")
+                        "#D9D9D9"
+                    }
+                }
+            }
 
-            ivCalendar.setImageResource(mainImageResId)
+            Log.d("HISTORY", "onBindViewHolder 날짜: $fullDateKey, 포스트 ID: $timelineItemId, 색상: $pointColorHex")
 
-            // ✅ 해당 월이 선택되었을 때만 `pointColor` 적용
-            if (isMonthSelected) {
-                ivCalendar.setColorFilter(android.graphics.Color.parseColor(pointColor))
+            // 사진 설정 (사진이 있든 없든 확인용 임시 이미지 넣기)
+            if (timelineItemId != null) {
+                ivCalendar.setImageResource(R.drawable.example_profile)
+            } else {
+                ivCalendar.setImageResource(R.drawable.img_history_calendar_default)
+            }
+
+            // 색상 설정 (안전하게)
+            if (!pointColorHex.isNullOrEmpty()) {
+                try {
+                    ivCalendar.setColorFilter(Color.parseColor(pointColorHex))
+                } catch (e: IllegalArgumentException) {
+                    ivCalendar.clearColorFilter() // 파싱 실패시 기본상태로
+                    Log.e("HISTORY", "색상 파싱 실패: $pointColorHex")
+                }
             } else {
                 ivCalendar.clearColorFilter()
             }
-*/
 
-            // ✅ 크기 조정 유지
+
+            // 크기 조정 유지
             val calculatedWidth = weekdayWidth
             val calculatedHeight = (calculatedWidth * 5) / 3
             ivCalendar.layoutParams = ivCalendar.layoutParams.apply {
@@ -85,7 +102,7 @@ class CalendarAdapter(
                 height = calculatedHeight
             }
 
-            // ✅ 클릭 이벤트 추가
+            // 클릭 이벤트 추가
             root.setOnClickListener {
                 timelineItemId?.let { id ->
                     val context = holder.itemView.context
@@ -93,6 +110,7 @@ class CalendarAdapter(
                         putExtra("timeline_item_id", id)
                     }
                     context.startActivity(intent)
+                    Log.d("HISTORY", "아이템 클릭됨: $id")
                 }
             }
         }

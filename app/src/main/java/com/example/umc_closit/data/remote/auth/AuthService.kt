@@ -27,6 +27,5 @@ interface AuthService {
 
     @DELETE("/api/auth/users/")
     fun deleteUser(
-        @Header("Authorization") token: String
     ): Call<QuitResponse<String>>
 }

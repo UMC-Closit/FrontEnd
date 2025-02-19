@@ -156,20 +156,17 @@ class ProfileFragment : Fragment() {
         val followingClositId = profileUserClositId
 
         if (isFollowing) {
-            unfollowUser(followerClositId, followingClositId)
+            //unfollowUser(followerClositId, followingClositId)
         } else {
             followUser(followerClositId, followingClositId)
         }
     }
 
     private fun followUser(followerClositId: String, followingClositId: String) {
-        val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-        val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
-
         val request = FollowRequest(follower = followerClositId, following = followingClositId)
 
         val apiCall = {
-            RetrofitClient.profileService.followUser(token, request)
+            RetrofitClient.profileService.followUser(request)
         }
 
         TokenUtils.handleTokenRefresh(
@@ -191,12 +188,13 @@ class ProfileFragment : Fragment() {
         )
     }
 
+/*
     private fun unfollowUser(followerClositId: String, followingClositId: String) {
         val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         val token = "Bearer ${sharedPreferences.getString("accessToken", "") ?: ""}"
 
         val apiCall = {
-            RetrofitClient.profileService.unfollowUser(token, followerClositId, followingClositId)
+            RetrofitClient.profileService.unfollowUser(followerClositId)
         }
 
         TokenUtils.handleTokenRefresh(
@@ -217,6 +215,7 @@ class ProfileFragment : Fragment() {
             context = requireContext()
         )
     }
+*/
 
 
     private fun updateFollowButtonUI(following: Boolean) {
@@ -315,7 +314,7 @@ class ProfileFragment : Fragment() {
         }
 
         val apiCall = {
-            RetrofitClient.authService.deleteUser("Bearer $token")
+            RetrofitClient.authService.deleteUser()
         }
 
         TokenUtils.handleTokenRefresh(

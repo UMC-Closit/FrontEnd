@@ -12,9 +12,9 @@ import retrofit2.http.Query
 
 interface TimelineService {
 
+    // timeline
     @GET("api/auth/posts")
     fun getPosts(
-        @Header("Authorization") token: String,
         @Query("follower") follower: Boolean = false,
         @Query("user_id") userId: Int?,
         @Query("hashtag") hashtag: String?,
@@ -22,34 +22,42 @@ interface TimelineService {
         @Query("size") size: Int = 10
     ): Call<TimelineResponse>
 
+    // like
     @POST("/api/auth/posts/{post_id}/likes")
-    fun likePost(
-        @Header("Authorization") token: String,
-        @Path("post_id") postId: Int,
-        @Query("user_id") userId: Int
+    fun addLike(
+        @Path("post_id") postId: Int
     ): Call<LikeResponse>
 
-    @POST("api/auth/bookmarks")
-    fun savePost(
-        @Header("Authorization") token: String,
-        @Body request: BookmarkRequest
-    ): Call<BookmarkResponse>
+    @DELETE("/api/auth/posts/{post_id}/likes")
+    fun removeLike(
+        @Path("post_id") postId: Int
+    ): Call<LikeResponse>
 
+    // bookmark
+    @POST("/api/auth/bookmarks")
+    fun addBookmark(
+        @Body request: BookmarkRequest
+    ): Call<BookmarkCreateResponse>
+
+    @DELETE("/api/auth/bookmarks/{post_id}")
+    fun removeBookmark(
+        @Path("post_id") postId: Int
+    ): Call<BookmarkDeleteResponse>
+
+    // notification
     @PATCH("/api/auth/notifications")
     fun getNotifications(
-        @Header("Authorization") token: String,
         @Query("page") page: Int
     ): Call<NotificationResponse>
 
+
     @PATCH("/api/auth/notifications/{notification_id}")
     fun readNotification(
-        @Header("Authorization") token: String,
         @Path("notification_id") notificationId: Int
     ): Call<NotificationReadResponse>
 
     @DELETE("/api/auth/notifications/{notification_id}")
     fun deleteNotification(
-        @Header("Authorization") token: String,
         @Path("notification_id") notificationId: Int
     ): Call<NotificationDeleteResponse>
 

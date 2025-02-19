@@ -1,6 +1,7 @@
 package com.example.umc_closit.ui.timeline.notification
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -61,10 +62,9 @@ class NotificationActivity : AppCompatActivity() {
         if (isLoading || !hasNextPage) return
 
         isLoading = true
-        val token = TokenUtils.getAccessToken(this) ?: return
 
         val apiCall = {
-            RetrofitClient.timelineService.getNotifications("Bearer $token", currentPage)
+            RetrofitClient.timelineService.getNotifications(currentPage)
         }
 
         TokenUtils.handleTokenRefresh(
@@ -78,7 +78,6 @@ class NotificationActivity : AppCompatActivity() {
                     newAdapter.addItems(newItems)
                     lastAdapter.addItems(lastItems)
 
-                    // 새 알림, 지난 알림 없을 때 empty view 처리
                     updateEmptyViewVisibility(
                         newAdapter.itemCount == 0,
                         lastAdapter.itemCount == 0
@@ -100,7 +99,6 @@ class NotificationActivity : AppCompatActivity() {
         )
     }
 
-
     private fun updateEmptyViewVisibility(isNewEmpty: Boolean, isLastEmpty: Boolean) {
         binding.tvNewNone.visibility = if (isNewEmpty) View.VISIBLE else View.GONE
         binding.tvLastNone.visibility = if (isLastEmpty) View.VISIBLE else View.GONE
@@ -111,7 +109,7 @@ class NotificationActivity : AppCompatActivity() {
         val token = TokenUtils.getAccessToken(this) ?: return
 
         val apiCall = {
-            RetrofitClient.timelineService.deleteNotification("Bearer $token", notificationId)
+            RetrofitClient.timelineService.deleteNotification(notificationId)
         }
 
         TokenUtils.handleTokenRefresh(

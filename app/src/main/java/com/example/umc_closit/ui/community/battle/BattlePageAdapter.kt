@@ -94,11 +94,10 @@ class BattlePageAdapter(
      * 투표 요청 처리 (TokenUtils 적용)
      */
     private fun sendVote(battleId: Long, postId: Long, progressBar: ProgressBar) {
-        val authToken = "Bearer ${TokenUtils.getAccessToken(context)}"
         val requestBody = mapOf("postId" to postId)
 
         TokenUtils.handleTokenRefresh(
-            call = apiService.voteBattle(authToken, requestBody),
+            call = apiService.voteBattle(requestBody),
             onSuccess = { voteResponse: VoteResponse ->
                 if (voteResponse.isSuccess) {
                     val total = (voteResponse.result?.firstVotingRate ?: 0) +
@@ -128,8 +127,7 @@ class BattlePageAdapter(
                 Toast.makeText(context, "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
             retryCall = {
-                val newAuthToken = "Bearer ${TokenUtils.getAccessToken(context)}"
-                apiService.voteBattle(newAuthToken, requestBody)
+                apiService.voteBattle(requestBody)
             },
             context = context
         )

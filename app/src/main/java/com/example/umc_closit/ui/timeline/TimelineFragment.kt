@@ -58,7 +58,7 @@ class TimelineFragment : Fragment() {
         accessToken = sharedPreferences.getString("accessToken", "") ?: ""
         userId = sharedPreferences.getInt("userId", -1)
 
-        timelineAdapter = TimelineAdapter(requireContext(), mutableListOf(), accessToken, userId)
+        timelineAdapter = TimelineAdapter(requireContext(), mutableListOf())
 
         binding.rvTimeline.apply {
             layoutManager = LinearLayoutManager(requireContext())

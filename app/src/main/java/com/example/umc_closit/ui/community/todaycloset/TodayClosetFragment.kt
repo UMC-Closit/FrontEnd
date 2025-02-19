@@ -84,10 +84,9 @@ class TodayClosetFragment : Fragment() {
      */
     private fun loadTodayClosets(page: Int) {
         isLoading = true
-        val authToken = "Bearer ${TokenUtils.getAccessToken(requireContext())}"
 
         TokenUtils.handleTokenRefresh(
-            call = RetrofitClient.todayClosetApiService.getTodayClosets(authToken, page),
+            call = RetrofitClient.todayClosetApiService.getTodayClosets(page),
             onSuccess = { response ->
                 isLoading = false
                 if (response.isSuccess) {
@@ -108,8 +107,7 @@ class TodayClosetFragment : Fragment() {
                 Toast.makeText(requireContext(), "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
             retryCall = {
-                val newAuthToken = "Bearer ${TokenUtils.getAccessToken(requireContext())}"
-                RetrofitClient.todayClosetApiService.getTodayClosets(newAuthToken, page)
+                RetrofitClient.todayClosetApiService.getTodayClosets(page)
             },
             context = requireContext()
         )

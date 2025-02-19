@@ -27,7 +27,6 @@ class TimelineViewModel : ViewModel() {
 
         val apiCall = {
             com.example.umc_closit.data.remote.RetrofitClient.timelineService.getPosts(
-                token = "Bearer $token",
                 userId = userId,
                 hashtag = hashtag,
                 page = currentPage,
