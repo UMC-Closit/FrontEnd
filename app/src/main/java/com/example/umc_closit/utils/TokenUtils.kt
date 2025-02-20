@@ -151,11 +151,6 @@ object TokenUtils {
         return sharedPreferences.getString("accessToken", null)
     }
 
-    fun getUserId(context: Context): Int {
-        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return sharedPreferences.getInt("userId", -1)
-    }
-
     fun getClositId(context: Context): String? {
         val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return sharedPreferences.getString("clositId", "")

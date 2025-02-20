@@ -11,10 +11,12 @@ import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.timeline.CommentItem
 import com.example.umc_closit.data.remote.timeline.CommentRequest
 import com.example.umc_closit.databinding.FragmentCommentBottomSheetBinding
+import com.example.umc_closit.ui.profile.ProfileFragment
 import com.example.umc_closit.utils.TokenUtils
 
 class CommentBottomSheetFragment : com.google.android.material.bottomsheet.BottomSheetDialogFragment() {
@@ -46,11 +48,29 @@ class CommentBottomSheetFragment : com.google.android.material.bottomsheet.Botto
     ): View {
         binding = FragmentCommentBottomSheetBinding.inflate(inflater, container, false)
 
-        commentAdapter = CommentAdapter(comments, ::deleteComment)
+        commentAdapter = CommentAdapter(
+            comments,
+            onDeleteComment = ::deleteComment,
+            onProfileClick = { clositId ->
+                dismiss() // 댓글창 닫기
+                val profileFragment = ProfileFragment().apply {
+                    arguments = Bundle().apply {
+                        putString("profileUserClositId", clositId)
+                    }
+                }
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, profileFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
+
+
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.commentsRecyclerView.adapter = commentAdapter
 
-        val itemTouchHelper = ItemTouchHelper(CommentSwipeCallback(commentAdapter))
+        val myClositId = TokenUtils.getClositId(requireContext()) ?: ""
+        val itemTouchHelper = ItemTouchHelper(CommentSwipeCallback(commentAdapter, myClositId))
         itemTouchHelper.attachToRecyclerView(binding.commentsRecyclerView)
 
         loadComments()
@@ -166,8 +186,10 @@ class CommentBottomSheetFragment : com.google.android.material.bottomsheet.Botto
                     if (position != -1) {
                         comments.removeAt(position)
                         commentAdapter.notifyItemRemoved(position)
-                        updateNoCommentTextViewVisibility()
                     }
+                }
+                binding.commentsRecyclerView.post{
+                    updateNoCommentTextViewVisibility()
                 }
             },
             onFailure = { t ->
@@ -177,6 +199,9 @@ class CommentBottomSheetFragment : com.google.android.material.bottomsheet.Botto
             context = requireContext()
         )
     }
+
+
+
 
     /**
      * 댓글 없을 때 "아직 댓글이 없습니다" TextView 표시/숨김

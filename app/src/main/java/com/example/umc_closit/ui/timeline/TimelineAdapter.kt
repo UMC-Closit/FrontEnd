@@ -3,6 +3,7 @@ package com.example.umc_closit.ui.timeline
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -17,6 +18,7 @@ import com.example.umc_closit.data.remote.timeline.BookmarkRequest
 import com.example.umc_closit.data.remote.timeline.LikeResponse
 import com.example.umc_closit.data.remote.timeline.PostPreview
 import com.example.umc_closit.databinding.ItemTimelineBinding
+import com.example.umc_closit.ui.profile.ProfileFragment
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
 import com.example.umc_closit.utils.TokenUtils
@@ -147,8 +149,18 @@ class TimelineAdapter(
 
 
             ivUserProfile.setOnClickListener {
-                Toast.makeText(context, "유저 프로필 클릭됨", Toast.LENGTH_SHORT).show()
+                val activity = context as? androidx.fragment.app.FragmentActivity
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.fragment_container, ProfileFragment().apply {
+                        arguments = Bundle().apply {
+                            putString("profileUserClositId", item.clositId)
+                        }
+                    })
+                    ?.addToBackStack(null)
+                    ?.commit()
             }
+
+
         }
     }
 

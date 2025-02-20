@@ -32,5 +32,10 @@
         <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="ProfileImageShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 
 </resources>

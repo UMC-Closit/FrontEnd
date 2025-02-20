@@ -17,8 +17,10 @@ import retrofit2.Response
 
 class CommentAdapter(
     private val commentList: MutableList<CommentItem>,
-    private val onDeleteComment: (Int) -> Unit
+    private val onDeleteComment: (Int) -> Unit,
+    private val onProfileClick: (String) -> Unit
 ) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
+
 
     inner class CommentViewHolder(val binding: ItemCommentBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(comment: CommentItem) {
@@ -37,6 +39,11 @@ class CommentAdapter(
                     .load(comment.profileImage ?: R.drawable.img_profile_default)
                     .circleCrop()
                     .into(ivUserProfile)
+
+                ivUserProfile.setOnClickListener { onProfileClick(comment.clositId) }
+                tvUserName.setOnClickListener { onProfileClick(comment.clositId) }
+
+
             }
         }
 
@@ -73,6 +80,10 @@ class CommentAdapter(
             holder.bind(comment)
         }
     }
+
+
+
+
 
     override fun getItemCount(): Int = commentList.size
 
@@ -130,4 +141,5 @@ class CommentAdapter(
                 }
             })
     }
+
 }
