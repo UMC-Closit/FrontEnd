@@ -1,9 +1,11 @@
 package com.example.umc_closit.ui.mission
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
@@ -17,6 +19,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import com.example.umc_closit.data.remote.post.TagData
+import com.example.umc_closit.databinding.CustomTagDialogBinding
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.constraintlayout.helper.widget.Flow
+import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.content.Context
+import android.graphics.Typeface
+import androidx.core.content.res.ResourcesCompat
+import com.example.umc_closit.R
+
 
 class FrontOnlyActivity : AppCompatActivity() {
 
@@ -26,6 +43,7 @@ class FrontOnlyActivity : AppCompatActivity() {
     private var backPhotoPath: String? = null
     private var originalBitmapPath: String? = null
 
+    private val hashtags = mutableListOf<String>()
     private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
     private var originalBitmap: Bitmap? = null
@@ -69,6 +87,13 @@ class FrontOnlyActivity : AppCompatActivity() {
             isColorExtractMode = !isColorExtractMode
         }
 
+        binding.addItem.setOnClickListener{
+            val intent = Intent(this, TaggingActivity::class.java).apply {
+                putExtra("photoPath", frontPhotoPath)
+            }
+            startActivityForResult(intent, TAGGING_REQUEST_CODE)
+        }
+
         binding.imageViewFrontOnly.setOnTouchListener { view, event ->
             if (isColorExtractMode) {
                 if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
@@ -77,27 +102,15 @@ class FrontOnlyActivity : AppCompatActivity() {
                         setIconColor(binding.viewColorIcon, color)
                     }
                 }
-            } else {
-                if (event.action == MotionEvent.ACTION_UP) {
-                    val intent = Intent(this, TaggingActivity::class.java).apply {
-                        putExtra("photoPath", frontPhotoPath)
-                    }
-                    startActivityForResult(intent, TAGGING_REQUEST_CODE)
-                }
             }
             true
         }
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            hashtagsFlow.collect { hashtags ->
-                updateHashtagsUI(hashtags)
-            }
-        }
 
-        // 해시태그 버튼
         binding.btnHashtag.setOnClickListener {
             showHashtagDialog { newHashtag ->
-                addHashtag(newHashtag)
+                hashtags.add(newHashtag)
+                createHashtagTextView(newHashtag, binding.clHashtag, binding.flowHashtagContainer)
             }
         }
 
@@ -110,9 +123,7 @@ class FrontOnlyActivity : AppCompatActivity() {
                 if (ifTagged) {
                     putParcelableArrayListExtra("frontTagList", receivedTagList ?: arrayListOf())
                 }
-
-                // 해시태그 리스트 전달 (없으면 빈 리스트)
-                putStringArrayListExtra("hashtags", ArrayList(hashtagsFlow.value))
+                putStringArrayListExtra("hashtags", ArrayList(hashtags))
 
                 //  포인트 색상 전달 (없으면 기본값 -1)
                 putExtra("pointColor", pointColor ?: -1)
@@ -122,50 +133,38 @@ class FrontOnlyActivity : AppCompatActivity() {
         }
     }
 
-    private fun addHashtag(hashtag: String) {
-        val currentHashtags = hashtagsFlow.value.toMutableList()
-        currentHashtags.add(hashtag)
-        hashtagsFlow.value = currentHashtags
-    }
-
     // 해시태그 입력 다이얼로그
     private fun showHashtagDialog(onHashtagSaved: (String) -> Unit) {
-        val editText = android.widget.EditText(this).apply {
-            hint = "#해시태그 입력"
+        // 다이얼로그 생성
+        val dialog = Dialog(this)
+        val binding = CustomTagDialogBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명화
+
+        // 기본값으로 '#' 추가
+        binding.etHashtag.setText("#")
+        binding.etHashtag.setSelection(1) // 커서를 # 뒤로 이동
+
+        // 취소 버튼
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("해시태그 입력")
-            .setView(editText)
-            .setPositiveButton("확인") { _, _ ->
-                val input = editText.text.toString()
-                if (input.isNotBlank()) {
-                    onHashtagSaved(input)
-                }
+        // 확인 버튼
+        binding.btnConfirm.setOnClickListener {
+            val input = binding.etHashtag.text.toString().trim()
+
+            // 입력 검증
+            if (input.length > 1 && input.startsWith("#")) {
+                onHashtagSaved(input)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "올바른 해시태그를 입력하세요.", Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("취소", null)
-            .show()
-    }
-
-    private fun updateHashtagsUI(hashtags: List<String>) {
-        binding.hashtagContainer.removeAllViews()
-
-        hashtags.forEach { hashtag ->
-            val hashtagTextView = android.widget.TextView(this).apply {
-                text = "#$hashtag"
-                setTextColor(resources.getColor(com.example.umc_closit.R.color.white))
-                setPadding(16, 8, 16, 8)
-                background = resources.getDrawable(com.example.umc_closit.R.drawable.bg_detail_hashtag, null)
-                layoutParams = android.widget.LinearLayout.LayoutParams(
-                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
-                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginStart = 8
-                }
-            }
-
-            binding.hashtagContainer.addView(hashtagTextView)
         }
+
+        dialog.show()
     }
 
     // 아이콘 색상 변경
@@ -226,6 +225,31 @@ class FrontOnlyActivity : AppCompatActivity() {
     private fun dpToPx(dp: Int): Int {
         val scale = resources.displayMetrics.density
         return (dp * scale + 0.5f).toInt()
+    }
+
+    private fun createHashtagTextView(text: String, parentLayout: ConstraintLayout, flow: Flow) {
+
+        val font: Typeface? = ResourcesCompat.getFont(this, R.font.pretendard_regular)
+        val textView = TextView(this).apply {
+            id = View.generateViewId()
+            this.text = text
+            textSize = 16f
+            typeface = font
+            setTextColor(ContextCompat.getColor(context, R.color.white))
+            setBackgroundResource(R.drawable.bg_hashtag2) // 해시태그 배경
+            setPadding(16, 8, 16, 8)
+
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+
+            // TODO: 해시태그 클릭 시 삭제 기능 추가
+            // setOnClickListener {}
+        }
+
+        parentLayout.addView(textView)
+        flow.referencedIds += textView.id
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

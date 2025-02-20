@@ -10,12 +10,12 @@ data class PostResponse(
 data class PostDetail(
     val postId: Int,
     val clositId: String,
+    val username: String,
     val profileImage: String,
     val frontImage: String,
     val backImage: String,
     val isLiked: Boolean,
     val isSaved: Boolean,
-    val isFriend: Boolean,
     val hashtags: List<String>,
     val frontItemtags: List<ItemTag>,
     val backItemtags: List<ItemTag>,

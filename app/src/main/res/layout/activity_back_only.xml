@@ -65,17 +65,47 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" >
+
         <ImageView
             android:id="@+id/imageViewBackOnly"
-            android:layout_height="match_parent"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:adjustViewBounds="true"
+            android:clipToOutline="true"
             android:scaleType="fitXY"
             android:src="@drawable/image_background"
-            android:clipToOutline="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            tools:layout_editor_absoluteY="0dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/margin8"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/imageAndTag"
+        app:layout_constraintHeight_percent="0.015"
+        />
+
+    <View
+        android:id="@+id/margin9"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/margin8"
+        app:layout_constraintHeight_percent="0.015"
+        app:layout_constraintWidth_percent="0.12"
+        />
+
+    <ImageView
+        android:id="@+id/addItem"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/btn_add_item"
+        app:layout_constraintHeight_percent="0.03"
+        app:layout_constraintTop_toBottomOf="@id/margin8"
+        app:layout_constraintStart_toEndOf="@id/margin9"
+        />
 
 
     <!-- 문구 + 색상 아이콘 + 개인정보 버튼 -->
@@ -83,9 +113,8 @@
         android:id="@+id/layoutPointColor"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintHeight_percent="0.04"
-        app:layout_constraintTop_toBottomOf="@id/imageAndTag"
+        app:layout_constraintTop_toBottomOf="@id/addItem"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="@id/imageAndTag">
 
@@ -160,40 +189,38 @@
         app:layout_constraintHeight_percent="0.01"
         app:layout_constraintTop_toBottomOf="@+id/layoutPointColor"/>
 
-    <!-- 해시태그 버튼 및 컨테이너 -->
-    <LinearLayout
-        android:id="@+id/layoutHashtags"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_hashtag"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:weightSum="10"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintTop_toBottomOf="@id/margin4"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <View
-            android:id="@+id/margin6"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@color/transparent"
-            android:layout_weight="0.4" />
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutPointColor">
 
         <ImageButton
             android:id="@+id/btnHashtag"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="3"
             android:src="@drawable/btn_hashtag"
             android:background="@android:color/transparent"/>
 
-        <LinearLayout
-            android:id="@+id/hashtagContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical" />
-    </LinearLayout>
+        <!-- 해시태그 영역과 + 버튼 -->
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow_hashtag_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            app:flow_horizontalGap="6dp"
+            app:flow_verticalGap="5dp"
+            app:flow_wrapMode="aligned"
+            app:flow_horizontalAlign="start"
+            app:layout_constraintStart_toEndOf="@id/btnHashtag"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!-- 업로드 버튼 -->
     <ImageButton
