@@ -11,6 +11,7 @@ import retrofit2.http.Body
 import retrofit2.http.Multipart
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface PostService {
     @GET("/api/auth/posts/{post_id}")
@@ -31,5 +32,11 @@ interface PostService {
         @Part frontImage: MultipartBody.Part,
         @Part backImage: MultipartBody.Part,
     ): Response<PostUploadResponse>
+
+    @GET("/api/auth/users/{closit_id}/recent-post")
+    suspend fun getRecentPosts(
+        @Path("closit_id") clositId: String,
+        @Query("page") page: Int
+    ): Response<Response<RecentPostResponse>>
 }
 

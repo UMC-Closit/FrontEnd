@@ -16,6 +16,7 @@ data class PostDetail(
     val backImage: String,
     val isLiked: Boolean,
     val isSaved: Boolean,
+    val isHighlighted: Boolean,
     val hashtags: List<String>,
     val frontItemtags: List<ItemTag>,
     val backItemtags: List<ItemTag>,
@@ -60,4 +61,20 @@ data class PostUploadResult(
     val postId: Int,
     val createdAt: String,
     val visibility: String
+)
+
+data class RecentPostResponse(
+    val userRecentPostDTOList: List<UserRecentPostDTO>,
+    val listSize: Int,
+    val hasNext: Boolean,
+    val first: Boolean,
+    val last: Boolean
+)
+
+data class UserRecentPostDTO(
+    val clositId: String,
+    val userName: String,
+    val postId: Int,
+    val thumbnail: String,
+    val createdAt: String
 )
