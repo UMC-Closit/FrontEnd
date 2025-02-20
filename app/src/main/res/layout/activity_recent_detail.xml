@@ -32,23 +32,13 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date"
+            android:text="Recent"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:paddingStart="16dp"
             app:layout_constraintStart_toEndOf="@id/iv_back"
             app:layout_constraintTop_toTopOf="@id/iv_back"
             app:layout_constraintBottom_toBottomOf="@id/iv_back" />
-
-        <ImageView
-            android:id="@+id/iv_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_delete_black"
-            android:paddingEnd="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

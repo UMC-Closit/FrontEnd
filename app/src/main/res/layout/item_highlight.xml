@@ -12,6 +12,7 @@
         android:src="@drawable/img_profile_highlight"
         android:background="@drawable/rounded_image"
         android:clipToOutline="true"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintDimensionRatio="1:1"

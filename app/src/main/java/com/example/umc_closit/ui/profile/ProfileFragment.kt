@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -21,6 +22,7 @@ import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.data.entities.RecentItem
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.post.RecentPostResponse
 import com.example.umc_closit.data.remote.profile.FollowRequest
 import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.profile.ProfileUserResponse
@@ -36,10 +38,14 @@ import com.example.umc_closit.utils.DateUtils.getCurrentDate
 import com.example.umc_closit.utils.TokenUtils
 import com.example.umc_closit.ui.mission.MissionActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
+import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
+import com.example.umc_closit.ui.profile.recent.RecentDetailActivity
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -57,6 +63,8 @@ class ProfileFragment : Fragment() {
     private var isFollowing = false
 
     private lateinit var highlightAdapter: HighlightAdapter
+    private lateinit var recentAdapter: RecentAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,6 +78,9 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkUser()
+        loadUserHighlights()
+        loadRecentPosts()
+
 
         if (isMyProfile()) {
             binding.tvEditProfileImage.visibility = View.VISIBLE
@@ -88,32 +99,44 @@ class ProfileFragment : Fragment() {
 
         val screenWidth = resources.displayMetrics.widthPixels
 
-        val highlightItems = mutableListOf(
-            HighlightItem(R.drawable.img_profile_highlight, "24.12.07"),
-            HighlightItem(R.drawable.img_profile_highlight, "24.12.08")
+        highlightAdapter = HighlightAdapter(
+            items = mutableListOf(),
+            onAddClick = {
+                startActivity(Intent(requireContext(), HistoryActivity::class.java))
+            },
+            onItemClick = { item ->
+                val postIdList = highlightAdapter.getPostIdList()
+                val clickedPosition = postIdList.indexOf(item.postId)
+
+                val intent = Intent(requireContext(), HighlightDetailActivity::class.java)
+                intent.putIntegerArrayListExtra("postIdList", ArrayList(postIdList))
+                intent.putExtra("clickedPosition", clickedPosition)
+                startActivity(intent)
+            },
+            screenWidth = screenWidth,
+            isMyProfile = isMyProfile()
         )
 
-        val recentItems = listOf(
-            RecentItem(R.drawable.img_profile_recent, "Item 1"),
-            RecentItem(R.drawable.img_profile_recent, "Item 2")
-        )
+        recentAdapter = RecentAdapter(
+            items = emptyList(),
+            screenWidth = resources.displayMetrics.widthPixels
+        ) { postId ->
+            val postIdList = recentAdapter.getPostIdList()
+            val clickedPosition = postIdList.indexOf(postId)
 
-        val recentAdapter = RecentAdapter(recentItems, screenWidth)
+            val intent = Intent(requireContext(), RecentDetailActivity::class.java).apply {
+                putIntegerArrayListExtra("postIdList", ArrayList(postIdList))
+                putExtra("clickedPosition", clickedPosition)
+            }
+            startActivity(intent)
+        }
+
         binding.rvRecent.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = recentAdapter
             setHasFixedSize(true)
         }
 
-        highlightAdapter = HighlightAdapter(
-            highlightItems,
-            {
-                val newHighlight = HighlightItem(R.drawable.img_profile_highlight, getCurrentDate())
-                highlightAdapter.updateItems(newHighlight)
-            },
-            screenWidth,
-            isMyProfile()
-        )
 
         binding.rvHighlights.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -149,6 +172,49 @@ class ProfileFragment : Fragment() {
             toggleFollow()
         }
     }
+
+    private fun loadRecentPosts() {
+        val apiCall = { RetrofitClient.postService.getRecentPosts(profileUserClositId, 0) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    val recentPosts = response.result.userRecentPostDTOList
+                    Log.d("RECENT","${recentPosts.size}")
+                    recentAdapter.updateItems(recentPosts)
+                }
+            },
+            onFailure = { t ->
+                Log.e("ProfileFragment", "최근 게시물 불러오기 실패: ${t.message}")
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
+    }
+
+
+
+
+    private fun loadUserHighlights() {
+        val apiCall = { RetrofitClient.profileService.getHighlights(profileUserClositId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    val highlights = response.result.highlights
+                    highlightAdapter.setItems(highlights)
+                }
+            },
+            onFailure = { t ->
+                Log.e("ProfileFragment", "하이라이트 불러오기 실패: ${t.message}")
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
+    }
+
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -439,6 +505,10 @@ class ProfileFragment : Fragment() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadUserHighlights() // 하이라이트 목록 다시 불러오기
+    }
 
 
     private fun logout() {

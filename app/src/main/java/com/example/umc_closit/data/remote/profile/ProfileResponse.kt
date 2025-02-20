@@ -1,5 +1,7 @@
 package com.example.umc_closit.data.remote.profile
 
+import com.example.umc_closit.data.remote.profile.history.DateHistoryThumbnail
+
 
 // follow
 data class FollowRequest(
@@ -81,9 +83,10 @@ data class HighlightListResult(
 )
 
 data class HighlightItem(
-    val highlightId: Int,
     val clositId: String,
+    val userName: String,
     val postId: Int,
+    val thumbnail: String,
     val createdAt: String,
     val updatedAt: String? = null
 )
