@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:paddingTop="12dp">
 
     <!-- 툴바 (고정된 영역) -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,11 +61,14 @@
         android:id="@+id/surfaceView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.81"
-        app:layout_constraintWidth_percent="0.8775"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:background="@drawable/rounded_image"
+        android:clipToOutline="true"
+        app:layout_constraintBottom_toTopOf="@+id/btnCapturePhoto"
+        app:layout_constraintDimensionRatio="9:16"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintWidth_percent="0.8" />
 
     <!-- 사진 촬영 버튼 -->
     <ImageButton
@@ -86,6 +90,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.015" />
+        app:layout_constraintHeight_percent="0.02" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,26 +34,39 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="오늘의 옷장"
+            android:text="Date"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:paddingStart="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_back"
             app:layout_constraintStart_toEndOf="@+id/iv_back"
             app:layout_constraintTop_toTopOf="@+id/iv_back" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_delete_black"
+            android:paddingEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
     <!-- 스크롤 가능한 콘텐츠 -->
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -83,12 +97,12 @@
                         android:id="@+id/iv_image_big"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:background="@drawable/rounded_image"
+                        android:clipToOutline="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/img_detail_big_default"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:clipToOutline="true"
-                        android:background="@drawable/rounded_image"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -100,9 +114,9 @@
                         android:layout_height="0dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
-                        android:scaleType="centerCrop"
-                        android:clipToOutline="true"
                         android:background="@drawable/rounded_image"
+                        android:clipToOutline="true"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/img_detail_small_default"
                         app:layout_constraintDimensionRatio="W,201:157"
                         app:layout_constraintStart_toStartOf="@id/iv_image_big"
@@ -110,120 +124,62 @@
                         app:layout_constraintWidth_percent="0.33" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <!-- 유저 프로필 -->
-                <ImageView
-                    android:id="@+id/iv_user_profile"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_timeline_circle_shape"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/img_profile_default"
-                    app:layout_constraintBottom_toBottomOf="@id/cl_frame"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintStart_toStartOf="@id/cl_frame"
-                    app:layout_constraintTop_toBottomOf="@id/cl_image_container"
-                    app:layout_constraintWidth_percent="0.1" />
 
-                <!-- 댓글, 좋아요, 저장 버튼 -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/cl_actions"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    app:layout_constraintBottom_toBottomOf="@id/cl_frame"
-                    app:layout_constraintEnd_toEndOf="@id/cl_frame"
-                    app:layout_constraintHeight_default="spread"
-                    app:layout_constraintStart_toEndOf="@+id/iv_user_profile"
-                    app:layout_constraintTop_toBottomOf="@id/cl_image_container">
-
-                    <ImageView
-                        android:id="@+id/iv_comment"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_comment"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintEnd_toStartOf="@id/iv_like"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="0.1" />
-
-                    <ImageView
-                        android:id="@+id/iv_like"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_like_off"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintEnd_toStartOf="@id/iv_save"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="0.1" />
-
-                    <ImageView
-                        android:id="@+id/iv_save"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:src="@drawable/ic_save_off"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintEnd_toEndOf="@id/cl_actions"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="0.1" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- 문구 + 색상 아이콘 + 개인정보 버튼 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutPointColor"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-
-                app:layout_constraintHeight_percent="0.04"
-                app:layout_constraintTop_toBottomOf="@id/cl_frame"
+                android:id="@+id/cl_piointcolor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/cl_frame">
+                app:layout_constraintTop_toBottomOf="@+id/cl_frame"
+                app:layout_constraintWidth_percent="0.92">
 
-                <!-- 왼쪽 여백 -->
-                <View
-                    android:id="@+id/marginLeft3"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/transparent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintWidth_percent="0.12" />
-
-                <!-- 오늘의 포인트 색상 텍스트 -->
                 <TextView
-                    android:id="@+id/textTodayColor"
+                    android:id="@+id/tv_point_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="오늘의 포인트 색상"
-                    android:paddingEnd="10dp"
-                    android:textColor="@android:color/black"
-                    android:fontFamily="@font/ibm_extralight"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintStart_toEndOf="@id/marginLeft3"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- 색상 아이콘 -->
+                <!-- 색상 표시 동그라미 -->
                 <View
-                    android:id="@+id/viewColorIcon"
+                    android:id="@+id/view_color_circle"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_detail_color_round"
-                    app:layout_constraintStart_toEndOf="@id/textTodayColor"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHeight_percent="0.8"
-                    app:layout_constraintDimensionRatio="1:1" />
+                    app:layout_constraintBottom_toBottomOf="@id/tv_point_color"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintHeight_default="spread"
+                    app:layout_constraintStart_toEndOf="@id/tv_point_color"
+                    app:layout_constraintTop_toTopOf="@id/tv_point_color" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/cl_piointcolor"
+                    app:layout_constraintTop_toTopOf="@+id/cl_piointcolor">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/exposed_dropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_add_highlight_dropdown"
+                        android:drawableEnd="@drawable/ic_drop_down"
+                        android:drawablePadding="4dp"
+                        android:padding="8dp"
+                        android:text="공개범위"
+                        android:textSize="12dp"
+                        android:inputType="none"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -233,26 +189,45 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutPointColor"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/cl_piointcolor">
 
-                <!-- 해시태그 영역과 + 버튼 -->
                 <androidx.constraintlayout.helper.widget.Flow
                     android:id="@+id/flow_hashtag_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    app:flow_horizontalAlign="start"
                     app:flow_horizontalGap="16dp"
                     app:flow_verticalGap="16dp"
                     app:flow_wrapMode="aligned"
-                    app:flow_horizontalAlign="start"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.core.widget.NestedScrollView>
+
+    <ImageView
+        android:id="@+id/iv_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_left"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

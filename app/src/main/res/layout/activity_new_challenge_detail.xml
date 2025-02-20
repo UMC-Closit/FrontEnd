@@ -3,7 +3,8 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:paddingTop="12dp">
 
     <!-- 툴바 (고정된 영역) -->
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -75,6 +75,7 @@ object TokenUtils {
                     Log.d("TOKEN_DEBUG", "HTTP 코드: ${response.code()}")
                     Log.d("TOKEN_DEBUG", "응답 바디: ${response.body()}")
                     Log.d("TOKEN_DEBUG", "에러 바디: ${response.errorBody()?.string()}")
+                    Log.d("TOKEN_DEBUG","리프레시 토큰: ${refreshToken}")
 
                     if (response.isSuccessful) {
                         val newAccessToken = response.body()?.result?.accessToken ?: ""

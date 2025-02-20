@@ -4,7 +4,8 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:paddingTop="12dp">
 
     <!-- 툴바 (고정된 영역) -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,6 +72,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:src="@drawable/image_background"
+            android:background="@drawable/rounded_image"
             android:clipToOutline="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
