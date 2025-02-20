@@ -18,6 +18,7 @@ import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.battle.LikeResponse
 import com.example.umc_closit.data.remote.battle.VoteResponse
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.ui.battle.comment.BattleCommentBottomSheetFragment
 import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -57,6 +58,10 @@ class BattlePageAdapter(
 
             // 댓글 클릭 시 CommentBottomSheetFragment 호출
             ivComment.setOnClickListener {
+                BattleCommentBottomSheetFragment.newInstance(item.battleId).show(
+                    (context as AppCompatActivity).supportFragmentManager,
+                    "comment"
+                )
 /*                CommentBottomSheetFragment.newInstance().show(
                     (context as AppCompatActivity).supportFragmentManager,
                     "comment"
@@ -95,7 +100,7 @@ class BattlePageAdapter(
     /**
      * 투표 요청 처리 (TokenUtils 적용)
      */
-    private fun sendVote(battleId: Long, postId: Long, progressBar: ProgressBar) {
+    private fun sendVote(battleId: Int, postId: Int, progressBar: ProgressBar) {
         val requestBody = mapOf("postId" to postId)
 
         TokenUtils.handleTokenRefresh(

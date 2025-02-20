@@ -1,9 +1,10 @@
-package com.example.umc_closit.data.remote
+package com.example.umc_closit.data.remote.battle
 
 import com.example.umc_closit.data.BattlePostRequest
 import com.example.umc_closit.data.BattlePostResponse
 import com.example.umc_closit.data.remote.battle.LikeResponse
 import com.example.umc_closit.data.remote.battle.VoteResponse
+import com.example.umc_closit.data.remote.battle.CommentResponse
 
 import retrofit2.Call
 import retrofit2.http.*
@@ -19,16 +20,37 @@ interface BattleApiService {
     @Headers("Content-Type: application/json")
     @POST("/api/auth/communities/battle/vote")
     fun voteBattle(
-        @Body requestBody: Map<String, Long>
+        @Body requestBody: Map<String, Int>
     ): Call<VoteResponse>
 
 
     // 배틀 like API
     @POST("/api/battle/like/{battleId}")
-    fun addBattleLike(@Path("battleId") battleId: Long): Call<LikeResponse>
+    fun addBattleLike(@Path("battleId") battleId: Int): Call<LikeResponse>
 
     // 배틀 like 취소 API
     @DELETE("/api/battle/like/{battleLikeId}")
-    fun removeBattleLike(@Path("battleLikeId") battleLikeId: Long): Call<LikeResponse>
+    fun removeBattleLike(@Path("battleLikeId") battleLikeId: Int): Call<LikeResponse>
+
+    // 배틀 댓글 조회 API
+    @GET("/api/auth/communities/battle/{battle_id}/comments")
+    fun getBattleComments(
+        @Path("battle_id") battleId: Int,
+        @Query("page") page: Int
+    ): Call<CommentResponse>
+
+    // 배틀 댓글 작성 API
+    @POST("/api/auth/communities/battle/{battle_id}/comments")
+    fun postBattleComment(
+        @Path("battle_id") battleId: Int,
+        @Body commentRequest: CommentRequest
+    ): Call<CommentPostResponse>
+
+    // 배틀 댓글 삭제 API
+    @DELETE("/api/auth/communities/battle/{battle_id}/comments/{battle_comment_id}")
+    fun deleteBattleComment(
+        @Path("battle_id") battleId: Int,
+        @Path("battle_comment_id") battleCommentId: Int
+    ): Call<DeleteCommentResponse>
 
 }
