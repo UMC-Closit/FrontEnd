@@ -1,7 +1,15 @@
 // BattlePostRequest.kt
 package com.example.umc_closit.data
 
+import com.google.gson.annotations.SerializedName
+
 data class BattlePostRequest(
-    val postId: Int,    // 게시글 ID
-    val title: String   // 배틀 제목
+    @SerializedName("postId") val postId: Int,
+    @SerializedName("title") val title: String
 )
+
+data class VoteRequest(
+    val postId: Int
+)
+
+

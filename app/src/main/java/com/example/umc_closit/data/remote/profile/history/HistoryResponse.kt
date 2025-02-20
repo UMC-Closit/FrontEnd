@@ -46,19 +46,19 @@ data class ColorHistoryThumbnail(
 )
 
 // detail
-data class HistoryDetailResponse(
+data class DetailHistoryResponse(
     val isSuccess: Boolean,
     val code: String,
     val message: String,
-    val result: HistoryDetailResult
+    val result: DetailHistoryResult
 )
 
-data class HistoryDetailResult(
-    val postList: List<HistoryDetailPost>,
+data class DetailHistoryResult(
+    val postList: List<DetailHistoryPost>,
     val date: String
 )
 
-data class HistoryDetailPost(
+data class DetailHistoryPost(
     val postId: Int,
     val createdAt: String
 )

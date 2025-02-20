@@ -50,7 +50,7 @@
                 app:layout_constraintDimensionRatio="W,201:157"
                 app:layout_constraintStart_toStartOf="@id/iv_image_big"
                 app:layout_constraintTop_toTopOf="@id/iv_image_big"
-                app:layout_constraintWidth_percent="0.33" />
+                app:layout_constraintWidth_percent="0.4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.example.umc_closit.ui.profile.history
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +14,7 @@ import java.util.Calendar
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
-    private val postThumbnails = mutableMapOf<String, Int>()
+    private val postThumbnails = mutableMapOf<String, String>()
     private val postColors = mutableMapOf<String, String>()
 
     private var currentPage = 0
@@ -50,7 +49,7 @@ class HistoryActivity : AppCompatActivity() {
                 response.result?.dateHistoryThumbnailDTOList?.let { result ->
                     result.forEach { item ->
                         val dateKey = item.createdAt.substring(0, 10).replace("/", "-")
-                        postThumbnails[dateKey] = item.postId
+                        postThumbnails[dateKey] = item.thumbnail
                         Log.d("HISTORY", "사진 날짜: $dateKey, postId: ${item.postId}")
                     }
                 }
