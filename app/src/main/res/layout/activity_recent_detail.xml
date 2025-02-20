@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:paddingTop="12dp">
 
     <!-- 툴바 -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -49,6 +50,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_arrow_left"
         android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
