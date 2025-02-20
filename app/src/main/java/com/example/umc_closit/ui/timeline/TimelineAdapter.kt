@@ -23,7 +23,7 @@ import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
 import com.example.umc_closit.utils.TokenUtils
 
-class TimelineAdapter(
+class   TimelineAdapter(
     private val context: Context,
     private var timelineItems: MutableList<PostPreview>,
 ) : RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder>() {

@@ -173,7 +173,7 @@ class BackOnlyActivity : AppCompatActivity() {
 
             val visibility = when (tvPrivacyStatus?.text?.toString()) {
                 "전체공개" -> "PUBLIC"
-                "친구공개" -> "FRIENDS"
+                "친구공개" -> "FRIEND"
                 "나만보기" -> "PRIVATE"
                 else -> "PUBLIC"
             }

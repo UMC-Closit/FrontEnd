@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Query
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -45,6 +46,12 @@ interface ProfileService {
     fun updateUserProfile(
         @Body request: EditProfileRequest
     ): Call<ProfileUserResponse>
+
+    @GET("/api/auth/bookmarks")
+    fun getBookmarks(
+        @Query("page") page: Int = 0,  // 기본값 0
+        @Query("size") size: Int = 10  // 기본값 10
+    ): Call<BookmarkResponse>
 
 
 }
