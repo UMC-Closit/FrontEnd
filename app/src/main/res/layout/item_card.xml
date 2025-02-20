@@ -15,9 +15,9 @@
 
         <!-- 작은 이미지 -->
         <ImageView
-            android:id="@+id/profile_image"
-            android:layout_width="45dp"
-            android:layout_height="80dp"
+            android:id="@+id/main_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@color/gray"
             android:scaleType="centerCrop"
             android:layout_alignParentStart="true"
