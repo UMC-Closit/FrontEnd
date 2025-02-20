@@ -3,16 +3,18 @@ package com.example.umc_closit.ui.profile.highlight
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.umc_closit.data.remote.profile.HighlightItem
 import com.example.umc_closit.databinding.ItemAddHighlightBinding
 import com.example.umc_closit.databinding.ItemHighlightBinding
-import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 
 class HighlightAdapter(
     private var items: MutableList<HighlightItem>,
     private val onAddClick: () -> Unit,
-    private val screenWidth: Int, // 화면 너비
-    private val isMyProfile: Boolean // 본인 프로필 여부
+    private val onItemClick: (HighlightItem) -> Unit,
+    private val screenWidth: Int,
+    private val isMyProfile: Boolean
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -35,14 +37,22 @@ class HighlightAdapter(
 
     class HighlightViewHolder(private val binding: ItemHighlightBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HighlightItem, itemSize: Int) {
-            binding.highlightImage.setImageResource(item.imageResId)
-            binding.highlightText.text = item.date
+        fun bind(item: HighlightItem, itemSize: Int, onItemClick: (HighlightItem) -> Unit) {
+            Glide.with(binding.root.context)
+                .load(item.thumbnail)
+                .into(binding.highlightImage)
+
+            binding.highlightText.text = item.createdAt.substring(2, 10).replace("-", ".")
+
             binding.highlightImage.layoutParams = binding.highlightImage.layoutParams.apply {
                 width = itemSize
                 height = itemSize
             }
             binding.highlightImage.requestLayout()
+
+            binding.root.setOnClickListener {
+                onItemClick(item)
+            }
         }
     }
 
@@ -72,7 +82,7 @@ class HighlightAdapter(
         } else if (holder is HighlightViewHolder) {
             val itemPosition = if (isMyProfile) position - 1 else position
             val item = items[itemPosition]
-            holder.bind(item, itemSize)
+            holder.bind(item, itemSize, onItemClick)
         }
     }
 
@@ -80,8 +90,25 @@ class HighlightAdapter(
         return if (isMyProfile) items.size + 1 else items.size
     }
 
-    fun updateItems(newItem: HighlightItem) {
-        items.add(newItem)
-        notifyItemInserted(items.size)
+    fun updateItems(newItems: List<HighlightItem>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
     }
+
+    fun addItem(newItem: HighlightItem) {
+        items.add(newItem)
+        notifyItemInserted(items.size - 1)
+    }
+
+    fun getPostIdList(): List<Int> {
+        return items.map { it.postId }
+    }
+
+    fun setItems(newItems: List<HighlightItem>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
+    }
+
 }

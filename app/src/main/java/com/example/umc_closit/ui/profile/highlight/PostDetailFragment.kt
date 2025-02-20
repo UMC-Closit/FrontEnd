@@ -59,6 +59,9 @@ class PostDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val showButton = arguments?.getBoolean("showButton") ?: true
+        binding.buttonWithIcon.visibility = if (showButton) View.VISIBLE else View.GONE
+
         fetchPostDetail(postId)
 
         binding.buttonWithIcon.setOnClickListener {
@@ -258,15 +261,16 @@ class PostDetailFragment : Fragment() {
 
 
 
-companion object {
-    fun newInstance(postId: Int): PostDetailFragment {
-        return PostDetailFragment().apply {
-            arguments = Bundle().apply {
-                putInt("postId", postId)
+    companion object {
+        fun newInstance(postId: Int, showButton: Boolean): PostDetailFragment {
+            return PostDetailFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("postId", postId)
+                    putBoolean("showButton", showButton)
+                }
             }
         }
     }
-}
 
 }
 

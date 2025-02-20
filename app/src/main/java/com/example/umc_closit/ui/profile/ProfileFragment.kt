@@ -36,6 +36,7 @@ import com.example.umc_closit.utils.DateUtils.getCurrentDate
 import com.example.umc_closit.utils.TokenUtils
 import com.example.umc_closit.ui.mission.MissionActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
+import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -70,6 +71,8 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkUser()
+        loadUserHighlights()
+
 
         if (isMyProfile()) {
             binding.tvEditProfileImage.visibility = View.VISIBLE
@@ -88,10 +91,6 @@ class ProfileFragment : Fragment() {
 
         val screenWidth = resources.displayMetrics.widthPixels
 
-        val highlightItems = mutableListOf(
-            HighlightItem(R.drawable.img_profile_highlight, "24.12.07"),
-            HighlightItem(R.drawable.img_profile_highlight, "24.12.08")
-        )
 
         val recentItems = listOf(
             RecentItem(R.drawable.img_profile_recent, "Item 1"),
@@ -106,14 +105,24 @@ class ProfileFragment : Fragment() {
         }
 
         highlightAdapter = HighlightAdapter(
-            highlightItems,
-            {
-                val newHighlight = HighlightItem(R.drawable.img_profile_highlight, getCurrentDate())
-                highlightAdapter.updateItems(newHighlight)
+            items = mutableListOf(),
+            onAddClick = {
+                startActivity(Intent(requireContext(), HistoryActivity::class.java))
             },
-            screenWidth,
-            isMyProfile()
+            onItemClick = { item ->
+                val postIdList = highlightAdapter.getPostIdList()
+                val clickedPosition = postIdList.indexOf(item.postId)
+
+                val intent = Intent(requireContext(), HighlightDetailActivity::class.java)
+                intent.putIntegerArrayListExtra("postIdList", ArrayList(postIdList))
+                intent.putExtra("clickedPosition", clickedPosition)
+                startActivity(intent)
+            },
+            screenWidth = screenWidth,
+            isMyProfile = isMyProfile()
         )
+
+
 
         binding.rvHighlights.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -149,6 +158,26 @@ class ProfileFragment : Fragment() {
             toggleFollow()
         }
     }
+
+    private fun loadUserHighlights() {
+        val apiCall = { RetrofitClient.profileService.getHighlights(profileUserClositId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    val highlights = response.result.highlights
+                    highlightAdapter.setItems(highlights)
+                }
+            },
+            onFailure = { t ->
+                Log.e("ProfileFragment", "하이라이트 불러오기 실패: ${t.message}")
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
+    }
+
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -439,6 +468,10 @@ class ProfileFragment : Fragment() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadUserHighlights() // 하이라이트 목록 다시 불러오기
+    }
 
 
     private fun logout() {

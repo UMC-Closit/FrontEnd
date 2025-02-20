@@ -4,15 +4,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class PostDetailPagerAdapter(
+class HighlightDetailPagerAdapter(
     activity: AppCompatActivity,
-    private val postIdList: List<Int>
+    private var postIdList: List<Int>
 ) : FragmentStateAdapter(activity) {
 
     override fun getItemCount(): Int = postIdList.size
 
     override fun createFragment(position: Int): Fragment {
-        return PostDetailFragment.newInstance(postIdList[position], showButton = true)
+        return PostDetailFragment.newInstance(postIdList[position], showButton = false)
+    }
 
+    fun updateList(newList: List<Int>) {
+        postIdList = newList
+        notifyDataSetChanged()
     }
 }

@@ -61,6 +61,8 @@
         <activity android:name=".ui.mission.PreviewBackActivity"/>
         <activity android:name=".ui.mission.TaggingActivity"/>
         <activity android:name=".ui.mission.BackOnlyActivity"/>
+        <activity android:name=".ui.profile.highlight.HighlightDetailActivity" />
+
 
         <activity
             android:name=".ui.login.LoginActivity"
