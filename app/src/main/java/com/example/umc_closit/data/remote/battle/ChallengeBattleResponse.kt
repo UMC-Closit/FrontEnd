@@ -16,7 +16,7 @@ data class ChallengeBattleResult(
 )
 
 data class ChallengeBattlePreview(
-    val battleId: Int,
+    val battleId: Long,
     val firstClositId: String,
     val firstProfileImage: String,
     val firstPostId: Int,

@@ -24,7 +24,7 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var commentAdapter: BattleCommentAdapter
     private val comments = mutableListOf<BattleComment>()
 
-    private var battleId: Int = -1
+    private var battleId: Long = -1
     private var page: Int = 0
     private var hasNext = true
 
@@ -38,7 +38,7 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        battleId = arguments?.getInt("battleId") ?: -1
+        battleId = arguments?.getLong("battleId") ?: -1
     }
 
     override fun onCreateView(
@@ -207,10 +207,10 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance(battleId: Int): BattleCommentBottomSheetFragment {
+        fun newInstance(battleId: Long): BattleCommentBottomSheetFragment {
             val fragment = BattleCommentBottomSheetFragment()
             val args = Bundle()
-            args.putInt("battleId", battleId)
+            args.putLong("battleId", battleId)
             fragment.arguments = args
             return fragment
         }

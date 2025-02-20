@@ -18,7 +18,7 @@ data class BattleListResult(
 )
 
 data class BattlePreview(
-    @SerializedName("battleId") val battleId: Int,
+    @SerializedName("battleId") val battleId: Long,
     @SerializedName("title") val title: String,
     @SerializedName("firstClositId") val firstClositId: String,
     @SerializedName("firstProfileImage") val firstProfileImage: String,

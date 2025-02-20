@@ -11,7 +11,7 @@ data class BattlePostResponse(
 )
 
 data class BattlePostResult(
-    @SerializedName("battleId") val battleId: Int,
+    @SerializedName("battleId") val battleId: Long,
     @SerializedName("thumbnail") val thumbnail: String,
     @SerializedName("deadline") val deadline: String,
     @SerializedName("createdAt") val createdAt: String

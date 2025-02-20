@@ -49,7 +49,7 @@ class BattleViewModel: ViewModel() {
     private val battleApiService = RetrofitClient.battleApiService
 
     // 댓글 조회 메서드
-    fun fetchComments(battleId: Int, page: Int) {
+    fun fetchComments(battleId: Long, page: Int) {
         _isLoading.value = true
 
         battleApiService.getBattleComments(battleId, page)
@@ -71,7 +71,7 @@ class BattleViewModel: ViewModel() {
     }
 
     // 댓글 작성 메서드
-    fun postComment(battleId: Int, content: String) {
+    fun postComment(battleId: Long, content: String) {
         val commentRequest = CommentRequest(content)
 
         battleApiService.postBattleComment(battleId, commentRequest)
@@ -94,7 +94,7 @@ class BattleViewModel: ViewModel() {
     }
 
     // 댓글 삭제 메서드
-    fun deleteComment(battleId: Int, commentId: Int) {
+    fun deleteComment(battleId: Long, commentId: Int) {
         _isLoading.value = true
 
         battleApiService.deleteBattleComment(battleId, commentId)

@@ -3,7 +3,7 @@ package com.example.umc_closit.data.entities
 // BattleItem: 배틀 게시글 데이터를 담는 데이터 클래스입니다.
 data class BattleItem(
     val id: Int,
-    val battleId: Int,
+    val battleId: Long,
     val userName: String,
     val userProfileUrl: String,
     val leftPostId: Int,

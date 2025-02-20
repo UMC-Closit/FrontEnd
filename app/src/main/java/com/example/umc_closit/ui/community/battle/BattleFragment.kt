@@ -33,7 +33,7 @@ class BattleFragment : Fragment() {
         val itemList = List(10) { index ->
             BattleItem(
                 id = index,
-                battleId = (1000 + index),
+                battleId = (1000 + index).toLong(),
                 userProfileUrl = (2000 + index).toString(),
                 userName = (3000 + index).toString(),
                 battleLikeId = (4000 + index),

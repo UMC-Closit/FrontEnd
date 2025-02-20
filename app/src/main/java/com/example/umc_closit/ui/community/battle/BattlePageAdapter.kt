@@ -94,7 +94,7 @@ class BattlePageAdapter(
     /**
      * 투표 요청 처리 (TokenUtils 적용)
      */
-    private fun sendVote(battleId: Int, postId: Int, progressBar: ProgressBar) {
+    private fun sendVote(battleId: Long, postId: Int, progressBar: ProgressBar) {
         val requestBody = mapOf("postId" to postId)
 
         TokenUtils.handleTokenRefresh(

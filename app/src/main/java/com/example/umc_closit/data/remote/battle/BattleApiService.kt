@@ -20,9 +20,9 @@ interface BattleApiService {
 
     // 배틀 vote API
     @Headers("Content-Type: application/json")
-    @POST("/api/auth/communities/battle/vote")
+    @POST("/api/auth/communities/battle/{battle_id}/voting")
     fun voteBattle(
-        @Path("battle_id") battleId: Int,
+        @Path("battle_id") battleId: Long,
         @Body requestBody: Map<String, Int>  // {"postId": value}
     ): Call<VoteResponse>
 
@@ -30,7 +30,7 @@ interface BattleApiService {
     @Headers("Content-Type: application/json")
     @POST("/api/auth/communities/battle/challenge/upload/{battle_id}")
     fun challengeBattle(
-        @Path("battle_id") battleId: Int,
+        @Path("battle_id") battleId: Long,
         @Body request: BattleChallengeRequest
     ): Call<BattleChallengeResponse>
 
@@ -54,7 +54,7 @@ interface BattleApiService {
 
     // 배틀 like API
     @POST("/api/battle/like/{battleId}")
-    fun addBattleLike(@Path("battleId") battleId: Int): Call<LikeResponse>
+    fun addBattleLike(@Path("battleId") battleId: Long): Call<LikeResponse>
 
     // 배틀 like 취소 API
     @DELETE("/api/battle/like/{battleLikeId}")
@@ -63,21 +63,21 @@ interface BattleApiService {
     // 배틀 댓글 조회 API
     @GET("/api/auth/communities/battle/{battle_id}/comments")
     fun getBattleComments(
-        @Path("battle_id") battleId: Int,
+        @Path("battle_id") battleId: Long,
         @Query("page") page: Int
     ): Call<CommentResponse>
 
     // 배틀 댓글 작성 API
     @POST("/api/auth/communities/battle/{battle_id}/comments")
     fun postBattleComment(
-        @Path("battle_id") battleId: Int,
+        @Path("battle_id") battleId: Long,
         @Body commentRequest: CommentRequest
     ): Call<CommentPostResponse>
 
     // 배틀 댓글 삭제 API
     @DELETE("/api/auth/communities/battle/{battle_id}/comments/{battle_comment_id}")
     fun deleteBattleComment(
-        @Path("battle_id") battleId: Int,
+        @Path("battle_id") battleId: Long,
         @Path("battle_comment_id") battleCommentId: Int
     ): Call<DeleteCommentResponse>
 
