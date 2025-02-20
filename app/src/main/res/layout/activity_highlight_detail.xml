@@ -88,7 +88,7 @@
                     android:id="@+id/cl_image_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    app:layout_constraintDimensionRatio="W,566:336"
+                    app:layout_constraintDimensionRatio="W,16:9"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -118,7 +118,7 @@
                         android:clipToOutline="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/img_detail_small_default"
-                        app:layout_constraintDimensionRatio="W,201:157"
+                        app:layout_constraintDimensionRatio="W,16:9"
                         app:layout_constraintStart_toStartOf="@id/iv_image_big"
                         app:layout_constraintTop_toTopOf="@id/iv_image_big"
                         app:layout_constraintWidth_percent="0.4" />

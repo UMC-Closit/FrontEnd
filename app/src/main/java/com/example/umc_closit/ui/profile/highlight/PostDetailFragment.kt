@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -17,8 +18,12 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.post.ItemTag
 import com.example.umc_closit.data.remote.post.PostDetail
 import com.example.umc_closit.databinding.FragmentPostDetailBinding
+import com.example.umc_closit.utils.FileUtils.addItemTagView
+import com.example.umc_closit.utils.FileUtils.swapImagesWithTagEffect
+import com.example.umc_closit.utils.HashtagUtils
 import com.example.umc_closit.utils.TokenUtils
 import kotlinx.coroutines.launch
 
@@ -28,7 +33,15 @@ class PostDetailFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var postId: Int = -1
-    private var isSaved: Boolean = false
+    private var isHighlighted: Boolean = false
+    private var isFrontImageBig = true // 전면이 큰 사진인지
+    private var isTagVisible = false   // 현재 태그 보이는지
+
+
+    private var frontItemTags: List<ItemTag> = emptyList()
+    private var backItemTags: List<ItemTag> = emptyList()
+    private var hashtags: List<String> = emptyList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,13 +62,58 @@ class PostDetailFragment : Fragment() {
         fetchPostDetail(postId)
 
         binding.buttonWithIcon.setOnClickListener {
-            if (isSaved) {
+            if (isHighlighted) {
                 deleteHighlight(postId)
             } else {
                 createHighlight(postId)
             }
         }
+
+        binding.ivImageBig.setOnClickListener {
+            if (isTagVisible) {
+                // 태그 숨김
+                binding.clTagContainer.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction {
+                        binding.clTagContainer.removeAllViews()
+                        isTagVisible = false
+                    }
+                    .start()
+            } else {
+                // 태그 표시
+                val tags = if (isFrontImageBig) frontItemTags else backItemTags
+                binding.clTagContainer.removeAllViews()
+
+                for (tag in tags) {
+                    addItemTagView(requireContext(), binding.clTagContainer, binding.ivImageBig, tag)
+                }
+
+                binding.clTagContainer.alpha = 0f
+                binding.clTagContainer.animate()
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+
+                isTagVisible = true
+            }
+        }
+
+
+        binding.ivImageSmall.setOnClickListener {
+            swapImagesWithTagEffect(
+                bigImageView = binding.ivImageBig,
+                smallImageView = binding.ivImageSmall,
+                tagContainer = binding.clTagContainer
+            ) {
+                isFrontImageBig = !isFrontImageBig
+                isTagVisible = false // 스왑하면 태그 숨김 상태로 리셋
+                binding.clTagContainer.alpha = 0f // 투명도 0으로 만들어 둬
+            }
+        }
+
     }
+
 
 
     private fun fetchPostDetail(postId: Int) {
@@ -64,7 +122,21 @@ class PostDetailFragment : Fragment() {
                 val response = RetrofitClient.postService.getPostDetail(postId)
                 if (response.isSuccessful && response.body() != null) {
                     val post = response.body()!!.result
-                    isSaved = post.isSaved // 서버에서 가져온 초기 상태 반영
+                    isHighlighted = post.isHighlighted
+
+                    frontItemTags = post.frontItemtags
+                    backItemTags = post.backItemtags
+
+                    hashtags = post.hashtags
+                    HashtagUtils.displayHashtags(
+                        context = requireContext(),
+                        hashtags = hashtags,
+                        flow = binding.flowHashtagContainer,
+                        parentLayout = binding.clHashtag
+                    )
+
+                    Log.d("HIGHLIGHT","$hashtags")
+
                     updateUI(post)
                     updateHighlightButtonUI()
                 }
@@ -73,6 +145,7 @@ class PostDetailFragment : Fragment() {
             }
         }
     }
+
 
 
     private fun updateUI(post: PostDetail) {
@@ -87,37 +160,17 @@ class PostDetailFragment : Fragment() {
             }
             viewColorCircle.background = drawable
 
-            displayHashtags(post.hashtags)
+            HashtagUtils.displayHashtags(
+                context = requireContext(),
+                hashtags = post.hashtags,
+                flow = binding.flowHashtagContainer,
+                parentLayout = binding.clHashtag
+            )
+
 
             // visibility 드롭다운 설정
             setupDropdown(post.visibility)
         }
-    }
-
-    private fun displayHashtags(hashtags: List<String>) {
-        val flow = binding.flowHashtagContainer
-        val parentLayout = binding.clHashtag
-        val ids = mutableListOf<Int>()
-
-        parentLayout.removeAllViews() // 중복 생성 방지
-
-        for (hashtag in hashtags) {
-            val textView = TextView(requireContext()).apply {
-                id = View.generateViewId()
-                text = "#$hashtag"
-                textSize = 16f
-                typeface = ResourcesCompat.getFont(requireContext(), R.font.noto_regular)
-                includeFontPadding = false
-                setTextColor(ContextCompat.getColor(context, R.color.white))
-                setBackgroundResource(R.drawable.bg_detail_hashtag)
-                setPadding(30, 8, 30, 8)
-            }
-            parentLayout.addView(textView)
-            ids.add(textView.id)
-        }
-
-        flow.referencedIds = ids.toIntArray()
-        flow.invalidate()
     }
 
 
@@ -138,7 +191,7 @@ class PostDetailFragment : Fragment() {
 
     private fun updateHighlightButtonUI() {
         with(binding.buttonWithIcon) {
-            if (isSaved) {
+            if (isHighlighted) {
                 text = "하이라이트에 추가됨"
                 setBackgroundColor(Color.BLACK)
                 setTextColor(Color.WHITE)
@@ -162,7 +215,7 @@ class PostDetailFragment : Fragment() {
             call = apiCall(),
             onSuccess = { response ->
                 if (response.isSuccess) {
-                    isSaved = true
+                    isHighlighted = true
                     updateHighlightButtonUI()
                     Toast.makeText(requireContext(), "하이라이트 추가 성공", Toast.LENGTH_SHORT).show()
                 } else {
@@ -187,7 +240,7 @@ class PostDetailFragment : Fragment() {
             call = apiCall(),
             onSuccess = { response ->
                 if (response.isSuccess) {
-                    isSaved = false
+                    isHighlighted = false
                     updateHighlightButtonUI()
                     Toast.makeText(requireContext(), "하이라이트 삭제 성공", Toast.LENGTH_SHORT).show()
                 } else {

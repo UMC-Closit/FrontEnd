@@ -234,10 +234,11 @@ class FrontOnlyActivity : AppCompatActivity() {
             id = View.generateViewId()
             this.text = text
             textSize = 16f
-            typeface = font
+            typeface = ResourcesCompat.getFont(context, R.font.noto_medium)
+            includeFontPadding = false
             setTextColor(ContextCompat.getColor(context, R.color.white))
-            setBackgroundResource(R.drawable.bg_hashtag2) // 해시태그 배경
-            setPadding(16, 8, 16, 8)
+            setBackgroundResource(R.drawable.bg_detail_hashtag)
+            setPadding(36, 12, 36, 12)
 
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
