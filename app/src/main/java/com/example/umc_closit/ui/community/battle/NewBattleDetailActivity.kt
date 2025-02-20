@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.umc_closit.R
 import com.example.umc_closit.data.BattlePostRequest
 import com.example.umc_closit.data.BattlePostResponse
@@ -34,6 +35,22 @@ class NewBattleDetailActivity : AppCompatActivity() {
         titleEditText = findViewById(R.id.et_battle_title)
         uploadButton = findViewById(R.id.btn_upload)
         backButton = findViewById(R.id.iv_back)
+        val ivImageBig = findViewById<ImageView>(R.id.iv_image_big)
+
+        // ✅ 전달받은 썸네일 URL 가져오기
+        val thumbnailUrl = intent.getStringExtra("thumbnail_url")
+        val postId = intent.getIntExtra("post_id", -1)
+
+
+        if (!thumbnailUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(thumbnailUrl)
+                .placeholder(R.drawable.img_gray_square)
+                .error(R.drawable.img_gray_square)
+                .into(ivImageBig)
+        } else {
+            Toast.makeText(this, "이미지 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
 
         // "뒤로 가기" 버튼 클릭 시
         backButton.setOnClickListener {
@@ -44,7 +61,7 @@ class NewBattleDetailActivity : AppCompatActivity() {
         uploadButton.setOnClickListener {
             val title = titleEditText.text.toString().trim()
             if (title.isNotEmpty()) {
-                uploadBattlePost(title)
+                uploadBattlePost(postId, title)
                 val intent = Intent(this, TimelineActivity::class.java)
                 startActivity(intent)
             } else {
@@ -56,13 +73,12 @@ class NewBattleDetailActivity : AppCompatActivity() {
     /**
      * 배틀 업로드 API 호출
      */
-    private fun uploadBattlePost(title: String) {
-
+    private fun uploadBattlePost(postId: Int, title: String) {
         val request = BattlePostRequest(
-            postId = (System.currentTimeMillis() % 100000).toInt(), // 간단한 임시 ID
+            postId = postId,  // ✅ 전달받은 postId 사용
             title = title
         )
-        
+
         TokenUtils.handleTokenRefresh(
             call = RetrofitClient.battleApiService.uploadBattle(request),
             onSuccess = { response ->
@@ -72,6 +88,11 @@ class NewBattleDetailActivity : AppCompatActivity() {
                         "업로드 성공! 배틀 ID: ${response.result?.battleId}",
                         Toast.LENGTH_LONG
                     ).show()
+
+                    // 성공 후 타임라인으로 이동
+                    val intent = Intent(this, TimelineActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 } else {
                     Toast.makeText(
                         this@NewBattleDetailActivity,
@@ -85,7 +106,6 @@ class NewBattleDetailActivity : AppCompatActivity() {
                 Toast.makeText(this@NewBattleDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
             retryCall = {
-                val newAuthToken = "Bearer ${TokenUtils.getAccessToken(this)}"
                 RetrofitClient.battleApiService.uploadBattle(request)
             },
             context = this@NewBattleDetailActivity

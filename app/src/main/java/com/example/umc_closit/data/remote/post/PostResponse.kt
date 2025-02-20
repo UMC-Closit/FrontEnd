@@ -62,8 +62,14 @@ data class PostUploadResult(
     val createdAt: String,
     val visibility: String
 )
-
 data class RecentPostResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: RecentPostResult
+)
+
+data class RecentPostResult(
     val userRecentPostDTOList: List<UserRecentPostDTO>,
     val listSize: Int,
     val hasNext: Boolean,
