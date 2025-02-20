@@ -52,8 +52,9 @@ class TimelineAdapter(
                 context.startActivity(intent)
             }
 
+            // TimelineAdapter.kt
             ivComment.setOnClickListener {
-                val commentFragment = CommentBottomSheetFragment.newInstance()
+                val commentFragment = CommentBottomSheetFragment.newInstance(item.postId)
                 commentFragment.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, commentFragment.tag)
             }
 

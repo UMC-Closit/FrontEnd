@@ -10,20 +10,24 @@ import retrofit2.http.Path
 
 interface ProfileService {
 
-    @GET("api/auth/users/{closit_id}")
-    fun getUserProfile(
-        @Path("closit_id") clositId: String
-    ): Call<ProfileUserResponse>
-
     @POST("/api/auth/follows")
     fun followUser(
         @Body request: FollowRequest
     ): Call<FollowResponse>
 
-    @DELETE("/api/auth/follows/{followerId}/{followingId}")
+    @DELETE("/api/auth/follows/{receiver_closit_id}")
     fun unfollowUser(
-        @Path("followerId") followId: String,
-        @Path("followingId") followingId: String
+        @Path("receiver_closit_id") receiverClositId: String
     ): Call<UnfollowResponse>
+
+    @GET("/api/auth/follows/{receiver_closit_id}")
+    fun checkFollowStatus(
+        @Path("receiver_closit_id") receiverClositId: String
+    ): Call<FollowCheckResponse>
+
+    @GET("/api/auth/users/{closit_id}")
+    fun getUserProfile(
+        @Path("closit_id") clositId: String
+    ): Call<ProfileUserResponse>
 
 }

@@ -34,10 +34,6 @@ class MakeIdActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        binding.btnCheckId.setOnClickListener{
-
-        }
-
         // 초기에 버튼 비활성화 및 오류 메시지 숨김
         binding.btnNext.isEnabled = false
         binding.btnNext.backgroundTintList = ContextCompat.getColorStateList(this, R.color.gray_dark)

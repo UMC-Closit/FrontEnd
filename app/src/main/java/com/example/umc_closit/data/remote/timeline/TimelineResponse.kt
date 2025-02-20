@@ -123,3 +123,45 @@ data class NotificationDeleteResponse(
     val message: String,
     val result: String
 )
+
+// Comment
+data class CommentListResponse(
+    val isSuccess: Boolean,
+    val result: CommentListResult
+)
+
+data class CommentListResult(
+    val commentPreviewList: List<CommentItem>,
+    val hasNext: Boolean
+)
+
+data class CommentItem(
+    val commentId: Int,
+    val clositId: String,
+    val content: String,
+    val createdAt: String,
+    var name: String? = null,         // 추가
+    var profileImage: String? = null  // 추가
+)
+
+
+data class CommentRequest(
+    val content: String
+)
+
+data class CommentCreateResponse(
+    val isSuccess: Boolean,
+    val result: CommentCreateResult
+)
+
+data class CommentCreateResult(
+    val commentId: Int,
+    val clositId: String,
+    val createdAt: String
+)
+
+data class CommentDeleteResponse(
+    val isSuccess: Boolean,
+    val result: String
+)
+
