@@ -11,6 +11,6 @@ interface HistoryService {
     @GET("/api/auth/history/pointcolor")
     fun getPointColorHistoryList(@Query("page") page: Int): Call<ColorHistoryResponse>
 
-/*    @GET("/api/auth/history/detail")
-    fun getDetailHistory(@Query("localDate") date: String): Call<DetailHistoryResponse>*/
+    @GET("/api/auth/history/detail")
+    fun getDetailHistory(@Query("localDate") date: String): Call<DetailHistoryResponse>
 }

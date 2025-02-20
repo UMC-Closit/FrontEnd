@@ -64,3 +64,70 @@ data class EditProfileRequest(
     val password: String,
     val birth: String
 )
+
+// highlight
+data class HighlightListResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HighlightListResult
+)
+
+data class HighlightListResult(
+    val highlights: List<HighlightItem>,
+    val hasNext: Boolean,
+    val pageNumber: Int,
+    val size: Int
+)
+
+data class HighlightItem(
+    val highlightId: Int,
+    val clositId: String,
+    val postId: Int,
+    val createdAt: String,
+    val updatedAt: String? = null
+)
+
+data class HighlightDetailResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HighlightDetailResult
+)
+
+data class HighlightDetailResult(
+    val highlightId: Int,
+    val clositId: String,
+    val createdAt: String,
+    val updatedAt: String?,
+    val post: HighlightPost
+)
+
+data class HighlightPost(
+    val id: Int,
+    val backImage: String,
+    val createdAt: String
+)
+
+
+data class HighlightCreateResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HighlightCreateResult
+)
+
+data class HighlightCreateResult(
+    val highlightId: Int,
+    val clositId: String,
+    val postId: Int,
+    val createdAt: String
+)
+
+data class HighlightDeleteResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: String
+)
+

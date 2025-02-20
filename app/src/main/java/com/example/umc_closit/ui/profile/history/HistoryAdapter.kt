@@ -11,7 +11,7 @@ import com.example.umc_closit.databinding.ItemCalendarMonthBinding
 
 class HistoryAdapter(
     val months: List<Pair<Int, Int>>,
-    private val postThumbnails: Map<String, Int>,
+    private val postThumbnails: MutableMap<String, String>,
     private val postColors: MutableMap<String, String>,
     private val historyActivity: HistoryActivity,
     private val sharedPool: RecyclerView.RecycledViewPool

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.HighlightItem
 import com.example.umc_closit.data.entities.RecentItem
@@ -38,6 +39,7 @@ import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -170,34 +172,21 @@ class ProfileFragment : Fragment() {
 
         try {
             val inputStream = requireContext().contentResolver.openInputStream(imageUri)
-            val requestFile = inputStream?.readBytes()?.let {
-                RequestBody.create("image/*".toMediaTypeOrNull(), it)
-            }
+            inputStream?.use { input ->
+                val requestFile = input.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                val fileName = "${clositId}_profile_${System.currentTimeMillis()}.jpg"
+                val body = MultipartBody.Part.createFormData("user_image", fileName, requestFile)
 
-            val body = requestFile?.let {
-                MultipartBody.Part.createFormData("user_image", "profile.jpg", it)
-            }
-
-            Log.d("PROFILE_IMAGE", "clositId: $clositId")
-            Log.d("PROFILE_IMAGE", "imageUri: $imageUri")
-            Log.d("PROFILE_IMAGE", "inputStream: $inputStream")
-            Log.d("PROFILE_IMAGE", "requestFile: $requestFile")
-            Log.d("PROFILE_IMAGE", "body: $body")
-
-            if (body != null) {
-                val apiCall = {
-                    RetrofitClient.profileService.uploadProfileImage(clositId, body)
-                }
+                val apiCall = { RetrofitClient.profileService.uploadProfileImage(clositId, body) }
 
                 TokenUtils.handleTokenRefresh(
                     call = apiCall(),
                     onSuccess = { response ->
-                        Log.d("PROFILE_IMAGE", "response: $response")
                         if (response.isSuccess) {
                             Toast.makeText(requireContext(), "프로필 이미지 변경 성공", Toast.LENGTH_SHORT).show()
-                            loadUserProfile() // 변경된 프로필 이미지 반영
+                            loadUserProfile()
                         } else {
-                            Toast.makeText(requireContext(), "프로필 이미지 변경 실패", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "프로필 이미지 변경 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                             Log.e("PROFILE_IMAGE", "프로필 이미지 변경 실패: ${response.message}")
                         }
                     },
@@ -208,13 +197,12 @@ class ProfileFragment : Fragment() {
                     retryCall = apiCall,
                     context = requireContext()
                 )
-            } else {
-                Log.e("PROFILE_IMAGE", "body가 null임")
-            }
+            } ?: Log.e("PROFILE_IMAGE", "inputStream이 null임")
         } catch (e: Exception) {
             Log.e("PROFILE_IMAGE", "Exception 발생", e)
         }
     }
+
 
 
     companion object {
@@ -327,10 +315,13 @@ class ProfileFragment : Fragment() {
                     binding.tvUsername.text = user.name ?: "UNKNOWN"
 
                     Glide.with(requireContext())
-                        .load(user.profileImage ?: R.drawable.img_profile_user)
+                        .load(user.profileImage + "?ts=${System.currentTimeMillis()}")
                         .placeholder(R.drawable.img_profile_user)
                         .error(R.drawable.img_profile_user)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(binding.ivProfileImage)
+
 
                     // 팔로워, 팔로잉 수 업데이트
                     binding.tvFollowersCount.text = user.followers.toString()
