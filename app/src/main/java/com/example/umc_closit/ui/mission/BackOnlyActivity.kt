@@ -126,7 +126,6 @@ class BackOnlyActivity : AppCompatActivity() {
                 Toast.makeText(this, "게시글 업로드 성공! ID: ${response.result.postId}", Toast.LENGTH_SHORT).show()
                 // 업로드 성공 시 타임라인으로 이동
                 val intent = Intent(this, TimelineActivity::class.java)
-                intent.putExtra("showUploadFragment", true)
                 startActivity(intent)
                 finish()
             }.onFailure { error ->
