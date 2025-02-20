@@ -9,6 +9,7 @@ import com.example.umc_closit.data.remote.post.PostService
 import com.example.umc_closit.data.remote.profile.ProfileService
 import com.example.umc_closit.data.remote.timeline.TimelineService
 import com.example.umc_closit.data.remote.profile.history.HistoryService
+import com.example.umc_closit.data.remote.battle.BattleApiService
 import okhttp3.OkHttpClient
 
 import retrofit2.Retrofit

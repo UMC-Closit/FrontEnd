@@ -32,13 +32,13 @@ class BattleFragment : Fragment() {
         // 더미 데이터 추가 (BattleItem 리스트)
         val itemList = List(10) { index ->
             BattleItem(
-                id = index.toLong(),
+                id = index,
                 battleId = (1000 + index).toLong(),
                 userProfileUrl = (2000 + index).toString(),
                 userName = (3000 + index).toString(),
-                battleLikeId = (4000 + index).toLong(),
-                leftPostId = (5000 + index).toLong(),
-                rightPostId = (6000 + index).toLong()
+                battleLikeId = (4000 + index),
+                leftPostId = (5000 + index),
+                rightPostId = (6000 + index)
             )
         }
 

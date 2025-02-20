@@ -18,6 +18,7 @@ import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.battle.LikeResponse
 import com.example.umc_closit.data.remote.battle.VoteResponse
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.ui.battle.comment.BattleCommentBottomSheetFragment
 import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -57,12 +58,10 @@ class BattlePageAdapter(
 
             // 댓글 클릭 시 CommentBottomSheetFragment 호출
             ivComment.setOnClickListener {
-/*                CommentBottomSheetFragment.newInstance().show(
+                BattleCommentBottomSheetFragment.newInstance(item.battleId).show(
                     (context as AppCompatActivity).supportFragmentManager,
                     "comment"
                 )
-                수진 -> 지우 : CommentBottomSheetFragment를 수정하는 과정에서 해당 파트가 오류가 나 임시 주석 처리했습니다!
-                */
             }
 
             // 좋아요 상태 반영
@@ -95,25 +94,28 @@ class BattlePageAdapter(
     /**
      * 투표 요청 처리 (TokenUtils 적용)
      */
-    private fun sendVote(battleId: Long, postId: Long, progressBar: ProgressBar) {
+    private fun sendVote(battleId: Long, postId: Int, progressBar: ProgressBar) {
         val requestBody = mapOf("postId" to postId)
 
         TokenUtils.handleTokenRefresh(
-            call = apiService.voteBattle(requestBody),
+            call = apiService.voteBattle(battleId, requestBody),  // 변경된 부분: battleId를 PathVariable로 전달
             onSuccess = { voteResponse: VoteResponse ->
                 if (voteResponse.isSuccess) {
-                    val total = (voteResponse.result?.firstVotingRate ?: 0) +
-                            (voteResponse.result?.secondVotingRate ?: 0)
-                    val progress = if (total > 0) {
-                        (voteResponse.result?.firstVotingRate ?: 0) * 100 / total
+                    val firstVotingRate = voteResponse.result?.firstVotingRate ?: 0
+                    val secondVotingRate = voteResponse.result?.secondVotingRate ?: 0
+                    val totalVotes = firstVotingRate + secondVotingRate
+
+                    val progress = if (totalVotes > 0) {
+                        (firstVotingRate * 100) / totalVotes
                     } else {
-                        50
+                        50  // 기본값
                     }
 
                     animateProgress(progressBar, progress)
+
                     Toast.makeText(
                         context,
-                        "투표: ${voteResponse.result?.firstVotingRate}% vs ${voteResponse.result?.secondVotingRate}%",
+                        "투표 성공! ${firstVotingRate}% vs ${secondVotingRate}%",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -126,10 +128,10 @@ class BattlePageAdapter(
             },
             onFailure = { throwable ->
                 Log.e("Vote", "API 호출 실패", throwable)
-                Toast.makeText(context, "네트워크 오류", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "네트워크 오류: ${throwable.message}", Toast.LENGTH_SHORT).show()
             },
             retryCall = {
-                apiService.voteBattle(requestBody)
+                apiService.voteBattle(battleId, requestBody)  // 재시도 시에도 battleId를 포함
             },
             context = context
         )

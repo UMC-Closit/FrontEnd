@@ -72,4 +72,11 @@ interface ProfileService {
     fun deleteHighlight(
         @Path("highlight_id") highlightId: Int
     ): Call<HighlightDeleteResponse>
+
+    @GET("/api/auth/bookmarks")
+    fun getBookmarks(
+        @Query("page") page: Int = 0,  // 기본값 0
+        @Query("size") size: Int = 10  // 기본값 10
+    ): Call<BookmarkResponse>
+
 }

@@ -13,9 +13,9 @@ data class VoteResponse(
 // 투표 결과 데이터
 data class VoteResult(
     @SerializedName("battleId") val battleId: Long,
-    @SerializedName("firstClosetId") val firstClosetId: String,
+    @SerializedName("firstClositId") val firstClosetId: String,
     @SerializedName("firstVotingRate") val firstVotingRate: Int,
-    @SerializedName("secondClosetId") val secondClosetId: String,
+    @SerializedName("secondClositId") val secondClosetId: String,
     @SerializedName("secondVotingRate") val secondVotingRate: Int,
     @SerializedName("createdAt") val createdAt: String
 )

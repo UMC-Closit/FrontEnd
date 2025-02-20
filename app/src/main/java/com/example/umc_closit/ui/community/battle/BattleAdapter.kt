@@ -5,36 +5,43 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.post.UserRecentPostDTO
+import com.example.umc_closit.databinding.ItemBattle2Binding
 import com.example.umc_closit.ui.community.battle.NewBattleDetailActivity
 import com.example.umc_closit.databinding.ItemBattleBinding
 
 class BattleAdapter(
-    private val itemList: List<Int>,
+    private val itemList: List<UserRecentPostDTO>,
     private val context: Context
-) : RecyclerView.Adapter<BattleAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<BattleAdapter.BattleViewHolder>() {
 
-    class ViewHolder(private val binding: ItemBattleBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(imageResId: Int, position: Int, context: Context) {
-            binding.imgBattleIcon.setImageResource(imageResId)
+    inner class BattleViewHolder(val binding: ItemBattle2Binding) : RecyclerView.ViewHolder(binding.root)
 
-            // 클릭 이벤트 추가 (이미지를 클릭하면 NewBattleDetailActivity로 이동)
-            binding.imgBattleIcon.setOnClickListener {
-                val intent = Intent(context, NewBattleDetailActivity::class.java).apply {
-                    putExtra("ITEM_POSITION", position) // 클릭한 아이템의 위치 정보 전달
-                    putExtra("IMAGE_RES_ID", imageResId) // 클릭한 이미지 리소스 전달
-                }
-                context.startActivity(intent)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BattleViewHolder {
+        val binding = ItemBattle2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return BattleViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: BattleViewHolder, position: Int) {
+        val post = itemList[position]
+        Glide.with(context)
+            .load(post.thumbnail)
+            .placeholder(R.drawable.img_gray_square)  // 로딩 중일 때 기본 이미지
+            .error(R.drawable.img_gray_square)        // 로딩 실패 시 기본 이미지
+            .centerCrop()
+            .into(holder.binding.imageView)           // imageView는 item_battle.xml에 있는 이미지 뷰
+
+        holder.binding.imageView.setOnClickListener {
+            val intent = Intent(context, NewBattleDetailActivity::class.java).apply {
+                putExtra("thumbnail_url", post.thumbnail)  // 클릭한 썸네일 URL 전달
+                putExtra("post_id", post.postId)  //  postId 전달
             }
+            context.startActivity(intent)
         }
-    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemBattleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position], position, context)
     }
 
     override fun getItemCount(): Int = itemList.size

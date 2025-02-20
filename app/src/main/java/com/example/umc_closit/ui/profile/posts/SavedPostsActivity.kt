@@ -7,6 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.umc_closit.databinding.ActivitySavedPostsBinding
 import com.example.umc_closit.data.entities.Post
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.profile.BookmarkResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SavedPostsActivity : AppCompatActivity() {
 
@@ -19,6 +24,10 @@ class SavedPostsActivity : AppCompatActivity() {
         // ViewBinding 초기화
         binding = ActivitySavedPostsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
 
         // btnTrash 클릭 시 동작
         binding.btnTrash.setOnClickListener {
@@ -33,7 +42,6 @@ class SavedPostsActivity : AppCompatActivity() {
             val selectedPosts = postAdapter.getSelectedPosts()
             if (selectedPosts.isNotEmpty()) {
                 postAdapter.deleteSelectedPosts()
-                Toast.makeText(this, "${selectedPosts.size} 개의 게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "삭제할 게시글을 선택하세요.", Toast.LENGTH_SHORT).show()
             }
@@ -48,16 +56,39 @@ class SavedPostsActivity : AppCompatActivity() {
         }
 
         // RecyclerView 설정
-        postAdapter = PostAdapter(getPosts())
+        postAdapter = PostAdapter(mutableListOf(), this)
         binding.recyclerView.adapter = postAdapter
         binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+
+        // API로부터 북마크된 게시물 가져오기
+        getPostsFromApi()
     }
 
-    private fun getPosts(): MutableList<Post> {
-        val posts = mutableListOf<Post>()
-        for (i in 1..17) {
-            posts.add(Post("Image $i", com.example.umc_closit.R.drawable.sample_image)) // TODO: 시연용, 추후 수정
-        }
-        return posts
+    private fun getPostsFromApi() {
+        RetrofitClient.profileService.getBookmarks(page = 0, size = 20)
+            .enqueue(object : Callback<BookmarkResponse> {
+                override fun onResponse(call: Call<BookmarkResponse>, response: Response<BookmarkResponse>) {
+                    if (response.isSuccessful && response.body()?.isSuccess == true) {
+                        val bookmarks = response.body()?.result?.bookmarkResultDTOList ?: emptyList()
+
+                        // BookmarkItem -> Post 변환
+                        val posts = bookmarks.map {
+                            Post(
+                                title = "Post ${it.postId}",
+                                imageUrl = it.thumbnail,  // API에서 받은 이미지 URL 사용
+                                postId = it.postId
+                            )
+                        }.toMutableList()
+
+                        postAdapter.updatePosts(posts)
+                    } else {
+                        Toast.makeText(this@SavedPostsActivity, "북마크 불러오기 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<BookmarkResponse>, t: Throwable) {
+                    Toast.makeText(this@SavedPostsActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 }

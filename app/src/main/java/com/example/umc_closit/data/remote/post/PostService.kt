@@ -37,6 +37,6 @@ interface PostService {
     suspend fun getRecentPosts(
         @Path("closit_id") clositId: String,
         @Query("page") page: Int
-    ): Response<Response<RecentPostResponse>>
+    ): Response<RecentPostResponse>
 }
 
