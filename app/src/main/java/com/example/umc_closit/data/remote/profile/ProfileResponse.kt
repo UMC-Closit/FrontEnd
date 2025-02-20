@@ -65,31 +65,6 @@ data class EditProfileRequest(
     val birth: String
 )
 
-// 북마크 조회
-data class BookmarkResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: BookmarkResult
-)
-
-data class BookmarkResult(
-    val bookmarkResultDTOList: List<BookmarkItem>,
-    val listSize: Int,
-    val hasNext: Boolean,
-    val first: Boolean,
-    val last: Boolean
-)
-
-data class BookmarkItem(
-    val clositId: String,
-    val userName: String,
-    val bookmarkId: Int,
-    val postId: Int,
-    val thumbnail: String,
-    val createdAt: String
-)
-
 // highlight
 data class HighlightListResponse(
     val isSuccess: Boolean,
@@ -155,3 +130,4 @@ data class HighlightDeleteResponse(
     val message: String,
     val result: String
 )
+
