@@ -72,6 +72,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:src="@drawable/image_background"
+            android:background="@drawable/rounded_image"
             android:clipToOutline="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

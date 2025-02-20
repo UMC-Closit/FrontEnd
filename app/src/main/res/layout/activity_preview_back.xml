@@ -60,12 +60,15 @@
         android:id="@+id/imageViewMain"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.73"
-        app:layout_constraintWidth_percent="0.8"
+        android:background="@drawable/rounded_image"
+        android:clipToOutline="true"
         android:scaleType="fitXY"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/btnRetake"
+        app:layout_constraintDimensionRatio="9:16"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintWidth_percent="0.75" />
 
     <!-- 버튼 레이아웃 -->
     <ImageButton
@@ -75,16 +78,9 @@
         app:layout_constraintHeight_percent="0.065"
         android:src="@drawable/retake"
         android:background="@android:color/transparent"
-        app:layout_constraintBottom_toTopOf="@+id/margin1"
-        app:layout_constraintEnd_toEndOf="@+id/margin1" />
-
-    <View
-        android:id="@+id/margin1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.013"
         app:layout_constraintBottom_toTopOf="@+id/btnNext"
         app:layout_constraintEnd_toEndOf="@+id/btnNext" />
+
 
     <ImageButton
         android:id="@+id/btnNext"
@@ -103,6 +99,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.015" />
+        app:layout_constraintHeight_percent="0.02" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
