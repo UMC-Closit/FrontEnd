@@ -34,9 +34,10 @@ interface PostService {
     ): Response<PostUploadResponse>
 
     @GET("/api/auth/users/{closit_id}/recent-post")
-    suspend fun getRecentPosts(
+    fun getRecentPosts(
         @Path("closit_id") clositId: String,
         @Query("page") page: Int
-    ): Response<RecentPostResponse>
+    ): Call<RecentPostResponse>
+
 }
 
