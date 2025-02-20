@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -32,6 +34,16 @@ import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.utils.DateUtils.getCurrentDate
 import com.example.umc_closit.utils.TokenUtils
 import com.example.umc_closit.ui.mission.MissionActivity
+import com.example.umc_closit.ui.profile.edit.EditProfileActivity
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.util.Date
+import java.util.Locale
+
 
 class ProfileFragment : Fragment() {
 
@@ -56,6 +68,17 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkUser()
+
+        if (isMyProfile()) {
+            binding.tvEditProfileImage.visibility = View.VISIBLE
+        } else {
+            binding.tvEditProfileImage.visibility = View.GONE
+        }
+
+        binding.tvEditProfileImage.setOnClickListener {
+            openGallery()
+        }
+
 
         // 유저 정보 불러오기
         loadUserProfile()
@@ -101,7 +124,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.tvEditInfo.setOnClickListener {
-            startActivity(Intent(requireContext(), MissionActivity::class.java))
+            startActivity(Intent(requireContext(), EditProfileActivity::class.java))
         }
 
         binding.tvSavePosts.setOnClickListener {
@@ -123,6 +146,79 @@ class ProfileFragment : Fragment() {
         binding.tvFollow.setOnClickListener {
             toggleFollow()
         }
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK) {
+            val imageUri = data?.data
+            imageUri?.let {
+                uploadProfileImage(it)
+            }
+        }
+    }
+
+    private fun uploadProfileImage(imageUri: Uri) {
+        val clositId = loggedInUserClositId
+
+        try {
+            val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+            val requestFile = inputStream?.readBytes()?.let {
+                RequestBody.create("image/*".toMediaTypeOrNull(), it)
+            }
+
+            val body = requestFile?.let {
+                MultipartBody.Part.createFormData("user_image", "profile.jpg", it)
+            }
+
+            Log.d("PROFILE_IMAGE", "clositId: $clositId")
+            Log.d("PROFILE_IMAGE", "imageUri: $imageUri")
+            Log.d("PROFILE_IMAGE", "inputStream: $inputStream")
+            Log.d("PROFILE_IMAGE", "requestFile: $requestFile")
+            Log.d("PROFILE_IMAGE", "body: $body")
+
+            if (body != null) {
+                val apiCall = {
+                    RetrofitClient.profileService.uploadProfileImage(clositId, body)
+                }
+
+                TokenUtils.handleTokenRefresh(
+                    call = apiCall(),
+                    onSuccess = { response ->
+                        Log.d("PROFILE_IMAGE", "response: $response")
+                        if (response.isSuccess) {
+                            Toast.makeText(requireContext(), "프로필 이미지 변경 성공", Toast.LENGTH_SHORT).show()
+                            loadUserProfile() // 변경된 프로필 이미지 반영
+                        } else {
+                            Toast.makeText(requireContext(), "프로필 이미지 변경 실패", Toast.LENGTH_SHORT).show()
+                            Log.e("PROFILE_IMAGE", "프로필 이미지 변경 실패: ${response.message}")
+                        }
+                    },
+                    onFailure = { t ->
+                        Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        Log.e("PROFILE_IMAGE", "네트워크 오류", t)
+                    },
+                    retryCall = apiCall,
+                    context = requireContext()
+                )
+            } else {
+                Log.e("PROFILE_IMAGE", "body가 null임")
+            }
+        } catch (e: Exception) {
+            Log.e("PROFILE_IMAGE", "Exception 발생", e)
+        }
+    }
+
+
+    companion object {
+        private const val GALLERY_REQUEST_CODE = 100
     }
 
     private fun toggleFollow() {
@@ -149,13 +245,18 @@ class ProfileFragment : Fragment() {
                 if (response.isSuccess) {
                     isFollowing = true
                     updateFollowButtonUI(isFollowing)
-                    Toast.makeText(requireContext(), "팔로우 성공", Toast.LENGTH_SHORT).show()
+
+                    // 팔로워 수 증가
+                    val currentFollowers = binding.tvFollowersCount.text.toString().toInt()
+                    binding.tvFollowersCount.text = (currentFollowers + 1).toString()
+
                 } else {
                     Toast.makeText(requireContext(), "팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
             },
             onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                Log.e("FOLLOW","$t")
             },
             retryCall = apiCall,
             context = requireContext()
@@ -173,7 +274,9 @@ class ProfileFragment : Fragment() {
                 if (response.isSuccess) {
                     isFollowing = false
                     updateFollowButtonUI(isFollowing)
-                    Toast.makeText(requireContext(), "언팔로우 성공", Toast.LENGTH_SHORT).show()
+                    // 팔로워 수 감소
+                    val currentFollowers = binding.tvFollowersCount.text.toString().toInt()
+                    binding.tvFollowersCount.text = (currentFollowers - 1).toString()
                 } else {
                     Toast.makeText(requireContext(), "언팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -228,12 +331,26 @@ class ProfileFragment : Fragment() {
                         .placeholder(R.drawable.img_profile_user)
                         .error(R.drawable.img_profile_user)
                         .into(binding.ivProfileImage)
+
+                    // 팔로워, 팔로잉 수 업데이트
+                    binding.tvFollowersCount.text = user.followers.toString()
+                    binding.tvFollowingCount.text = user.following.toString()
+
+                    // 기록일 수 업데이트
+                    val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+                    val createdAtDate = dateFormat.parse(user.createdAt.substring(0, 10))
+                    val today = Date()
+                    val daysBetween = ((today.time - createdAtDate.time) / (1000 * 60 * 60 * 24)).toInt() + 1
+
+                    binding.tvRecordDays.text = getString(R.string.record_days_format, daysBetween)
+
                 } else {
                     Toast.makeText(requireContext(), "프로필 정보 로드 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
             },
             onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                Log.e("PROFILE","네트워크 오류: ${t.message}")
             },
             retryCall = apiCall,
             context = requireContext()
@@ -241,19 +358,23 @@ class ProfileFragment : Fragment() {
     }
 
 
+
     private fun updateFollowButtonUI(following: Boolean) {
         val backgroundDrawable = binding.viewFollowBtn.background.mutate() as android.graphics.drawable.GradientDrawable
 
         if (following) {
             binding.tvFollow.text = "팔로잉"
-            backgroundDrawable.setColor(resources.getColor(R.color.black, null))
+            backgroundDrawable.setColor(resources.getColor(R.color.pink_point, null))
+            backgroundDrawable.setStroke(2, resources.getColor(R.color.pink_point, null)) // 테두리 변경
             binding.tvFollow.setTextColor(resources.getColor(R.color.white, null))
         } else {
             binding.tvFollow.text = "팔로우"
-            backgroundDrawable.setColor(resources.getColor(R.color.white, null))
-            binding.tvFollow.setTextColor(resources.getColor(R.color.black, null))
+            backgroundDrawable.setColor(resources.getColor(R.color.black, null))
+            backgroundDrawable.setStroke(2, resources.getColor(R.color.white, null)) // 테두리 변경
+            binding.tvFollow.setTextColor(resources.getColor(R.color.white, null))
         }
     }
+
 
     private fun checkUser() {
         val sp = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
@@ -261,7 +382,15 @@ class ProfileFragment : Fragment() {
         profileUserClositId = arguments?.getString("profileUserClositId", "") ?: ""
 
         if (loggedInUserClositId == profileUserClositId) {
+            // 내 프로필이면 수정 관련 버튼 보이게
+            binding.clSettingsContainer.visibility = View.VISIBLE
             binding.viewFollowBtn.visibility = View.GONE
+            binding.tvFollow.visibility = View.GONE
+        } else {
+            // 다른 사람 프로필이면 팔로우 버튼 보이게
+            binding.clSettingsContainer.visibility = View.GONE
+            binding.viewFollowBtn.visibility = View.VISIBLE
+            binding.tvFollow.visibility = View.VISIBLE
         }
     }
 

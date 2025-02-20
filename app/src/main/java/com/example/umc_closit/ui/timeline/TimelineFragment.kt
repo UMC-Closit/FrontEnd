@@ -25,7 +25,6 @@ class TimelineFragment : Fragment() {
     private lateinit var timelineAdapter: TimelineAdapter
 
     private var accessToken: String = ""
-    private var userId: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +55,6 @@ class TimelineFragment : Fragment() {
         // SharedPreferences에서 accessToken 가져오기
         val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         accessToken = sharedPreferences.getString("accessToken", "") ?: ""
-        userId = sharedPreferences.getInt("userId", -1)
 
         timelineAdapter = TimelineAdapter(requireContext(), mutableListOf())
 
@@ -67,43 +65,66 @@ class TimelineFragment : Fragment() {
             // 스크롤 감지해서 다음 페이지 불러오기
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val itemCount = layoutManager.itemCount
 
-                    if (!timelineViewModel.isLoading && timelineViewModel.hasNextPage && lastVisibleItemPosition == itemCount - 1) {
-                        timelineViewModel.fetchTimelinePosts(accessToken, userId, context = requireContext())
+                    if (timelineViewModel.isLoading.value != true && timelineViewModel.hasNextPage && lastVisibleItemPosition == itemCount - 1) {
+                        timelineViewModel.fetchTimelinePosts(context = requireContext())
                     }
                 }
             })
         }
-        timelineViewModel.fetchTimelinePosts(accessToken, userId, context = requireContext())
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.tvPostNone.visibility = View.GONE
+            timelineViewModel.resetPage()
+            timelineViewModel.fetchTimelinePosts(context = requireContext())
+        }
 
 
-        timelineViewModel.timelineItems.observe(viewLifecycleOwner, Observer { timelineItems ->
-            when {
-                timelineItems == null -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.rvTimeline.visibility = View.GONE
-                    binding.tvPostNone.visibility = View.GONE
-                }
+        // 스와이프 새로고침 설정
+        timelineViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.tvPostNone.visibility = View.GONE
+            } else {
+                binding.progressBar.visibility = View.GONE
+            }
+        }
 
-                timelineItems.isNotEmpty() -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.rvTimeline.visibility = View.VISIBLE
-                    binding.tvPostNone.visibility = View.GONE
-                    timelineAdapter.updateTimelineItems(timelineItems)
-                }
+        timelineViewModel.timelineItems.observe(viewLifecycleOwner) { timelineItems ->
+            binding.swipeRefreshLayout.isRefreshing = false
 
-                else -> { // 데이터는 불러왔지만 비었을 때
-                    binding.progressBar.visibility = View.GONE
-                    binding.rvTimeline.visibility = View.GONE
+            if (timelineItems.isNullOrEmpty()) {
+                binding.rvTimeline.visibility = View.GONE
+                if (timelineViewModel.isLoading.value != true) {
                     binding.tvPostNone.visibility = View.VISIBLE
                 }
+            } else {
+                binding.rvTimeline.visibility = View.VISIBLE
+                binding.tvPostNone.visibility = View.GONE
+                timelineAdapter.updateTimelineItems(timelineItems)
             }
-        })
+        }
 
+
+        timelineViewModel.timelineItems.observe(viewLifecycleOwner) { timelineItems ->
+            binding.swipeRefreshLayout.isRefreshing = false
+
+            if (!timelineViewModel.isLoading.value!! && timelineItems != null) {
+                // 로딩 끝난 후에만 데이터 업데이트
+                timelineAdapter.updateTimelineItems(timelineItems)
+
+                if (timelineItems.isEmpty()) {
+                    binding.tvPostNone.visibility = View.VISIBLE
+                } else {
+                    binding.tvPostNone.visibility = View.GONE
+                }
+            }
+        }
+        // 초기 데이터 로드
+        timelineViewModel.fetchTimelinePosts(context = requireContext())
 
     }
 

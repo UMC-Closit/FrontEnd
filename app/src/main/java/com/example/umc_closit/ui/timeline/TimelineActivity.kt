@@ -1,10 +1,12 @@
 package com.example.umc_closit.ui.timeline
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.ui.community.CommunityFragment
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ActivityTimelineBinding
+import com.example.umc_closit.ui.mission.MissionActivity
 import com.example.umc_closit.ui.profile.ProfileFragment
 import com.example.umc_closit.ui.upload.UploadFragment
 
@@ -62,9 +64,8 @@ class TimelineActivity : AppCompatActivity() {
                 }
 
                 R.id.menu_upload -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, UploadFragment())
-                        .commit()
+                    val intent = Intent(this, MissionActivity::class.java)
+                    startActivity(intent)
                     true
                 }
 
@@ -72,4 +73,5 @@ class TimelineActivity : AppCompatActivity() {
             }
         }
     }
+
 }

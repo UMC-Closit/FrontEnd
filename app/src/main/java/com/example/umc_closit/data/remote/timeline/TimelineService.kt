@@ -16,8 +16,6 @@ interface TimelineService {
     @GET("api/auth/posts")
     fun getPosts(
         @Query("follower") follower: Boolean = false,
-        @Query("user_id") userId: Int?,
-        @Query("hashtag") hashtag: String?,
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10
     ): Call<TimelineResponse>

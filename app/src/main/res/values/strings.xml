@@ -3,8 +3,7 @@
 
 
 
-    <string name="register1">UMC_Closit</string>
-    <string name="register2">UMC_Closit</string>
-    <string name="register3">UMC_Closit</string>
+    <string name="record_days_format">%1$d일째 기록중</string>
+
 
 </resources>

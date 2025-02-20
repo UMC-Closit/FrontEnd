@@ -1,11 +1,15 @@
 package com.example.umc_closit.data.remote.profile
 
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ProfileService {
@@ -29,5 +33,18 @@ interface ProfileService {
     fun getUserProfile(
         @Path("closit_id") clositId: String
     ): Call<ProfileUserResponse>
+
+    @Multipart
+    @POST("/api/auth/users/{closit_id}/profile-image")
+    fun uploadProfileImage(
+        @Path("closit_id") clositId: String,
+        @Part user_image: MultipartBody.Part
+    ): Call<ProfileUserResponse>
+
+    @PATCH("/api/auth/users/")
+    fun updateUserProfile(
+        @Body request: EditProfileRequest
+    ): Call<ProfileUserResponse>
+
 
 }

@@ -22,7 +22,7 @@ data class TimelineResult(
 @Parcelize
 data class PostPreview(
     val postId: Int,
-    val userId: Int,
+    val clositId: String,
     val profileImage: String,
     val frontImage: String,
     val backImage: String,

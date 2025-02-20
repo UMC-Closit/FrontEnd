@@ -189,7 +189,7 @@
             android:fontFamily="@font/ibm_regular"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="380:50"
             app:layout_constraintEnd_toEndOf="parent"

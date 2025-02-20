@@ -22,7 +22,10 @@ class NotificationAdapter(
         val item = items[position]
         with(holder.binding) {
             tvMessage.text = "${item.content}"
-            Glide.with(root.context).load(item.imageUrl).into(ivIcon)
+            Glide.with(root.context)
+                .load(item.imageUrl)
+                .circleCrop() // 동그랗게 만드는 부분 추가
+                .into(ivIcon)
         }
     }
 

@@ -145,21 +145,12 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun setSwipeToDelete(adapter: NotificationAdapter, recyclerView: RecyclerView) {
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val notificationId = adapter.getItemIdAtPosition(position)
+        val itemTouchHelper = ItemTouchHelper(
+            NotificationSwipeCallback(adapter) { notificationId ->
                 deleteNotification(notificationId)
             }
-        }
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+        )
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
+
 }
