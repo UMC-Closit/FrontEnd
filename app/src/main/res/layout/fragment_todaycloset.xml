@@ -10,9 +10,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/blackbackground"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1"
         android:background="@drawable/bg_leftcorner_black"
-        android:padding="16dp"
+        android:paddingTop="12dp"
+        android:paddingStart="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

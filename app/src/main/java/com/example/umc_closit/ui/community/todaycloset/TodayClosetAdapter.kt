@@ -18,10 +18,8 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val frontImage: ImageView = view.findViewById(R.id.img_front)
-        val viewCount: TextView = view.findViewById(R.id.tv_view_count)
         val backImage: ImageView = view.findViewById(R.id.img_back)
         val profileImage: ImageView = view.findViewById(R.id.iv_user_profile)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,24 +31,25 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = itemList[position]
 
-        // 이미지 로딩 (Glide 사용)
+        // 전면 사진 로드
         Glide.with(holder.itemView.context)
             .load(item.frontImage)
             .placeholder(R.drawable.ic_placeholder)
             .into(holder.frontImage)
 
+        // 후면 사진 로드
         Glide.with(holder.itemView.context)
             .load(item.backImage)
             .placeholder(R.drawable.ic_placeholder)
             .into(holder.backImage)
 
+        // 프로필 사진 로드
         Glide.with(holder.itemView.context)
             .load(item.profileImage)
-            .placeholder(R.drawable.ic_placeholder)
+            .placeholder(R.drawable.img_profile_default)
+            .circleCrop()
             .into(holder.profileImage)
 
-        // 조회수 표시
-        holder.viewCount.text = "조회수: ${item.viewCount}"
 
         // 아이템 클릭 시 상세 화면으로 이동
         holder.itemView.setOnClickListener {

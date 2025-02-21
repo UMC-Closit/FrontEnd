@@ -125,7 +125,7 @@ class DetailActivity : AppCompatActivity() {
         Glide.with(this).load(post.backImage).into(binding.ivImageSmall)
 
         // 프로필 이미지 업데이트
-        Glide.with(this).load(post.profileImage).into(binding.ivUserProfile)
+        Glide.with(this).load(post.profileImage).circleCrop().into(binding.ivUserProfile)
 
         val drawable = GradientDrawable().apply {
             shape = GradientDrawable.OVAL

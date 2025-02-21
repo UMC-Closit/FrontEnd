@@ -3,9 +3,11 @@ package com.example.umc_closit.ui.timeline
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ActivityTimelineBinding
 import com.example.umc_closit.ui.community.CommunityFragment
+import com.example.umc_closit.ui.community.todaycloset.TodayClosetFragment
 import com.example.umc_closit.ui.mission.MissionActivity
 import com.example.umc_closit.ui.profile.ProfileFragment
 import com.example.umc_closit.utils.TokenUtils
@@ -21,6 +23,12 @@ class TimelineActivity : AppCompatActivity() {
 
         // 디테일 액티비티에서 넘어온 profileUserClositId를 받는다.
         val profileUserClositId = intent.getStringExtra("profileUserClositId")
+
+        val navigateTo = intent.getStringExtra("navigateTo")
+
+        if (navigateTo == "TodayClosetFragment") {
+            replaceFragment(TodayClosetFragment())
+        }
 
         // 기본적으로는 타임라인 화면을 보여주지만,
         // 만약 profileUserClositId가 있으면 해당 프로필 화면을 로드.
@@ -80,5 +88,11 @@ class TimelineActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment) // fragment_container는 TimelineActivity의 FrameLayout ID
+            .commit()
     }
 }
