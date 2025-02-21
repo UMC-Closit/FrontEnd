@@ -157,16 +157,16 @@ class BackOnlyActivity : AppCompatActivity() {
 
             val frontItemtags = frontTagList?.map { tag ->
                 ItemTag(
-                    x = (tag.xRatio * 100).toInt(),
-                    y = (tag.yRatio * 100).toInt(),
+                    x = tag.xRatio,
+                    y = tag.yRatio,
                     content = tag.tagText
                 )
             } ?: emptyList()
 
             val backItemtags = backTagList?.map { tag ->
                 ItemTag(
-                    x = (tag.xRatio * 100).toInt(),
-                    y = (tag.yRatio * 100).toInt(),
+                    x = tag.xRatio,
+                    y = tag.yRatio,
                     content = tag.tagText
                 )
             } ?: emptyList()

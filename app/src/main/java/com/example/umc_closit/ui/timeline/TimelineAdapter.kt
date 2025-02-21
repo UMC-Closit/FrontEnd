@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -21,11 +23,12 @@ import com.example.umc_closit.databinding.ItemTimelineBinding
 import com.example.umc_closit.ui.profile.ProfileFragment
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
+import com.example.umc_closit.utils.FileUtils
 import com.example.umc_closit.utils.TokenUtils
 
 class   TimelineAdapter(
     private val context: Context,
-    private var timelineItems: MutableList<PostPreview>,
+    var timelineItems: MutableList<PostPreview>,
 ) : RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder>() {
 
     private val timelineService = RetrofitClient.timelineService
@@ -50,9 +53,29 @@ class   TimelineAdapter(
 
             ivImageBig.setOnClickListener {
                 val intent = Intent(context, DetailActivity::class.java)
-                intent.putExtra("timelineItem", item)
+                intent.putExtra("postId", item.postId)
+                Log.d("POST","send postId: ${item.postId}, ${item.isLiked} ${item.isSaved}")
+                intent.putExtra("position", position)
                 context.startActivity(intent)
             }
+
+
+            var isFrontImageBig = true
+
+
+            val fakeTagContainer = ConstraintLayout(context)
+
+            ivImageSmall.setOnClickListener {
+                FileUtils.swapImagesWithTagEffect(
+                    bigImageView = ivImageBig,
+                    smallImageView = ivImageSmall,
+                    tagContainer = fakeTagContainer
+                ) {
+                    isFrontImageBig = !isFrontImageBig
+                }
+            }
+
+
 
             // TimelineAdapter.kt
             ivComment.setOnClickListener {

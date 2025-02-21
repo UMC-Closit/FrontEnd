@@ -33,8 +33,8 @@ data class PostDeleteResponse(
 )
 
 data class ItemTag(
-    val x: Int,
-    val y: Int,
+    val x: Float,
+    val y: Float,
     val content: String
 )
 

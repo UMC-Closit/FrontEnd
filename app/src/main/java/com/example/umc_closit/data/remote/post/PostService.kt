@@ -15,9 +15,9 @@ import retrofit2.http.Query
 
 interface PostService {
     @GET("/api/auth/posts/{post_id}")
-    suspend fun getPostDetail(
+    fun getPostDetail(
         @Path("post_id") postId: Int
-    ): Response<PostResponse>
+    ): Call<PostResponse>
 
     @DELETE("/api/auth/posts/{post_id}")
     suspend fun deletePost(

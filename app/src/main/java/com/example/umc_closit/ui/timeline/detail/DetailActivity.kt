@@ -1,78 +1,283 @@
 package com.example.umc_closit.ui.timeline.detail
 
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.helper.widget.Flow
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.TimelineItem
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.post.ItemTag
+import com.example.umc_closit.data.remote.post.PostDetail
+import com.example.umc_closit.data.remote.timeline.BookmarkRequest
 import com.example.umc_closit.databinding.ActivityDetailBinding
+import com.example.umc_closit.ui.profile.ProfileFragment
+import com.example.umc_closit.ui.timeline.TimelineActivity
+import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.utils.FileUtils
+import com.example.umc_closit.utils.HashtagUtils
+import com.example.umc_closit.utils.TokenUtils
 
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
-    private val hashtags = listOf("#Nature", "#Sunset", "#Travel", "#Adventure") // 예시 해시태그 목록
+    private var postId: Int = -1
+    private var position: Int = -1
+    private var isFrontImageBig = true
+    private var isTagVisible = false
+    private var isLiked = false // 좋아요 상태 변수
+    private var isSaved = false // 북마크 상태 변수
+
+    private lateinit var post: PostDetail
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Flow 레이아웃 및 부모 ConstraintLayout 가져오기
-        val flow: Flow = binding.flowHashtagContainer
-        val parentLayout: ConstraintLayout = binding.clHashtag
+        postId = intent.getIntExtra("postId", -1)
+        position = intent.getIntExtra("position", -1)
 
-        // 해시태그 불러오기
-        loadHashtags(flow, parentLayout)
+        fetchPostDetail(postId)
+        Log.d("POST","receive postId: ${postId}")
 
-        // Intent로 전달된 TimelineItem 받기
-        val timelineItem = intent.getParcelableExtra<TimelineItem>("timelineItem")
+        // 댓글 동기화 및 UI 업데이트
+        updateLikeAndBookmark()
 
-        // 데이터를 바인딩
-        timelineItem?.let {
-            binding.ivImageBig.setImageResource(it.mainImageResId) // 큰 이미지
-            binding.ivImageSmall.setImageResource(it.overlayImageResId) // 겹쳐진 이미지
-            Glide.with(this)
-                .load(it.userProfileResId) // 유저 프로필 이미지
-                .apply(RequestOptions.circleCropTransform()) // 둥글게 자르기
-                .into(binding.ivUserProfile)
+        binding.ivBack.setOnClickListener { onBackPressed() }
+
+        binding.ivImageBig.setOnClickListener {
+            toggleTags()
         }
 
-        // 뒤로가기 버튼 클릭 리스너 설정
-        binding.ivBack.setOnClickListener {
-            onBackPressed()  // 뒤로 가기
+        binding.ivImageSmall.setOnClickListener {
+            swapImagesWithTags()
         }
-    }
 
-    // 해시태그 불러오기
-    private fun loadHashtags(flow: Flow, parentLayout: ConstraintLayout) {
-        for (hashtag in hashtags) {
-            createHashtagTextView(hashtag, parentLayout, flow)
+        binding.ivComment.setOnClickListener {
+            val commentFragment = CommentBottomSheetFragment.newInstance(postId)
+            commentFragment.show(supportFragmentManager, commentFragment.tag)
         }
-    }
 
-    // 해시태그 TextView 생성
-    private fun createHashtagTextView(text: String, parentLayout: ConstraintLayout, flow: Flow) {
-        val textView = TextView(this).apply {
-            id = View.generateViewId()
-            this.text = text
-            textSize = 18f
-            setTextColor(ContextCompat.getColor(context, R.color.white))
-            setBackgroundResource(R.drawable.bg_detail_hashtag) // 해시태그 배경
-            setPadding(30, 8, 30, 8)
+// 디테일 액티비티에서 프로필 이미지를 클릭했을 때
+        binding.ivUserProfile.setOnClickListener {
+            // 타임라인 액티비티로 이동
+            val intent = Intent(this, TimelineActivity::class.java)
+            intent.putExtra("profileUserClositId", post.clositId) // profileUserClositId를 넘겨준다
+            startActivity(intent)
+        }
 
-            setOnClickListener {
-                Toast.makeText(context, "해시태그: $text", Toast.LENGTH_SHORT).show()
+
+        binding.ivLike.setOnClickListener {
+            if (isLiked) {
+                removeLike(postId)
+            } else {
+                addLike(postId)
             }
         }
 
-        parentLayout.addView(textView)
-        flow.addView(textView)
+        binding.ivSave.setOnClickListener {
+            if (isSaved) {
+                removeBookmark(postId)
+            } else {
+                addBookmark(postId)
+            }
+        }
+    }
+
+    private fun updateLikeAndBookmark() {
+        // 좋아요/북마크 상태 업데이트
+        binding.ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
+        binding.ivSave.setImageResource(if (isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
+    }
+
+    private fun fetchPostDetail(postId: Int) {
+        val apiCall = { RetrofitClient.postService.getPostDetail(postId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    post = response.result
+                    bindPostDetail(post)
+                    isLiked = post.isLiked
+                    isSaved = post.isSaved
+                    Log.d("POST","$isLiked, $isSaved")
+                    updateLikeAndBookmark()
+                } else {
+                    Toast.makeText(this, "게시글 불러오기 실패", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = this
+        )
+    }
+
+    private fun bindPostDetail(post: PostDetail) {
+        // 이미지 및 데이터 바인딩
+        Glide.with(this).load(post.frontImage).into(binding.ivImageBig)
+        Glide.with(this).load(post.backImage).into(binding.ivImageSmall)
+
+        // 프로필 이미지 업데이트
+        Glide.with(this).load(post.profileImage).into(binding.ivUserProfile)
+
+        val drawable = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.parseColor(post.pointColor))
+            setStroke(2, Color.BLACK)
+        }
+        binding.viewColorIcon.background = drawable
+
+        HashtagUtils.displayHashtags(
+            context = this,
+            hashtags = post.hashtags,
+            flow = binding.flowHashtagContainer,
+            parentLayout = binding.clHashtag
+        )
+    }
+
+    private fun toggleTags() {
+        val tags = if (isFrontImageBig) post.frontItemtags else post.backItemtags
+
+        if (isTagVisible) {
+            binding.clTagContainer.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction {
+                    binding.clTagContainer.removeAllViews()
+                    isTagVisible = false
+                }
+                .start()
+        } else {
+            binding.clTagContainer.removeAllViews()
+
+            for (tag in tags) {
+                FileUtils.addItemTagView(
+                    context = this,
+                    container = binding.clTagContainer,
+                    imageView = binding.ivImageBig,
+                    tag = tag
+                )
+            }
+
+            binding.clTagContainer.alpha = 0f
+            binding.clTagContainer.animate()
+                .alpha(1f)
+                .setDuration(200)
+                .start()
+
+            isTagVisible = true
+        }
+    }
+
+    private fun swapImagesWithTags() {
+        FileUtils.swapImagesWithTagEffect(
+            bigImageView = binding.ivImageBig,
+            smallImageView = binding.ivImageSmall,
+            tagContainer = binding.clTagContainer
+        ) {
+            isFrontImageBig = !isFrontImageBig
+            isTagVisible = false
+            binding.clTagContainer.alpha = 0f
+        }
+    }
+
+    private fun addLike(postId: Int) {
+        val apiCall = { RetrofitClient.timelineService.addLike(postId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    isLiked = true
+                    updateLikeAndBookmark()
+                } else {
+                    Toast.makeText(this, "좋아요 추가 실패", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = this
+        )
+    }
+
+    private fun removeLike(postId: Int) {
+        val apiCall = { RetrofitClient.timelineService.removeLike(postId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    isLiked = false
+                    updateLikeAndBookmark()
+                } else {
+                    Toast.makeText(this, "좋아요 취소 실패", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = this
+        )
+    }
+
+    private fun addBookmark(postId: Int) {
+        val apiCall = { RetrofitClient.timelineService.addBookmark(BookmarkRequest(postId)) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    isSaved = true
+                    updateLikeAndBookmark()
+                } else {
+                    Toast.makeText(this, "북마크 추가 실패", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = this
+        )
+    }
+
+    private fun removeBookmark(postId: Int) {
+        val apiCall = { RetrofitClient.timelineService.removeBookmark(postId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    isSaved = false
+                    updateLikeAndBookmark()
+                } else {
+                    Toast.makeText(this, "북마크 취소 실패", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = this
+        )
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent()
+        intent.putExtra("isLiked", isLiked)
+        intent.putExtra("isSaved", isSaved)
+        intent.putExtra("position", position)
+        setResult(RESULT_OK, intent)
+        super.onBackPressed()
     }
 }

@@ -117,14 +117,14 @@ class PostDetailFragment : Fragment() {
 
     }
 
-
-
     private fun fetchPostDetail(postId: Int) {
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.postService.getPostDetail(postId)
-                if (response.isSuccessful && response.body() != null) {
-                    val post = response.body()!!.result
+        val apiCall = { RetrofitClient.postService.getPostDetail(postId) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    val post = response.result
                     isHighlighted = post.isHighlighted
 
                     frontItemTags = post.frontItemtags
@@ -138,17 +138,19 @@ class PostDetailFragment : Fragment() {
                         parentLayout = binding.clHashtag
                     )
 
-                    Log.d("HIGHLIGHT","$hashtags")
-
                     updateUI(post)
                     updateHighlightButtonUI()
+                } else {
+                    Toast.makeText(requireContext(), "게시글 불러오기 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
-                Log.e("PostDetailFragment", "게시글 상세 조회 실패: ${e.message}")
-            }
-        }
+            },
+            onFailure = { t ->
+                Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
-
 
 
     private fun updateUI(post: PostDetail) {
@@ -245,7 +247,6 @@ class PostDetailFragment : Fragment() {
                 if (response.isSuccess) {
                     isHighlighted = false
                     updateHighlightButtonUI()
-                    Toast.makeText(requireContext(), "하이라이트 삭제 성공", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "하이라이트 삭제 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }

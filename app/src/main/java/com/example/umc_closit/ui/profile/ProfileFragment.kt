@@ -14,41 +14,29 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.HighlightItem
-import com.example.umc_closit.data.entities.RecentItem
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.data.remote.post.RecentPostResponse
 import com.example.umc_closit.data.remote.profile.FollowRequest
 import com.example.umc_closit.data.remote.profile.FollowResponse
-import com.example.umc_closit.data.remote.profile.ProfileUserResponse
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
 import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.login.LoginActivity
+import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
+import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
 import com.example.umc_closit.ui.profile.history.HistoryActivity
 import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
-import com.example.umc_closit.utils.DateUtils.getCurrentDate
-import com.example.umc_closit.utils.TokenUtils
-import com.example.umc_closit.ui.mission.MissionActivity
-import com.example.umc_closit.ui.profile.edit.EditProfileActivity
-import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
 import com.example.umc_closit.ui.profile.recent.RecentDetailActivity
-import kotlinx.coroutines.launch
+import com.example.umc_closit.utils.TokenUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
 
@@ -81,6 +69,8 @@ class ProfileFragment : Fragment() {
         loadUserHighlights()
         loadRecentPosts()
 
+        binding.tvNoHighlight.visibility = View.GONE
+        binding.tvNoRecent.visibility = View.GONE
 
         if (isMyProfile()) {
             binding.tvEditProfileImage.visibility = View.VISIBLE
@@ -91,6 +81,7 @@ class ProfileFragment : Fragment() {
         binding.tvEditProfileImage.setOnClickListener {
             openGallery()
         }
+
 
 
         // 유저 정보 불러오기
@@ -130,6 +121,7 @@ class ProfileFragment : Fragment() {
             }
             startActivity(intent)
         }
+
 
         binding.rvRecent.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -173,6 +165,23 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun updateUI() {
+        // 하이라이트가 비어있으면 tv_no_highlight 보이기
+        if (highlightAdapter.itemCount == 0) {
+            binding.tvNoHighlight.visibility = View.VISIBLE
+        } else {
+            binding.tvNoHighlight.visibility = View.GONE
+        }
+
+        // 최근 게시물이 없으면 tv_no_recent 보이기
+        if (recentAdapter.itemCount == 0) {
+            binding.tvNoRecent.visibility = View.VISIBLE
+        } else {
+            binding.tvNoRecent.visibility = View.GONE
+        }
+    }
+
+
     private fun loadRecentPosts() {
         val apiCall = { RetrofitClient.postService.getRecentPosts(profileUserClositId, 0) }
 
@@ -183,6 +192,15 @@ class ProfileFragment : Fragment() {
                     val recentPosts = response.result.userRecentPostDTOList
                     Log.d("RECENT","${recentPosts.size}")
                     recentAdapter.updateItems(recentPosts)
+
+                    // 최근 게시글이 없으면 텍스트뷰 표시
+                    if (recentPosts.isEmpty()) {
+                        binding.tvNoRecent.visibility = View.VISIBLE
+                    } else {
+                        binding.tvNoRecent.visibility = View.GONE
+                    }
+                    // UI 업데이트 (하이라이트 및 최근 게시물 확인)
+                    updateUI()
                 }
             },
             onFailure = { t ->
@@ -205,6 +223,14 @@ class ProfileFragment : Fragment() {
                 if (response.isSuccess) {
                     val highlights = response.result.highlights
                     highlightAdapter.setItems(highlights)
+
+                    // 하이라이트가 비어있으면 텍스트 보이기
+                    if (highlights.isEmpty()) {
+                        binding.tvNoHighlight.visibility = View.VISIBLE
+                    } else {
+                        binding.tvNoHighlight.visibility = View.GONE
+                    }
+                    updateUI()
                 }
             },
             onFailure = { t ->

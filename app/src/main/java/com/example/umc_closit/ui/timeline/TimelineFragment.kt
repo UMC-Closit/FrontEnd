@@ -1,5 +1,6 @@
 package com.example.umc_closit.ui.timeline
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -52,6 +53,8 @@ class TimelineFragment : Fragment() {
             startActivity(intent)
         }
 
+
+
         // SharedPreferences에서 accessToken 가져오기
         val sharedPreferences = requireContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         accessToken = sharedPreferences.getString("accessToken", "") ?: ""
@@ -93,6 +96,8 @@ class TimelineFragment : Fragment() {
             }
         }
 
+
+
         timelineViewModel.timelineItems.observe(viewLifecycleOwner) { timelineItems ->
             binding.swipeRefreshLayout.isRefreshing = false
 
@@ -127,6 +132,8 @@ class TimelineFragment : Fragment() {
         timelineViewModel.fetchTimelinePosts(context = requireContext())
 
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

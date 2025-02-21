@@ -125,8 +125,8 @@ object FileUtils {
 
             layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
             layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
-            layoutParams.leftMargin = (imageViewWidth * tag.x / 100).toInt()
-            layoutParams.topMargin = (imageViewHeight * tag.y / 100).toInt()
+            layoutParams.leftMargin = (imageViewWidth * tag.x).toInt()
+            layoutParams.topMargin = (imageViewHeight * tag.y).toInt()
 
             container.addView(tagView, layoutParams)
         }
@@ -168,8 +168,8 @@ object FileUtils {
         val yOffset = imageViewLocation[1] - containerLocation[1]
 
         // 2. 태그 위치 비율 적용
-        val xPosition = (imageView.width * (tag.x / 100f)).toInt() + xOffset
-        val yPosition = (imageView.height * (tag.y / 100f)).toInt() + yOffset
+        val xPosition = (imageView.width * (tag.x)).toInt() + xOffset
+        val yPosition = (imageView.height * (tag.y)).toInt() + yOffset
 
         layoutParams.leftMargin = xPosition
         layoutParams.topMargin = yPosition

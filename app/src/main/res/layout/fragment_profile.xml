@@ -205,16 +205,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle" />
 
+        <TextView
+            android:id="@+id/tv_no_highlight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_regular"
+            android:includeFontPadding="false"
+            android:text="하이라이트가 비어 있습니다."
+            android:visibility="gone"
+            android:textColor="@color/text_gray"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_recentTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle" />
+
         <!-- Recent Section -->
         <TextView
             android:id="@+id/tv_recentTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recent"
-            android:padding="16dp"
-            android:textSize="16sp"
-            android:textColor="@color/black"
             android:fontFamily="@font/ibm_medium"
+            android:padding="16dp"
+            android:text="Recent"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rv_highlights" />
 
@@ -225,6 +240,21 @@
             android:paddingHorizontal="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_recentTitle" />
+
+        <TextView
+            android:id="@+id/tv_no_recent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_regular"
+            android:includeFontPadding="false"
+            android:text="최근 게시글이 아직 존재하지 않습니다."
+            android:visibility="gone"
+            android:textColor="@color/text_gray"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/cl_settingsContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_recentTitle" />
 
         <!-- 설정 메뉴 -->
         <androidx.constraintlayout.widget.ConstraintLayout
