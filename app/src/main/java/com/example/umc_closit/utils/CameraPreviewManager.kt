@@ -89,7 +89,9 @@ class CameraPreviewManager(
             }
 
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-            override fun surfaceDestroyed(holder: SurfaceHolder) {}
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                closeCamera()
+            }
         })
 
         captureButton.setOnClickListener {
@@ -117,24 +119,39 @@ class CameraPreviewManager(
         try {
             cameraManager.openCamera(cameraId, object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
-                    cameraDevice?.close()
-                    cameraDevice = camera
-                    currentCameraId = cameraId
-
-                    startPreview(cameraDevice)
+                    synchronized(this@CameraPreviewManager) {
+                        cameraDevice?.close()
+                        cameraDevice = camera
+                        currentCameraId = cameraId
+                        startPreview(cameraDevice)
+                    }
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {
                     camera.close()
+                    cameraDevice = null
+                    // 카메라가 끊어진 경우 재연결 시도
+                    startCamera(cameraType)
                 }
 
                 override fun onError(camera: CameraDevice, error: Int) {
                     camera.close()
+                    cameraDevice = null
+                    Toast.makeText(context, "카메라 오류 발생: $error", Toast.LENGTH_SHORT).show()
                 }
             }, null)
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
+    }
+
+    private fun closeCamera() {
+        previewSession?.close()
+        previewSession = null
+        cameraDevice?.close()
+        cameraDevice = null
+        imageReader?.close()
+        imageReader = null
     }
 
     private fun getCameraIds() {
