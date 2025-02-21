@@ -85,8 +85,10 @@ class TodayClosetFragment : Fragment() {
     private fun loadTodayClosets(page: Int) {
         isLoading = true
 
+        val token = TokenUtils.getAccessToken(requireContext())  // 저장된 토큰 가져오기
+
         TokenUtils.handleTokenRefresh(
-            call = RetrofitClient.todayClosetApiService.getTodayClosets(page),
+            call = RetrofitClient.todayClosetApiService.getTodayClosets("Bearer $token", page),
             onSuccess = { response ->
                 isLoading = false
                 if (response.isSuccess) {
@@ -107,12 +109,12 @@ class TodayClosetFragment : Fragment() {
                 Toast.makeText(requireContext(), "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
             retryCall = {
-                RetrofitClient.todayClosetApiService.getTodayClosets(page)
+                RetrofitClient.todayClosetApiService.getTodayClosets("Bearer $token", page)
             },
             context = requireContext()
         )
-
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
