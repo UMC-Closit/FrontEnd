@@ -26,7 +26,6 @@
             android:text="오늘의 옷장"
             android:textColor="@color/white"
             android:textSize="22sp"
-            android:textStyle="bold"
             android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

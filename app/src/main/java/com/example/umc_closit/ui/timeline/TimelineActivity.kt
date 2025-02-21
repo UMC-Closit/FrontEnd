@@ -21,74 +21,60 @@ class TimelineActivity : AppCompatActivity() {
         binding = ActivityTimelineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 디테일 액티비티에서 넘어온 profileUserClositId를 받는다.
         val profileUserClositId = intent.getStringExtra("profileUserClositId")
-
         val navigateTo = intent.getStringExtra("navigateTo")
 
-        if (navigateTo == "TodayClosetFragment") {
-            replaceFragment(TodayClosetFragment())
-        }
-
-        // 기본적으로는 타임라인 화면을 보여주지만,
-        // 만약 profileUserClositId가 있으면 해당 프로필 화면을 로드.
-        if (profileUserClositId != null) {
-            val profileFragment = ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString("profileUserClositId", profileUserClositId)  // 해당 사용자의 clositId를 넘긴다
-                }
+        // 1️⃣ `navigateTo` 값에 따라 초기 프래그먼트 설정
+        val initialFragment: Fragment = when (navigateTo) {
+            "TodayClosetFragment" -> {
+                binding.btnvTimeline.selectedItemId = R.id.menu_community // 👈 여기서 아이콘 활성화 변경
+                TodayClosetFragment()
             }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, profileFragment)  // fragment_container에 프로필 화면을 로드
-                .commit()
-        } else {
-            // 타임라인 화면 로드
-            val fragment = TimelineFragment()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit()
+            else -> if (profileUserClositId != null) {
+                ProfileFragment().apply {
+                    arguments = Bundle().apply {
+                        putString("profileUserClositId", profileUserClositId)
+                    }
+                }
+            } else {
+                TimelineFragment()
+            }
         }
 
-        // BottomNavigationView 설정
+        replaceFragment(initialFragment) // 초기 프래그먼트 설정
+
+        // 2️⃣ BottomNavigationView 설정 (항상 동작하도록)
         binding.btnvTimeline.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_timeline -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, TimelineFragment())
-                        .commit()
+                    replaceFragment(TimelineFragment())
                     true
                 }
-
                 R.id.menu_profile -> {
-                    val userClositId = TokenUtils.getClositId(this) // 본인 clositId 가져오기
+                    val userClositId = TokenUtils.getClositId(this)
                     val profileFragment = ProfileFragment().apply {
                         arguments = Bundle().apply {
-                            putString("profileUserClositId", userClositId) // 본인 clositId 넘기기
+                            putString("profileUserClositId", userClositId)
                         }
                     }
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, profileFragment) // 프로필 프래그먼트로 교체
-                        .commit()
+                    replaceFragment(profileFragment)
                     true
                 }
-
                 R.id.menu_community -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, CommunityFragment())
-                        .commit()
+                    replaceFragment(CommunityFragment())
                     true
                 }
-
                 R.id.menu_upload -> {
                     val intent = Intent(this, MissionActivity::class.java)
                     startActivity(intent)
                     true
                 }
-
                 else -> false
             }
         }
     }
+
+
 
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
