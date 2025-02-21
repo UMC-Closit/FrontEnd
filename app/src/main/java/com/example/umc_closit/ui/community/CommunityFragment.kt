@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-
-import androidx.fragment.app.commit
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.FragmentCommunityBinding
 import com.example.umc_closit.ui.community.battle.BattleFragment
@@ -15,7 +13,7 @@ import com.example.umc_closit.ui.community.battle.NewBattleActivity
 import com.example.umc_closit.ui.community.challenge.ChallengeFragment
 import com.example.umc_closit.ui.community.todaycloset.TodayClosetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
-import com.example.umc_closit.ui.upload.UploadFragment
+import com.example.umc_closit.ui.upload.UploadActivity
 
 class CommunityFragment : Fragment() {
 
@@ -52,13 +50,12 @@ class CommunityFragment : Fragment() {
             startActivity(intent)
         }
 
-        // btnUpload 버튼 클릭 시 UploadFragment 실행
+        // btnUpload 버튼 클릭 시 UploadActivity 실행
         binding.btnUpload.setOnClickListener {
-            parentFragmentManager.commit {
-                replace(R.id.fragment_container, UploadFragment()) // fragment_upload.xml을 로드하는 Fragment
-                addToBackStack(null) // 뒤로 가기 가능하도록 설정
-            }
+            val intent = Intent(requireContext(), UploadActivity::class.java)
+            startActivity(intent)
         }
+
 
         binding.btnBattle.setOnClickListener {
             val fragmentTransaction = parentFragmentManager.beginTransaction()

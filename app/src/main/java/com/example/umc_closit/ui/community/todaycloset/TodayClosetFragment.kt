@@ -1,5 +1,6 @@
 package com.example.umc_closit.ui.community.todaycloset
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,16 +13,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TodayClosetItem
-import com.example.umc_closit.data.TodayClosetResponse
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.FragmentTodayclosetBinding
-import com.example.umc_closit.ui.upload.UploadFragment
+import com.example.umc_closit.ui.upload.UploadActivity
 import com.example.umc_closit.utils.TokenUtils
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class TodayClosetFragment : Fragment() {
 
@@ -72,11 +67,10 @@ class TodayClosetFragment : Fragment() {
 
         // createButton 클릭 시 UploadFragment로 이동
         binding.createButton.setOnClickListener {
-            parentFragmentManager.commit {
-                replace(R.id.fragment_container, UploadFragment())
-                addToBackStack(null)
-            }
+            val intent = Intent(requireContext(), UploadActivity::class.java)
+            startActivity(intent)
         }
+
     }
 
     /**
@@ -85,10 +79,8 @@ class TodayClosetFragment : Fragment() {
     private fun loadTodayClosets(page: Int) {
         isLoading = true
 
-        val token = TokenUtils.getAccessToken(requireContext())  // 저장된 토큰 가져오기
-
         TokenUtils.handleTokenRefresh(
-            call = RetrofitClient.todayClosetApiService.getTodayClosets("Bearer $token", page),
+            call = RetrofitClient.todayClosetApiService.getTodayClosets(page),
             onSuccess = { response ->
                 isLoading = false
                 if (response.isSuccess) {
@@ -109,7 +101,7 @@ class TodayClosetFragment : Fragment() {
                 Toast.makeText(requireContext(), "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
             retryCall = {
-                RetrofitClient.todayClosetApiService.getTodayClosets("Bearer $token", page)
+                RetrofitClient.todayClosetApiService.getTodayClosets(page)
             },
             context = requireContext()
         )

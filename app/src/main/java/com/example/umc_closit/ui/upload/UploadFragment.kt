@@ -1,24 +1,30 @@
 package com.example.umc_closit.ui.upload
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.example.umc_closit.R
+import com.bumptech.glide.Glide
+import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.databinding.FragmentUploadBinding
-import com.example.umc_closit.model.TimelineViewModel
-import com.example.umc_closit.ui.mission.MissionActivity
+import com.example.umc_closit.utils.TokenUtils
 
 class UploadFragment : Fragment() {
 
     private lateinit var binding: FragmentUploadBinding
-    private val timelineViewModel: TimelineViewModel by viewModels() // ✅ ViewModel 연결
-    private val photoList = mutableListOf<Pair<Int, Int>>() // ✅ mainImageResId와 overlayImageResId 저장
-    private lateinit var uploadAdapter: UploadAdapter
+
+    companion object {
+        private const val ARG_POST_ID = "postId"
+
+        fun newInstance(postId: Int): UploadFragment {
+            val fragment = UploadFragment()
+            val args = Bundle()
+            args.putInt(ARG_POST_ID, postId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,60 +37,34 @@ class UploadFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnUpload.setOnClickListener{
-            val intent = Intent(requireContext(), MissionActivity::class.java)
-            startActivity(intent)
-        }
-        //observeTimelineData() // ✅ ViewModel 데이터 감지
-        //setupUploadButton()
+        val postId = arguments?.getInt(ARG_POST_ID) ?: return
+        loadPostDetail(postId)
     }
 
-/*    private fun observeTimelineData() {
-        timelineViewModel.timelineItems.observe(viewLifecycleOwner) { timelineItems ->
-            photoList.clear()
-            timelineItems.forEach { item ->
-                photoList.add(Pair(item.mainImageResId, item.overlayImageResId))
-            }
-            setupViewPager()
-        }
-    }*/
+    // 게시글 상세 조회 후 이미지 로드
+    private fun loadPostDetail(postId: Int) {
+        val apiCall = { RetrofitClient.postService.getPostDetail(postId) }
 
-/*    private fun setupViewPager() {
-        uploadAdapter = UploadAdapter(photoList)
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    val post = response.result
+                    // frontImage와 backImage를 Glide로 로드
+                    Glide.with(requireContext())
+                        .load(post.frontImage)
+                        .into(binding.ivImageBig)
 
-        val displayMetrics = resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels
-        val screenHeight = displayMetrics.heightPixels
-
-        val itemHeight = (screenHeight * 0.9).toInt() // ✅ 아이템 높이를 화면 높이의 90%로 설정
-        val pageMarginPx = (screenWidth * 0.06).toInt() // ✅ 좌우 여백을 화면 너비의 5%로 설정
-        val offsetPx = pageMarginPx * 1 // ✅ 미리보기 효과를 위한 간격
-
-        binding.photoViewPager.apply {
-            adapter = uploadAdapter
-            offscreenPageLimit = 3
-            clipToPadding = false
-            clipChildren = false
-            setPadding(pageMarginPx, 0, pageMarginPx, 0) // ✅ 좌우 패딩을 설정하여 미리보기가 유지되도록 함
-        }
-
-        binding.photoViewPager.setPageTransformer { page, position ->
-            val pageTranslationX = -offsetPx * position
-            page.translationX = pageTranslationX
-            page.layoutParams.height = itemHeight // ✅ 아이템 높이 적용
-        }
+                    Glide.with(requireContext())
+                        .load(post.backImage)
+                        .into(binding.ivImageSmall)
+                }
+            },
+            onFailure = { t ->
+                // 오류 처리
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
-
-    private fun setupUploadButton() {
-        binding.btnUpload.setOnClickListener {
-            if (photoList.isNotEmpty()) {
-                Toast.makeText(requireContext(), "사진이 업로드되었습니다.", Toast.LENGTH_SHORT).show()
-                // MissionActivity로 이동
-                val intent = Intent(requireContext(), MissionActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(requireContext(), "업로드할 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }*/
 }

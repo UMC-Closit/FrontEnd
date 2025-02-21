@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TodayClosetItem
+import com.example.umc_closit.data.remote.battle.TodayClosetItem
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
 
 class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>() {
