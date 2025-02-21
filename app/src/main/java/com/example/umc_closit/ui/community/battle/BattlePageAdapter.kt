@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.umc_closit.R
 import com.example.umc_closit.data.entities.BattleItem
 import com.example.umc_closit.databinding.ItemBattleMainBinding
@@ -50,6 +51,21 @@ class BattlePageAdapter(
         val item = battleItems[position]
 
         with(holder.binding) {
+
+            Glide.with(context)
+                .load(item.leftPostImageUrl)  // leftPostImageUrl 필드 추가 필요
+                .placeholder(R.drawable.img_gray_square)
+                .error(R.drawable.img_gray_square)
+                .centerCrop()
+                .into(leftItem)
+
+            Glide.with(context)
+                .load(item.rightPostImageUrl)  // rightPostImageUrl 필드 추가 필요
+                .placeholder(R.drawable.img_gray_square)
+                .error(R.drawable.img_gray_square)
+                .centerCrop()
+                .into(rightItem)
+
             // 좌측 battleID 표시
             tvLeftVote.text = "Left: ${item.battleId}"
 

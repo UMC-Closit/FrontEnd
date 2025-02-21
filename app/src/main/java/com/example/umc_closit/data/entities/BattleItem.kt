@@ -9,6 +9,8 @@ data class BattleItem(
     val leftPostId: Int,
     val rightPostId: Int,
     val battleLikeId: Int,
+    val leftPostImageUrl: String,   // 추가
+    val rightPostImageUrl: String   // 추가
 //    var isLiked: Boolean = false // 좋아요 상태
 
 )
