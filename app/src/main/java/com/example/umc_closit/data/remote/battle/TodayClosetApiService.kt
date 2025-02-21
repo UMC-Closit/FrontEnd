@@ -26,7 +26,8 @@ data class TodayClosetItem(
     val postId: Int,
     val frontImage: String,
     val backImage: String,
-    val viewCount: Int
+    val viewCount: Int,
+    val profileImage: String
 )
 
 
@@ -34,8 +35,11 @@ data class TodayClosetItem(
 interface TodayClosetApiService {
     @GET("/api/auth/communities/todayclosets")
     fun getTodayClosets(
+        @Header("Authorization") token: String,
         @Query("page") page: Int
     ): Call<TodayClosetResponse>
+
+
 }
 
 

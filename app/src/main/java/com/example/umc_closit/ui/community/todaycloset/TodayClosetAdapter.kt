@@ -20,6 +20,7 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
         val frontImage: ImageView = view.findViewById(R.id.img_front)
         val viewCount: TextView = view.findViewById(R.id.tv_view_count)
         val backImage: ImageView = view.findViewById(R.id.img_back)
+        val profileImage: ImageView = view.findViewById(R.id.iv_user_profile)
 
     }
 
@@ -43,6 +44,10 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
             .placeholder(R.drawable.ic_placeholder)
             .into(holder.backImage)
 
+        Glide.with(holder.itemView.context)
+            .load(item.profileImage)
+            .placeholder(R.drawable.ic_placeholder)
+            .into(holder.profileImage)
 
         // 조회수 표시
         holder.viewCount.text = "조회수: ${item.viewCount}"
