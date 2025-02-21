@@ -1,5 +1,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -93,23 +94,11 @@
                     android:src="@drawable/img_detail_big_default"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
-                <ImageView
-                    android:id="@+id/iv_image1_small"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/rounded_image"
-                    android:clipToOutline="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/img_detail_small_default"
-                    app:layout_constraintDimensionRatio="W,16:9"
-                    app:layout_constraintStart_toStartOf="@id/iv_image1_big"
-                    app:layout_constraintTop_toTopOf="@id/iv_image1_big"
-                    app:layout_constraintWidth_percent="0.33" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- 사진 영역 -->
@@ -138,23 +127,18 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
 
-                <ImageView
-                    android:id="@+id/iv_image2_small"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/rounded_image"
-                    android:clipToOutline="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/img_detail_small_default"
-                    app:layout_constraintDimensionRatio="W,16:9"
-                    app:layout_constraintStart_toStartOf="@id/iv_image2_big"
-                    app:layout_constraintTop_toTopOf="@id/iv_image2_big"
-                    app:layout_constraintWidth_percent="0.33" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <ImageButton
+        android:id="@+id/btnUpload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/btn_upload"
+        android:background="@color/transparent"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
