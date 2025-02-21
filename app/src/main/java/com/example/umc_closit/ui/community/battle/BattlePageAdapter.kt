@@ -117,15 +117,16 @@ class BattlePageAdapter(
             call = apiService.voteBattle(battleId, requestBody),  // 변경된 부분: battleId를 PathVariable로 전달
             onSuccess = { voteResponse: VoteResponse ->
                 if (voteResponse.isSuccess) {
-                    val firstVotingRate = voteResponse.result?.firstVotingRate ?: 0
-                    val secondVotingRate = voteResponse.result?.secondVotingRate ?: 0
+                    val firstVotingRate = voteResponse.result?.firstVotingRate?.toDouble() ?: 0.0
+                    val secondVotingRate = voteResponse.result?.secondVotingRate?.toDouble() ?: 0.0
                     val totalVotes = firstVotingRate + secondVotingRate
 
                     val progress = if (totalVotes > 0) {
-                        (firstVotingRate * 100) / totalVotes
+                        ((firstVotingRate * 100.0) / totalVotes).toInt()  // 결과를 Int로 변환
                     } else {
                         50  // 기본값
                     }
+
 
                     animateProgress(progressBar, progress)
 
