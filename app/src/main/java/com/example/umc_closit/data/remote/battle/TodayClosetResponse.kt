@@ -24,3 +24,19 @@ data class TodayClosetItem(
     val viewCount: Int,
     val profileImage: String
 )
+data class TodayClosetUploadRequest(
+    val postId: Int
+)
+
+
+data class TodayClosetUploadResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: TodayClosetUploadResult
+)
+
+data class TodayClosetUploadResult(
+    val todayClosetId: Int,
+    val createdAt: String
+)

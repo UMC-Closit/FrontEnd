@@ -1,13 +1,16 @@
 package com.example.umc_closit.ui.upload
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.battle.TodayClosetItem
+import com.example.umc_closit.data.remote.battle.TodayClosetUploadRequest
 import com.example.umc_closit.databinding.ActivityUploadBinding
+import com.example.umc_closit.ui.timeline.TimelineActivity
 import com.example.umc_closit.utils.TokenUtils
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -44,71 +47,125 @@ class UploadActivity : AppCompatActivity() {
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
+                Log.d("UPLOAD", "API Call Success: ${response.isSuccess}")  // API 호출 성공 로그 추가
                 if (response.isSuccess) {
                     val posts = response.result.userRecentPostDTOList
+                    Log.d("UPLOAD", "Posts fetched: ${posts.size}") // 가져온 게시물 수 확인
                     val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
-                    // 오늘 날짜에 해당하는 게시물만 필터링
                     todayPosts.addAll(posts.filter { post ->
                         try {
-                            // 여러 날짜 형식 처리: yyyy-MM-dd, yyyy/MM/dd
                             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            val postDate = post.createdAt.replace("/", "-") // / 를 -로 변경하여 처리
+                            val postDate = post.createdAt.replace("/", "-")
                             val parsedDate = dateFormat.parse(postDate)
-
-                            // 오늘 날짜와 비교
                             val postDateFormatted = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(parsedDate)
-                            postDateFormatted == todayDate // 오늘 날짜에 해당하는 게시물만
+                            postDateFormatted == todayDate
                         } catch (e: Exception) {
                             Log.e("UPLOAD", "Date parsing error: ${e.message}")
                             false
                         }
                     }.map { post ->
-                        // UserRecentPostDTO에서 TodayClosetItem으로 변환
                         TodayClosetItem(
-                            todayClosetId = post.postId,  // 해당 데이터를 TodayClosetItem에 맞게 변환
+                            todayClosetId = post.postId,
                             postId = post.postId,
-                            frontImage = post.thumbnail, // 예시로 frontImage에 thumbnail을 사용
-                            backImage = post.thumbnail,  // backImage도 같은 이미지로 할 경우
-                            viewCount = 0,  // 임의로 0으로 설정
-                            profileImage = post.thumbnail // 임의로 profileImage에 thumbnail을 설정
+                            frontImage = post.thumbnail,
+                            backImage = post.thumbnail,
+                            viewCount = 0,
+                            profileImage = post.thumbnail
                         )
                     })
 
-                    // 더 이상 오늘 날짜의 게시글이 나오지 않으면 멈추기
                     if (posts.isEmpty() || posts.last().createdAt.substring(0, 10) != todayDate) {
-                        setupViewPager()  // 오늘 날짜의 게시글만 있으면 뷰페이저 설정
+                        setupViewPager()
                     } else {
-                        currentPage++ // 다음 페이지로 넘어가기
-                        fetchRecentPosts(clositId, currentPage)  // 페이지네이션을 통해 계속해서 데이터 가져오기
+                        currentPage++
+                        fetchRecentPosts(clositId, currentPage)
                     }
+                } else {
+                    Log.d("UPLOAD", "API Call Failed: ${response.message}")  // 실패한 경우 로그 추가
                 }
             },
             onFailure = { t ->
+                Log.e("UPLOAD", "API Call Failed: ${t.message}")  // 실패 로그 추가
                 Toast.makeText(this, "게시글 불러오기 실패: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = this
+        )
+
+    }
+
+
+    // ViewPager2 설정
+// ViewPager 설정
+    private fun setupViewPager() {
+        val fragments = todayPosts.map { post ->
+            UploadFragment.newInstance(post.postId)  // UploadFragment에 postId 전달
+        }
+
+        val uploadAdapter = UploadAdapter(this, fragments)
+        binding.photoViewPager.adapter = uploadAdapter
+
+        // 화면 양 옆에 여백을 주기 위해 padding 설정
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val pageMarginPx = (screenWidth * 0.05).toInt() // 페이지 사이의 간격
+        val offsetPx = pageMarginPx * 1 // 미리보기 효과를 위한 간격 설정
+
+        binding.photoViewPager.apply {
+            setPadding(pageMarginPx, 0, pageMarginPx, 0)  // 좌우 여백을 설정
+            clipToPadding = false  // 패딩 부분이 잘리지 않도록 설정
+            offscreenPageLimit = 3 // 한 번에 보여줄 페이지 수
+        }
+
+        // 페이지 전환 효과 설정
+        binding.photoViewPager.setPageTransformer { page, position ->
+            val pageTranslationX = -offsetPx * position
+            page.translationX = pageTranslationX
+        }
+    }
+
+
+    // 업로드 버튼 클릭 시 처리
+// 업로드 버튼 클릭 시 API 호출 및 업로드 처리
+    private fun uploadSelectedPost() {
+        val currentItem = binding.photoViewPager.currentItem // 현재 보이는 아이템 위치
+        if (currentItem < 0 || currentItem >= todayPosts.size) {
+            Toast.makeText(this, "업로드할 게시글이 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val selectedPostId = todayPosts[currentItem].postId
+
+        val request = TodayClosetUploadRequest(selectedPostId)
+
+        val apiCall = { RetrofitClient.todayClosetApiService.uploadTodayCloset(request) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    Toast.makeText(this, "게시물이 업로드되었습니다!", Toast.LENGTH_SHORT).show()
+                    navigateToTimelineFragment() // 업로드 성공 후 타임라인 이동
+                } else {
+                    Toast.makeText(this, "업로드 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
             retryCall = apiCall,
             context = this
         )
     }
 
-
-    // ViewPager2 설정
-    private fun setupViewPager() {
-        Log.d("UPLOAD", "Setting up ViewPager with posts: ${todayPosts.size}")  // ViewPager 설정 전에 todayPosts 크기 확인
-        val fragments = todayPosts.map { post ->
-            Log.d("UPLOAD", "Passing postId: ${post.postId}")  // 여기도 각 postId 출력
-            UploadFragment.newInstance(post.postId)  // UploadFragment에 postId 전달
+    // 업로드 성공 후 TimelineActivity로 이동
+    private fun navigateToTimelineFragment() {
+        val intent = Intent(this, TimelineActivity::class.java).apply {
+            putExtra("navigateTo", "TodayClosetFragment") // 이동할 프래그먼트 정보 전달
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         }
-        val uploadAdapter = UploadAdapter(this, fragments)
-        binding.photoViewPager.adapter = uploadAdapter
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
     }
 
-
-
-    // 업로드 버튼 클릭 시 처리
-    private fun uploadSelectedPost() {
-        // 업로드 처리
-        Toast.makeText(this, "게시물이 업로드되었습니다.", Toast.LENGTH_SHORT).show()
-    }
 }

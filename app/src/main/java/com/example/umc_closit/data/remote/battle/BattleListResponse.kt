@@ -25,13 +25,13 @@ data class BattlePreview(
     @SerializedName("firstPostId") val firstPostId: Int,
     @SerializedName("firstPostFrontImage") val firstPostFrontImage: String,
     @SerializedName("firstPostBackImage") val firstPostBackImage: String,
-    @SerializedName("firstVotingRate") val firstVotingRate: Int,
+    @SerializedName("firstVotingRate") val firstVotingRate: Float,
     @SerializedName("secondClositId") val secondClositId: String,
     @SerializedName("secondProfileImage") val secondProfileImage: String,
     @SerializedName("secondPostId") val secondPostId: Int,
     @SerializedName("secondPostFrontImage") val secondPostFrontImage: String,
     @SerializedName("secondPostBackImage") val secondPostBackImage: String,
-    @SerializedName("secondVotingRate") val secondVotingRate: Int,
+    @SerializedName("secondVotingRate") val secondVotingRate: Float,
     @SerializedName("liked") val liked: Boolean
 )
 

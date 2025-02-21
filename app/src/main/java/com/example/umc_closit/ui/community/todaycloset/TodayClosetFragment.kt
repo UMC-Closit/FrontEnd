@@ -8,9 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.RetrofitClient
@@ -25,7 +23,7 @@ class TodayClosetFragment : Fragment() {
     private lateinit var adapter: TodayClosetAdapter
 
     // 페이징 변수
-    private var currentPage = 1
+    private var currentPage = 0
     private var isLoading = false
     private var hasNext = true
 
@@ -40,20 +38,19 @@ class TodayClosetFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // RecyclerView 초기화
+        // RecyclerView 초기화 (2열 그리드)
         adapter = TodayClosetAdapter()
-
-        binding.recyclerTodaycloset.adapter = adapter
         binding.recyclerTodaycloset.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.recyclerTodaycloset.adapter = adapter
 
-        // API 호출
+        // 첫 페이지 데이터 불러오기
         loadTodayClosets(currentPage)
 
         // 스크롤 페이징 처리
         binding.recyclerTodaycloset.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
                 val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
                 if (lastVisibleItem == adapter.itemCount - 1 && hasNext && !isLoading) {
                     loadTodayClosets(currentPage + 1)
@@ -61,16 +58,11 @@ class TodayClosetFragment : Fragment() {
             }
         })
 
-        // 첫 페이지 데이터 불러오기
-        loadTodayClosets(currentPage)
-
-
-        // createButton 클릭 시 UploadFragment로 이동
+        // 업로드 버튼 클릭 시 UploadActivity로 이동
         binding.createButton.setOnClickListener {
             val intent = Intent(requireContext(), UploadActivity::class.java)
             startActivity(intent)
         }
-
     }
 
     /**
@@ -83,16 +75,26 @@ class TodayClosetFragment : Fragment() {
             call = RetrofitClient.todayClosetApiService.getTodayClosets(page),
             onSuccess = { response ->
                 isLoading = false
+                Log.d("TodayCloset API Response", response.toString()) // API 응답 로그 출력
+
                 if (response.isSuccess) {
                     hasNext = response.result.hasNext
                     currentPage = page
+
+                    if (response.result.todayClosets.isEmpty()) {
+                        Log.d("TodayCloset", "서버에서 받은 게시글이 없음")
+                    } else {
+                        Log.d("TodayCloset", "서버에서 받은 게시글 개수: ${response.result.todayClosets.size}")
+                    }
+
                     if (page == 1) {
                         adapter.submitList(response.result.todayClosets)
                     } else {
                         adapter.addItems(response.result.todayClosets)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "데이터 로드 실패", Toast.LENGTH_SHORT).show()
+                    Log.e("TodayCloset", "API 응답 오류: ${response.message}")
+                    Toast.makeText(requireContext(), "데이터 로드 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
             },
             onFailure = { throwable ->

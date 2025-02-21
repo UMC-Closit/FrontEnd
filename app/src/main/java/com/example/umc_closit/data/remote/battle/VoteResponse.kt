@@ -14,9 +14,9 @@ data class VoteResponse(
 data class VoteResult(
     @SerializedName("battleId") val battleId: Long,
     @SerializedName("firstClositId") val firstClosetId: String,
-    @SerializedName("firstVotingRate") val firstVotingRate: Int,
+    @SerializedName("firstVotingRate") val firstVotingRate: Float,
     @SerializedName("secondClositId") val secondClosetId: String,
-    @SerializedName("secondVotingRate") val secondVotingRate: Int,
+    @SerializedName("secondVotingRate") val secondVotingRate: Float,
     @SerializedName("createdAt") val createdAt: String
 )
 

@@ -19,7 +19,7 @@
             android:id="@+id/cl_image_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="W,500:350"
+            app:layout_constraintDimensionRatio="W,16:9"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -49,10 +49,10 @@
                 android:background="@drawable/rounded_image"
                 android:clipToOutline="true"
                 android:src="@drawable/img_timeline_small_default"
-                app:layout_constraintDimensionRatio="W,153:125"
+                app:layout_constraintDimensionRatio="W,16:9"
                 app:layout_constraintStart_toStartOf="@id/img_front"
                 app:layout_constraintTop_toTopOf="@id/img_front"
-                app:layout_constraintWidth_percent="0.33" />
+                app:layout_constraintWidth_percent="0.4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- 유저 프로필 이미지 -->
@@ -87,13 +87,18 @@
             app:layout_constraintTop_toBottomOf="@id/cl_image_container">
 
             <TextView
-                android:id="@+id/tv_view_count"
+                android:id="@+id/tv_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="6dp"
-                android:text="조회수"
+                android:fontFamily="@font/noto_regular"
+                android:includeFontPadding="false"
+                android:text="username"
+                android:gravity="center"
+                android:visibility="gone"
+                android:paddingStart="6dp"
                 android:textColor="@android:color/black"
-                android:textSize="14sp"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
