@@ -27,9 +27,11 @@
         android:gravity="center_horizontal">
 
         <!-- 왼쪽 네모 (item_card) -->
-        <include
+        <ImageView
             android:id="@+id/left_item"
-            layout="@layout/item_card"
+            android:layout_width="135dp"
+            android:layout_height="240dp"
+            android:src="@drawable/image_background"
             tools:viewBindingIgnore="false"
             android:layout_marginEnd="8dp"/>
 

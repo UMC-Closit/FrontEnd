@@ -1,6 +1,7 @@
 package com.example.umc_closit.ui.community.challenge
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -23,18 +24,12 @@ class ChallengeAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(challenge: ChallengeBattlePreview) {
-            // left_item에 포함된 profile_image에 접근
-            val inflater = LayoutInflater.from(binding.root.context)
-            val leftItemView = inflater.inflate(R.layout.item_card, binding.root as ViewGroup, false)
-            val mainImageView = leftItemView.findViewById<ImageView>(R.id.main_image)
-            Log.d("ChallengeAdapter", "Image URL: ${challenge.firstPostFrontImage}")
-
 
             // Glide를 이용해 이미지 로드
             Glide.with(binding.root.context)
                 .load(challenge.firstPostFrontImage)
                 .placeholder(R.drawable.image_background)
-                .into(mainImageView)
+                .into(binding.leftItem)
 
             // Challenge 제목 설정
             binding.challengeTitle.text = challenge.title
@@ -48,7 +43,10 @@ class ChallengeAdapter(
 
             // 오른쪽 "도전하기" 카드 클릭 이벤트
             binding.rightItem.root.setOnClickListener {
-                Toast.makeText(binding.root.context, "도전하기 클릭됨", Toast.LENGTH_SHORT).show()
+                val intent = Intent(binding.root.context, NewChallengeActivity::class.java)
+                intent.putExtra("challenge_data", challenge)
+                binding.root.context.startActivity(intent)
+                Toast.makeText(binding.root.context, "도전하기!", Toast.LENGTH_SHORT).show()
             }
         }
     }

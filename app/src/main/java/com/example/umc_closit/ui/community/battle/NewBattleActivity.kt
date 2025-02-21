@@ -44,10 +44,15 @@ class NewBattleActivity : AppCompatActivity() {
     }
 
     private fun fetchRecentPosts(clositId: String) {
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.postService.getRecentPosts(clositId, 0).execute()
+        // Call 객체 생성
+        val call = RetrofitClient.postService.getRecentPosts(clositId, 0)
 
+        // 비동기 호출
+        call.enqueue(object : retrofit2.Callback<RecentPostResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<RecentPostResponse>,
+                response: retrofit2.Response<RecentPostResponse>
+            ) {
                 if (response.isSuccessful) {
                     val recentPostResponse = response.body()
                     if (recentPostResponse != null && recentPostResponse.isSuccess) {
@@ -66,11 +71,13 @@ class NewBattleActivity : AppCompatActivity() {
                     Log.e("API_ERROR", "응답 실패: ${response.code()} - ${response.message()}")
                     Toast.makeText(this@NewBattleActivity, "불러오기 실패", Toast.LENGTH_SHORT).show()
                 }
+            }
 
-            } catch (e: Exception) {
+            override fun onFailure(call: retrofit2.Call<RecentPostResponse>, t: Throwable) {
+                Log.e("API_ERROR", "네트워크 오류: ${t.message}")
                 Toast.makeText(this@NewBattleActivity, "네트워크 오류 발생", Toast.LENGTH_SHORT).show()
             }
-        }
+        })
     }
 
 }
