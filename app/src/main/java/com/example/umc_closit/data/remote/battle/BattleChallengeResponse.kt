@@ -12,10 +12,12 @@ data class BattleChallengeResponse(
 data class BattleChallengeResult(
     @SerializedName("firstClositId") val firstClositId: String,
     @SerializedName("firstPostId") val firstPostId: Int,
-    @SerializedName("firstPostImage") val firstPostImage: String,
+    @SerializedName("firstPostFrontImage") val firstPostFrontImage: String,
+    @SerializedName("firstPostBackImage") val firstPostBackImage: String,
     @SerializedName("secondClositId") val secondClositId: String,
     @SerializedName("secondPostId") val secondPostId: Int,
-    @SerializedName("secondPostImage") val secondPostImage: String,
+    @SerializedName("secondPostFrontImage") val secondPostFrontImage: String,
+    @SerializedName("secondPostBackImage") val secondPostBackImage: String,
     @SerializedName("createdAt") val createdAt: String
 )
 

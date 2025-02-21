@@ -41,6 +41,8 @@ class NewBattleDetailActivity : AppCompatActivity() {
         val thumbnailUrl = intent.getStringExtra("thumbnail_url")
         val postId = intent.getIntExtra("post_id", -1)
 
+        Log.d("Thumbnail at first", "Image URL: ${thumbnailUrl}")
+
 
         if (!thumbnailUrl.isNullOrEmpty()) {
             Glide.with(this)
@@ -88,6 +90,7 @@ class NewBattleDetailActivity : AppCompatActivity() {
                         "업로드 성공! 배틀 ID: ${response.result?.battleId}",
                         Toast.LENGTH_LONG
                     ).show()
+                    Log.d("Thumbnail", "Image URL: ${response.result?.thumbnail}")
 
                     // 성공 후 타임라인으로 이동
                     val intent = Intent(this, TimelineActivity::class.java)

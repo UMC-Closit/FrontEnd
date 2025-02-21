@@ -1,7 +1,7 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center_horizontal"
     android:layout_marginStart="15dp"
     android:padding="8dp"
@@ -9,7 +9,7 @@
 
     <!-- 왼쪽 정렬된 텍스트뷰 추가 -->
     <TextView
-        android:id="@+id/my_text"
+        android:id="@+id/challenge_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Lorem Ipsum"
@@ -26,15 +26,50 @@
         android:orientation="horizontal"
         android:gravity="center_horizontal">
 
-        <!-- 왼쪽 네모 -->
-        <include
+        <!-- 왼쪽 네모 (item_card) -->
+        <ImageView
             android:id="@+id/left_item"
-            layout="@layout/item_card"/>
+            android:layout_width="135dp"
+            android:layout_height="240dp"
+            android:src="@drawable/image_background"
+            tools:viewBindingIgnore="false"
+            android:layout_marginEnd="8dp"/>
 
-        <!-- 오른쪽 네모 -->
+        <!-- 오른쪽 네모 (item_card2) -->
         <include
             android:id="@+id/right_item"
-            layout="@layout/item_card2"/>
+            layout="@layout/item_card2"
+            android:layout_marginStart="8dp"/>
 
     </LinearLayout>
+
+    <!-- 프로필 이미지와 유저네임 (왼쪽 하단) -->
+    <LinearLayout
+        android:id="@+id/user_info_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical">
+
+        <!-- 프로필 이미지 -->
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_placeholder"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- 유저 네임 -->
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="유저네임"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+
 </LinearLayout>
