@@ -24,6 +24,7 @@ import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
 import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
+import com.example.umc_closit.ui.profile.follow.FollowListActivity
 import com.example.umc_closit.ui.login.LoginActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
@@ -82,7 +83,31 @@ class ProfileFragment : Fragment() {
             openGallery()
         }
 
+        binding.tvFollowingLabel.setOnClickListener {
+            val intent = Intent(requireContext(), FollowListActivity::class.java)
+            if (isMyProfile()) {
+                // 내 프로필일 때 팔로잉 목록으로 이동
+                intent.putExtra("listType", "following")  // 팔로잉 목록
+            } else {
+                // 타인의 프로필일 때 타인의 팔로잉 목록으로 이동
+                intent.putExtra("profileUserClositId", profileUserClositId) // 타인의 clositId 전달
+                intent.putExtra("listType", "following")  // 팔로잉 목록
+            }
+            startActivity(intent)
+        }
 
+        binding.tvFollowersLabel.setOnClickListener {
+            val intent = Intent(requireContext(), FollowListActivity::class.java)
+            if (isMyProfile()) {
+                // 내 프로필일 때 팔로워 목록으로 이동
+                intent.putExtra("listType", "followers")  // 팔로워 목록
+            } else {
+                // 타인의 프로필일 때 타인의 팔로워 목록으로 이동
+                intent.putExtra("profileUserClositId", profileUserClositId) // 타인의 clositId 전달
+                intent.putExtra("listType", "followers")  // 팔로워 목록
+            }
+            startActivity(intent)
+        }
 
         // 유저 정보 불러오기
         loadUserProfile()

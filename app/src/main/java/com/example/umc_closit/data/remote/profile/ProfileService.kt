@@ -79,4 +79,19 @@ interface ProfileService {
         @Query("size") size: Int = 10  // 기본값 10
     ): Call<BookmarkResponse>
 
+    // following list
+    @GET("/api/auth/users/{closit_id}/following")
+    fun getFollowingList(
+        @Path("closit_id") clositId: String,  // 사용자 ID
+        @Query("page") page: Int,  // 페이지 번호
+        @Query("size") size: Int   // 한 페이지에 불러올 항목 수
+    ): Call<FollowingResponse>
+
+    // follower list
+    @GET("/api/auth/users/{closit_id}/followers")
+    fun getFollowersList(
+        @Path("closit_id") clositId: String,  // 사용자 ID
+        @Query("page") page: Int,  // 페이지 번호
+        @Query("size") size: Int   // 한 페이지에 불러올 항목 수
+    ): Call<FollowerResponse>
 }
