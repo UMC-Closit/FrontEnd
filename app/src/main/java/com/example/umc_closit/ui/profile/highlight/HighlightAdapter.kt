@@ -1,6 +1,7 @@
 package com.example.umc_closit.ui.profile.highlight
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,14 +25,21 @@ class HighlightAdapter(
 
     class AddHighlightViewHolder(private val binding: ItemAddHighlightBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(onAddClick: () -> Unit, itemSize: Int) {
+        fun bind(onAddClick: () -> Unit, itemSize: Int, itemCount: Int) {
             binding.ivAddHighlight.layoutParams = binding.ivAddHighlight.layoutParams.apply {
                 width = itemSize
                 height = itemSize
             }
             binding.ivAddHighlight.requestLayout()
             binding.tvAddHighlightDate.text = getCurrentDate()
-            binding.ivAddHighlight.setOnClickListener { onAddClick() }
+
+            // 5개 이상이면 버튼 숨김
+            if (itemCount >= 5) {
+                binding.root.visibility = View.GONE
+            } else {
+                binding.root.visibility = View.VISIBLE
+                binding.ivAddHighlight.setOnClickListener { onAddClick() }
+            }
         }
     }
 
@@ -78,7 +86,7 @@ class HighlightAdapter(
         val itemSize = (screenWidth * 0.14).toInt()
 
         if (holder is AddHighlightViewHolder) {
-            holder.bind(onAddClick, itemSize)
+            holder.bind(onAddClick, itemSize, items.size) // itemCount 전달
         } else if (holder is HighlightViewHolder) {
             val itemPosition = if (isMyProfile) position - 1 else position
             val item = items[itemPosition]
@@ -97,8 +105,9 @@ class HighlightAdapter(
     }
 
     fun addItem(newItem: HighlightItem) {
+        if (items.size >= 5) return // 5개 이상이면 추가 X
         items.add(newItem)
-        notifyItemInserted(items.size - 1)
+        notifyItemInserted(if (isMyProfile) items.size else items.size - 1)
     }
 
     fun getPostIdList(): List<Int> {
