@@ -1,7 +1,7 @@
 ---
 name: Documentation Request
 about: 문서와 관련된 작업을 요청합니다.
-title: "[Docs] #<이슈 번호> <내용 요약>"
+title: "[Docs] 00 작성"
 labels: Docs
 assignees: coqls0817, nnmrm, practac
 
