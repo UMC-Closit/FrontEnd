@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">UMC_Closit</string>
+
+
+
+    <string name="record_days_format">%1$d일째 기록중</string>
+
+
 </resources>

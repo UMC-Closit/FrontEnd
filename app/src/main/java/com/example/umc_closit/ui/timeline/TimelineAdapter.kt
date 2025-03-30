@@ -1,30 +1,38 @@
 package com.example.umc_closit.ui.timeline
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.umc_closit.R
-import com.example.umc_closit.data.TimelineItem
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.timeline.BookmarkCreateResponse
+import com.example.umc_closit.data.remote.timeline.BookmarkDeleteResponse
+import com.example.umc_closit.data.remote.timeline.BookmarkRequest
+import com.example.umc_closit.data.remote.timeline.LikeResponse
+import com.example.umc_closit.data.remote.timeline.PostPreview
 import com.example.umc_closit.databinding.ItemTimelineBinding
-import com.example.umc_closit.model.TimelineViewModel
+import com.example.umc_closit.ui.profile.ProfileFragment
+import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.ui.timeline.detail.DetailActivity
+import com.example.umc_closit.utils.FileUtils
+import com.example.umc_closit.utils.TokenUtils
 
-class TimelineAdapter(
+class   TimelineAdapter(
     private val context: Context,
-    private var timelineItems: MutableList<TimelineItem>,
-    private val savedPosts: MutableList<TimelineItem>
+    var timelineItems: MutableList<PostPreview>,
 ) : RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder>() {
 
-    private val timelineViewModel: TimelineViewModel = ViewModelProvider(context as AppCompatActivity).get(TimelineViewModel::class.java)
+    private val timelineService = RetrofitClient.timelineService
 
-    // ViewHolder 정의
     class TimelineViewHolder(val binding: ItemTimelineBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimelineViewHolder {
@@ -32,77 +40,157 @@ class TimelineAdapter(
         return TimelineViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TimelineViewHolder, position: Int) {
-        val item = timelineItems[position]
+    override fun onBindViewHolder(holder: TimelineViewHolder, @SuppressLint("RecyclerView") position: Int) {
+        val item = timelineItems[position] ?: return
+
         with(holder.binding) {
-            ivImageBig.setImageResource(item.mainImageResId)
-            ivImageSmall.setImageResource(item.overlayImageResId)
+            Glide.with(context).load(item.frontImage).into(ivImageBig)
+            Glide.with(context).load(item.backImage).into(ivImageSmall)
+            Glide.with(context).load(item.profileImage).transform(CircleCrop()).into(ivUserProfile)
 
-            // 유저 프로필 사진을 동그라미로
-            Glide.with(context)
-                .load(item.userProfileResId)  // 프로필 이미지
-                .transform(CircleCrop())  // 원형으로 자르기
-                .into(ivUserProfile)
+            ivLike.setImageResource(if (item.isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
+            ivSave.setImageResource(if (item.isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
 
-            // 게시글 상세 페이지로 이동
             ivImageBig.setOnClickListener {
                 val intent = Intent(context, DetailActivity::class.java)
-                intent.putExtra("timelineItem", item) // 게시글 데이터를 전달
+                intent.putExtra("postId", item.postId)
+                Log.d("POST","send postId: ${item.postId}, ${item.isLiked} ${item.isSaved}")
+                intent.putExtra("position", position)
                 context.startActivity(intent)
             }
 
-            // 댓글 버튼 클릭 이벤트
+
+            var isFrontImageBig = true
+
+
+            val fakeTagContainer = ConstraintLayout(context)
+
+            ivImageSmall.setOnClickListener {
+                FileUtils.swapImagesWithTagEffect(
+                    bigImageView = ivImageBig,
+                    smallImageView = ivImageSmall,
+                    tagContainer = fakeTagContainer
+                ) {
+                    isFrontImageBig = !isFrontImageBig
+                }
+            }
+
+
+
+            // TimelineAdapter.kt
             ivComment.setOnClickListener {
-                val commentFragment = CommentBottomSheetFragment.newInstance()
-                commentFragment.show((context as AppCompatActivity).supportFragmentManager, commentFragment.tag)
+                val commentFragment = CommentBottomSheetFragment.newInstance(item.postId)
+                commentFragment.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, commentFragment.tag)
             }
 
-            // 초기 좋아요 및 저장 상태 설정 (ViewModel에서 가져오기)
-            val (isLiked, isSaved) = timelineViewModel.getPostStatus(item.id) ?: Pair(false, false)
-
-            ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
-            ivSave.setImageResource(if (isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
-
-            // 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
-                val newLikeState = !isLiked // 현재 상태 반대로 변경
-                timelineViewModel.updatePostStatus(item.id, newLikeState, isSaved) // ViewModel 업데이트
-
-                ivLike.setImageResource(
-                    if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off
-                )
-
-                Toast.makeText(context, if (newLikeState) "좋아요!" else "좋아요 취소!", Toast.LENGTH_SHORT).show()
-
-                notifyItemChanged(position) // UI 업데이트
+                if (item.isLiked) {
+                    val apiCall = { timelineService.removeLike(item.postId) }
+                    TokenUtils.handleTokenRefresh(
+                        call = apiCall(),
+                        onSuccess = { result: LikeResponse ->
+                            if (result.isSuccess) {
+                                timelineItems[position] = item.copy(isLiked = false)
+                                notifyItemChanged(position)
+                            }
+                        },
+                        onFailure = { t ->
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        },
+                        retryCall = apiCall,
+                        context = context
+                    )
+                } else {
+                    val apiCall = { timelineService.addLike(item.postId) }
+                    TokenUtils.handleTokenRefresh(
+                        call = apiCall(),
+                        onSuccess = { result: LikeResponse ->
+                            if (result.isSuccess) {
+                                timelineItems[position] = item.copy(isLiked = true)
+                                notifyItemChanged(position)
+                            }
+                        },
+                        onFailure = { t ->
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        },
+                        retryCall = apiCall,
+                        context = context
+                    )
+                }
             }
 
-            // 저장 버튼 클릭 이벤트
             ivSave.setOnClickListener {
-                val newSaveState = !isSaved
-                timelineViewModel.updatePostStatus(item.id, isLiked, newSaveState)
+                val newSaveState = !item.isSaved
 
-                ivSave.setImageResource(
-                    if (newSaveState) R.drawable.ic_save_on else R.drawable.ic_save_off
-                )
+                if (newSaveState) {
+                    val apiCall = {
+                        timelineService.addBookmark(BookmarkRequest(item.postId))
+                    }
 
-                Toast.makeText(context, if (newSaveState) "저장됨!" else "저장 취소", Toast.LENGTH_SHORT).show()
+                    TokenUtils.handleTokenRefresh(
+                        call = apiCall(),
+                        onSuccess = { response: BookmarkCreateResponse ->
+                            if (response.isSuccess) {
+                                timelineItems[position] = item.copy(isSaved = true)
+                                notifyItemChanged(position)
+                            } else {
+                                Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        onFailure = { t ->
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                        },
+                        retryCall = apiCall,
+                        context = context
+                    )
 
-                notifyItemChanged(position) // UI 업데이트
+                } else {
+                    val apiCall = {
+                        timelineService.removeBookmark(item.postId)
+                    }
+
+                    TokenUtils.handleTokenRefresh(
+                        call = apiCall(),
+                        onSuccess = { response: BookmarkDeleteResponse ->
+                            if (response.isSuccess) {
+                                timelineItems[position] = item.copy(isSaved = false)
+                                notifyItemChanged(position)
+                            } else {
+                                Toast.makeText(context, "저장 취소 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        onFailure = { t ->
+                            Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT)
+                                .show()
+                        },
+                        retryCall = apiCall,
+                        context = context
+                    )
+                }
+
             }
 
-            // 유저 프로필 클릭 이벤트
+
             ivUserProfile.setOnClickListener {
-                Toast.makeText(context, "유저 프로필 클릭됨", Toast.LENGTH_SHORT).show()
-                // 유저 프로필 창 구현은 사용자가 설정
+                val activity = context as? androidx.fragment.app.FragmentActivity
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.fragment_container, ProfileFragment().apply {
+                        arguments = Bundle().apply {
+                            putString("profileUserClositId", item.clositId)
+                        }
+                    })
+                    ?.addToBackStack(null)
+                    ?.commit()
             }
+
+
         }
     }
 
-    // updateTimelineItems 메서드 추가: LiveData 업데이트 시 호출
-    fun updateTimelineItems(updatedItems: List<TimelineItem>) {
-        this.timelineItems = updatedItems.toMutableList()
-        notifyDataSetChanged()  // RecyclerView 갱신
+    fun updateTimelineItems(updatedItems: List<PostPreview>) {
+        this.timelineItems.clear()
+        this.timelineItems.addAll(updatedItems)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = timelineItems.size

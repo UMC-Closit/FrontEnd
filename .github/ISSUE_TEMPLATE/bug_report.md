@@ -2,7 +2,7 @@
 name: Bug report
 about: 버그 또는 시스템 문제를 보고하세요.
 title: "[Bug] #<이슈 번호> <내용 요약>"
-labels: bug
+labels: ''
 assignees: coqls0817, nnmrm, practac
 
 ---

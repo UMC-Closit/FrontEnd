@@ -1,248 +1,340 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_profile_bg">
+    android:fillViewport="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 상단 사용자 정보 -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_topContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/white_profile_bg">
 
-        <ImageView
-            android:id="@+id/iv_profileImage"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintWidth_percent="0.3"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/rounded_image"
-            android:src="@drawable/img_profile_user"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/bg_timeline_circle_shape"
-            android:textColor="@color/black"
-            app:layout_constraintDimensionRatio="2.1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.17" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="팔로우"
-            android:textSize="12dp"
-            app:layout_constraintBottom_toBottomOf="@+id/view"
-            app:layout_constraintEnd_toEndOf="@+id/view"
-            app:layout_constraintStart_toStartOf="@+id/view"
-            app:layout_constraintTop_toTopOf="@+id/view" />
-
-        <!-- 사용자 정보 컨테이너 -->
+        <!-- 상단 사용자 정보 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_userInfoContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_default="spread"
-            android:layout_marginStart="10dp"
-            android:paddingVertical="5dp"
-            app:layout_constraintStart_toEndOf="@id/iv_profileImage"
-            app:layout_constraintTop_toTopOf="@id/iv_profileImage"
-            app:layout_constraintBottom_toBottomOf="@id/iv_profileImage">
+            android:id="@+id/cl_topContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp"
+            android:paddingTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="user"
-                android:paddingBottom="3dp"
-                android:textColor="@color/white_profile_bg"
-                android:textSize="22sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/cl_userInfoContainer" />
-
-            <TextView
-                android:id="@+id/tv_followers_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="followers"
-                android:paddingEnd="5dp"
-                android:textColor="@color/gray_profile_follow"
-                android:textSize="8sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_followers_count"
-                app:layout_constraintBottom_toBottomOf="@id/tv_followers_count"/>
-
-            <TextView
-                android:id="@+id/tv_followers_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/gray_normal"
-                android:textSize="10sp"
-                app:layout_constraintStart_toEndOf="@id/tv_followers_label"
-                app:layout_constraintTop_toBottomOf="@id/tv_username" />
-
-            <TextView
-                android:id="@+id/tv_following_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="following"
-                android:paddingEnd="5dp"
-                android:textColor="@color/gray_profile_follow"
-                android:textSize="8sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_following_count"
-                app:layout_constraintBottom_toBottomOf="@id/tv_following_count"/>
-
-            <TextView
-                android:id="@+id/tv_following_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/gray_normal"
-                android:textSize="10sp"
-                app:layout_constraintStart_toEndOf="@id/tv_following_label"
-                app:layout_constraintTop_toBottomOf="@id/tv_followers_count" />
-
-            <ImageView
-                android:id="@+id/iv_calendar"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_profileImage"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:src="@drawable/ic_calendar"
                 app:layout_constraintDimensionRatio="1:1"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_recordDays"
-                app:layout_constraintBottom_toBottomOf="@id/tv_recordDays"
+                app:layout_constraintWidth_percent="0.3"
                 app:layout_constraintHeight_default="spread"
-                />
+                app:layout_constraintWidth_default="spread"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/img_profile_user"
+                android:scaleType="centerCrop"
+                android:clipToOutline="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ProfileImageShape" />
+
 
             <TextView
-                android:id="@+id/tv_recordDays"
+                android:id="@+id/tv_edit_profileImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1일째 기록중"
-                android:textColor="@color/gray_normal"
-                android:textSize="12sp"
-                android:paddingStart="5dp"
-                app:layout_constraintStart_toEndOf="@id/iv_calendar"
-                app:layout_constraintTop_toBottomOf="@id/tv_following_count"
-                app:layout_constraintBottom_toBottomOf="@id/cl_userInfoContainer" />
+                android:text="프로필 편집"
+                android:textColor="@color/white"
+                android:textSize="11dp"
+                android:fontFamily="@font/noto_regular"
+                android:includeFontPadding="false"
+                android:layout_marginTop="4dp"
+                app:layout_constraintTop_toBottomOf="@+id/iv_profileImage"
+                app:layout_constraintStart_toStartOf="@+id/iv_profileImage"
+                app:layout_constraintEnd_toEndOf="@+id/iv_profileImage"
+                />
+
+            <View
+                android:id="@+id/view_follow_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:padding="4dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/bg_follow_btn_round"
+                android:textColor="@color/gray_bright"
+                app:layout_constraintDimensionRatio="2.1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.17" />
+
+            <TextView
+                android:id="@+id/tv_follow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="팔로우"
+                android:textSize="12dp"
+                android:fontFamily="@font/noto_regular"
+                android:includeFontPadding="false"
+                android:gravity="center"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/view_follow_btn"
+                app:layout_constraintEnd_toEndOf="@+id/view_follow_btn"
+                app:layout_constraintStart_toStartOf="@+id/view_follow_btn"
+                app:layout_constraintTop_toTopOf="@+id/view_follow_btn" />
+
+            <!-- 사용자 정보 컨테이너 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_userInfoContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintHeight_default="spread"
+                android:layout_marginStart="10dp"
+                app:layout_constraintStart_toEndOf="@id/iv_profileImage"
+                app:layout_constraintTop_toTopOf="@id/iv_profileImage"
+                app:layout_constraintBottom_toBottomOf="@id/iv_profileImage">
+
+                <TextView
+                    android:id="@+id/tv_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user"
+                    android:fontFamily="@font/noto_medium"
+                    android:includeFontPadding="false"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/white_profile_bg"
+                    android:textSize="21sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/cl_userInfoContainer" />
+
+                <TextView
+                    android:id="@+id/tv_followers_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="followers"
+                    android:fontFamily="@font/ibm_regular"
+                    android:paddingEnd="5dp"
+                    android:textColor="@color/gray_profile_follow"
+                    android:textSize="9sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_followers_count"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_followers_count"/>
+
+                <TextView
+                    android:id="@+id/tv_followers_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:textColor="@color/gray_normal"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/tv_followers_label"
+                    app:layout_constraintTop_toBottomOf="@id/tv_username" />
+
+                <TextView
+                    android:id="@+id/tv_following_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="following"
+                    android:fontFamily="@font/ibm_regular"
+                    android:paddingEnd="5dp"
+                    android:textColor="@color/gray_profile_follow"
+                    android:textSize="9sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_following_count"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_following_count"/>
+
+                <TextView
+                    android:id="@+id/tv_following_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:fontFamily="@font/ibm_semibold"
+                    android:textColor="@color/gray_normal"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/tv_following_label"
+                    app:layout_constraintTop_toBottomOf="@id/tv_followers_count" />
+
+                <ImageView
+                    android:id="@+id/iv_calendar"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_calendar"
+                    app:layout_constraintDimensionRatio="1:1"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_recordDays"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_recordDays"
+                    app:layout_constraintHeight_default="wrap"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_recordDays"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1일째 기록중"
+                    android:textColor="@color/gray_normal"
+                    android:fontFamily="@font/noto_medium"
+                    android:textSize="12sp"
+                    android:paddingStart="5dp"
+                    app:layout_constraintStart_toEndOf="@id/iv_calendar"
+                    app:layout_constraintTop_toBottomOf="@id/tv_following_count"
+                    app:layout_constraintBottom_toBottomOf="@id/cl_userInfoContainer" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Highlights Section -->
-    <TextView
-        android:id="@+id/tv_highlightsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Highlights"
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_topContainer" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_highlights"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle" />
-
-    <!-- Recent Section -->
-    <TextView
-        android:id="@+id/tv_recentTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recent"
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:fontFamily="sans-serif-medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_highlights" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_recent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_recentTitle" />
-
-    <!-- 설정 메뉴 -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_settingsContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="28dp"
-        android:layout_marginHorizontal="16dp"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
-        android:background="@drawable/bg_rounded_box"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_recent">
-
+        <!-- Highlights Section -->
         <TextView
-            android:id="@+id/tv_history"
+            android:id="@+id/tv_highlightsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="히스토리"
-            android:paddingVertical="3dp"
-            android:textSize="12sp"
+            android:text="Highlights"
+            android:padding="16dp"
+            android:textSize="16sp"
             android:textColor="@color/black"
+            android:fontFamily="@font/ibm_medium"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/cl_topContainer" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_highlights"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle" />
 
         <TextView
-            android:id="@+id/tv_editInfo"
+            android:id="@+id/tv_no_highlight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="내 정보 수정"
-            android:paddingVertical="3dp"
+            android:fontFamily="@font/noto_regular"
+            android:includeFontPadding="false"
+            android:text="하이라이트가 비어 있습니다."
+            android:visibility="gone"
+            android:textColor="@color/text_gray"
             android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_recentTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle" />
+
+        <!-- Recent Section -->
+        <TextView
+            android:id="@+id/tv_recentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ibm_medium"
+            android:padding="16dp"
+            android:text="Recent"
             android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="@id/tv_history"
-            app:layout_constraintTop_toBottomOf="@id/tv_history" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_highlights" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_recent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_recentTitle" />
 
         <TextView
-            android:id="@+id/tv_savePosts"
+            android:id="@+id/tv_no_recent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="게시물 저장"
-            android:paddingVertical="3dp"
+            android:fontFamily="@font/noto_regular"
+            android:includeFontPadding="false"
+            android:text="최근 게시글이 아직 존재하지 않습니다."
+            android:visibility="gone"
+            android:textColor="@color/text_gray"
             android:textSize="12sp"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="@id/tv_editInfo"
-            app:layout_constraintTop_toBottomOf="@id/tv_editInfo" />
+            app:layout_constraintBottom_toTopOf="@+id/cl_settingsContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_recentTitle" />
 
-        <TextView
-            android:id="@+id/tv_logout"
-            android:layout_width="wrap_content"
+        <!-- 설정 메뉴 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_settingsContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="로그아웃"
-            android:paddingVertical="3dp"
-            android:textSize="12sp"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="@id/tv_savePosts"
-            app:layout_constraintTop_toBottomOf="@id/tv_savePosts" />
+            android:layout_marginVertical="28dp"
+            android:layout_marginHorizontal="16dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:background="@drawable/bg_rounded_box"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_recent">
+
+            <TextView
+                android:id="@+id/tv_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="히스토리"
+                android:paddingVertical="5dp"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                android:includeFontPadding="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_editInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내 정보 수정"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/tv_history"
+                app:layout_constraintTop_toBottomOf="@id/tv_history" />
+
+            <TextView
+                android:id="@+id/tv_savePosts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="게시물 저장"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/tv_editInfo"
+                app:layout_constraintTop_toBottomOf="@id/tv_editInfo" />
+
+            <TextView
+                android:id="@+id/tv_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그아웃"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/tv_savePosts"
+                app:layout_constraintTop_toBottomOf="@id/tv_savePosts" />
+
+            <TextView
+                android:id="@+id/tv_quit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="탈퇴하기"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/error_red"
+                app:layout_constraintStart_toStartOf="@id/tv_logout"
+                app:layout_constraintTop_toBottomOf="@id/tv_logout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

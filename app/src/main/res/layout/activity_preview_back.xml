@@ -1,0 +1,104 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingTop="12dp">
+
+    <!-- 툴바 (고정된 영역) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintHeight_percent="0.085"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View
+            android:id="@+id/marginLeft"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.03"
+            android:background="@color/transparent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_black"
+            app:layout_constraintLeft_toRightOf="@+id/marginLeft"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <View
+            android:id="@+id/marginLeft2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.03"
+            app:layout_constraintLeft_toRightOf="@+id/iv_back"
+            android:background="@color/transparent"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily Mission"
+            android:textColor="@color/black"
+            android:font="@font/ibm_extralight"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_back"
+            app:layout_constraintStart_toEndOf="@+id/marginLeft2"
+            app:layout_constraintTop_toTopOf="@+id/iv_back" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 메인 이미지 뷰 -->
+    <ImageView
+        android:id="@+id/imageViewMain"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_image"
+        android:clipToOutline="true"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/btnRetake"
+        app:layout_constraintDimensionRatio="9:16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintWidth_percent="0.75" />
+
+    <!-- 버튼 레이아웃 -->
+    <ImageButton
+        android:id="@+id/btnRetake"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.065"
+        android:src="@drawable/retake"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/btnNext"
+        app:layout_constraintEnd_toEndOf="@+id/btnNext" />
+
+
+    <ImageButton
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.065"
+        android:src="@drawable/btn_continue"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/marginBottom"
+        app:layout_constraintEnd_toEndOf="@+id/marginBottom"/>
+
+    <View
+        android:id="@+id/marginBottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.02" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

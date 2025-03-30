@@ -1,0 +1,117 @@
+package com.example.umc_closit.ui.community.todaycloset
+
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.databinding.FragmentTodayclosetBinding
+import com.example.umc_closit.ui.upload.UploadActivity
+import com.example.umc_closit.utils.TokenUtils
+
+class TodayClosetFragment : Fragment() {
+
+    private var _binding: FragmentTodayclosetBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var adapter: TodayClosetAdapter
+
+    // 페이징 변수
+    private var currentPage = 0
+    private var isLoading = false
+    private var hasNext = true
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentTodayclosetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // RecyclerView 초기화 (2열 그리드)
+        adapter = TodayClosetAdapter()
+        binding.recyclerTodaycloset.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.recyclerTodaycloset.adapter = adapter
+
+        // 첫 페이지 데이터 불러오기
+        loadTodayClosets(currentPage)
+
+        // 스크롤 페이징 처리
+        binding.recyclerTodaycloset.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                if (lastVisibleItem == adapter.itemCount - 1 && hasNext && !isLoading) {
+                    loadTodayClosets(currentPage + 1)
+                }
+            }
+        })
+
+        // 업로드 버튼 클릭 시 UploadActivity로 이동
+        binding.createButton.setOnClickListener {
+            val intent = Intent(requireContext(), UploadActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    /**
+     * 오늘의 옷장 API 호출
+     */
+    private fun loadTodayClosets(page: Int) {
+        isLoading = true
+
+        TokenUtils.handleTokenRefresh(
+            call = RetrofitClient.todayClosetApiService.getTodayClosets(page),
+            onSuccess = { response ->
+                isLoading = false
+                Log.d("TodayCloset API Response", response.toString()) // API 응답 로그 출력
+
+                if (response.isSuccess) {
+                    hasNext = response.result.hasNext
+                    currentPage = page
+
+                    if (response.result.todayClosets.isEmpty()) {
+                        Log.d("TodayCloset", "서버에서 받은 게시글이 없음")
+                    } else {
+                        Log.d("TodayCloset", "서버에서 받은 게시글 개수: ${response.result.todayClosets.size}")
+                    }
+
+                    if (page == 1) {
+                        adapter.submitList(response.result.todayClosets)
+                    } else {
+                        adapter.addItems(response.result.todayClosets)
+                    }
+                } else {
+                    Log.e("TodayCloset", "API 응답 오류: ${response.message}")
+                    Toast.makeText(requireContext(), "데이터 로드 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { throwable ->
+                isLoading = false
+                Log.e("TodayCloset", "API 호출 실패", throwable)
+                Toast.makeText(requireContext(), "네트워크 오류", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = {
+                RetrofitClient.todayClosetApiService.getTodayClosets(page)
+            },
+            context = requireContext()
+        )
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
