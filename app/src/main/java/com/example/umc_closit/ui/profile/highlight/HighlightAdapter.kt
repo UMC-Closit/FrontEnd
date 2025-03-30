@@ -81,9 +81,12 @@ class HighlightAdapter(
 
     override fun getItemCount(): Int = items.size + 1 // "+" 버튼 포함
 
-    // 데이터 추가 함수
+    // 데이터 추가 함수 (최대 5개 제한)
     fun updateItems(newItem: HighlightItem) {
-        items.add(newItem) // 새로운 아이템 추가
-        notifyItemInserted(items.size) // RecyclerView에 변경 알림
+        if (items.size < 5) {
+            items.add(newItem)
+            notifyItemInserted(items.size) // RecyclerView에 변경 알림
+        }
     }
+
 }
