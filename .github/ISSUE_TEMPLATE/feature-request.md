@@ -3,7 +3,7 @@ name: Feature Request
 about: 새로운 기능을 요청합니다.
 title: "[Feature] 00 구현"
 labels: Feature
-assignees: coqls0817, nnmrm, practac
+assignees: ''
 
 ---
 

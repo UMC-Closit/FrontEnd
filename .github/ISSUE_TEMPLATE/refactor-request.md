@@ -3,7 +3,7 @@ name: Refactor Request
 about: 코드를 개선하거나 리팩터링이 필요합니다.
 title: "[Refactor] 00 개선"
 labels: Refactor
-assignees: coqls0817, nnmrm, practac
+assignees: ''
 
 ---
 
