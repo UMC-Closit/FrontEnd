@@ -6,6 +6,8 @@ import android.text.InputType
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.res.ResourcesCompat
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.auth.LoginRequest
 import com.example.umc_closit.data.remote.auth.LoginResponse
@@ -71,14 +73,18 @@ class LoginActivity : AppCompatActivity() {
 
     private fun togglePasswordVisibility() {
         if (isPasswordVisible) {
-            // 비밀번호 숨김 (기본 상태)
+            // 숨김 상태
             binding.etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             binding.btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
         } else {
-            // 비밀번호 표시
+            // 표시 상태
             binding.etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             binding.btnTogglePassword.setImageResource(R.drawable.ic_eye)
         }
+
+        val typeface = ResourcesCompat.getFont(binding.root.context, R.font.noto_regular)
+        binding.etPassword.typeface = typeface
+
         isPasswordVisible = !isPasswordVisible
         binding.etPassword.setSelection(binding.etPassword.text.length)
     }
