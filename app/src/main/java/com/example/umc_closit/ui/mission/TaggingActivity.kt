@@ -6,16 +6,18 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
-import androidx.appcompat.app.AlertDialog
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
 import com.example.umc_closit.databinding.ActivityTaggingBinding
 import com.example.umc_closit.databinding.CustomTagDialogBinding
-import java.io.File
-import java.io.FileOutputStream
+import java.util.ArrayList
 import com.example.umc_closit.data.remote.post.TagData
 
 class TaggingActivity : AppCompatActivity() {
@@ -42,23 +44,17 @@ class TaggingActivity : AppCompatActivity() {
 
         binding.imageViewTag.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                val localX = event.x
-                val localY = event.y
+                val xRatio = event.x / binding.imageViewTag.width.toFloat()
+                val yRatio = event.y / binding.imageViewTag.height.toFloat()
 
-                val imageViewWidth = binding.imageViewTag.width.toFloat()
-                val imageViewHeight = binding.imageViewTag.height.toFloat()
-
-                val xRatio = event.x / imageViewWidth  // X 좌표 비율
-                val yRatio = event.y / imageViewHeight // Y 좌표 비율
-
-                showTagDialog { tagText ->
-                    addTagView(tagText, xRatio, yRatio)
+                showTagDialog { fullTag, displayTag ->
+                    addTagView(fullTag, displayTag, xRatio, yRatio)
                 }
             }
             true
         }
 
-        binding.ivBack.setOnClickListener{
+        binding.ivBack.setOnClickListener {
             finish()
         }
 
@@ -71,12 +67,13 @@ class TaggingActivity : AppCompatActivity() {
             finish()
         }
 
-        tagList?.forEach { tag ->
-            addTagView(tag.tagText, tag.xRatio, tag.yRatio)
+        tagList.forEach { tag ->
+            val displayTag = if (tag.tagText.length > 7) tag.tagText.substring(0, 7) + "..." else tag.tagText
+            addTagView(tag.tagText, displayTag, tag.xRatio, tag.yRatio)
         }
     }
 
-    private fun showTagDialog(onTagSaved: (String) -> Unit) {
+    private fun showTagDialog(onTagSaved: (String, String) -> Unit) {
         val dialog = Dialog(this)
         val binding = CustomTagDialogBinding.inflate(layoutInflater)
 
@@ -88,9 +85,11 @@ class TaggingActivity : AppCompatActivity() {
         }
 
         binding.btnConfirm.setOnClickListener {
-            val input = binding.etHashtag.text.toString().trim()
-            if (input.isNotEmpty()) {
-                onTagSaved(input)
+            val fullTag = binding.etHashtag.text.toString().trim()
+
+            if (fullTag.isNotEmpty()) {
+                val displayTag = if (fullTag.length > 7) fullTag.substring(0, 7) + "..." else fullTag
+                onTagSaved(fullTag, displayTag) // 원본 태그와 표시 태그 전달
                 dialog.dismiss()
             }
         }
@@ -98,11 +97,11 @@ class TaggingActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
-        tagList.add(TagData(xRatio, yRatio, tagText)) // 태그 데이터 저장
+    private fun addTagView(fullTag: String, displayTag: String, xRatio: Float, yRatio: Float) {
+        tagList.add(TagData(xRatio, yRatio, fullTag)) // 전체 태그 저장
 
-        val tagView = android.widget.TextView(this).apply {
-            text = tagText
+        val tagView = TextView(this).apply {
+            text = displayTag
             setTextColor(Color.WHITE)
             textSize = 14f
             setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
@@ -110,6 +109,10 @@ class TaggingActivity : AppCompatActivity() {
             val pad = dpToPx(8)
             setPadding(leftPad, pad, pad, pad)
             id = View.generateViewId()
+
+            setOnClickListener {
+                Toast.makeText(context, "전체 태그: $fullTag", Toast.LENGTH_SHORT).show()
+            }
         }
 
         val layoutParams = ConstraintLayout.LayoutParams(
@@ -127,7 +130,6 @@ class TaggingActivity : AppCompatActivity() {
         layoutParams.topMargin = (parentHeight * yRatio).toInt()
 
         binding.imageAndTag.addView(tagView, layoutParams)
-
     }
 
     private fun dpToPx(dp: Int): Int {

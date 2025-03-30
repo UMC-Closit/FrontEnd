@@ -59,6 +59,10 @@ class FrontOnlyActivity : AppCompatActivity() {
         private const val TAGGING_REQUEST_CODE = 1001
     }
 
+    private fun getDisplayTag(fullTag: String): String {
+        return if (fullTag.length > 7) fullTag.substring(0, 7) + "..." else fullTag
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -113,6 +117,8 @@ class FrontOnlyActivity : AppCompatActivity() {
                 createHashtagTextView(newHashtag, binding.clHashtag, binding.flowHashtagContainer)
             }
         }
+
+
 
         // BackOnlyActivity로 이동
         binding.btnContinue.setOnClickListener {
@@ -196,14 +202,21 @@ class FrontOnlyActivity : AppCompatActivity() {
     }
 
     private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
+        val displayTag = getDisplayTag(tagText) // ✅ display tag 사용
+
         val tagView = android.widget.TextView(this).apply {
-            text = tagText
+            text = displayTag
             setTextColor(Color.WHITE)
             textSize = 14f
             setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
             val leftPad = dpToPx(30)
             val pad = dpToPx(8)
             setPadding(leftPad, pad, pad, pad)
+
+            // 전체 태그를 클릭하면 Toast로 보여주기 (선택 사항)
+            setOnClickListener {
+                Toast.makeText(context, "전체 태그: $tagText", Toast.LENGTH_SHORT).show()
+            }
         }
 
         val layoutParams = ConstraintLayout.LayoutParams(
