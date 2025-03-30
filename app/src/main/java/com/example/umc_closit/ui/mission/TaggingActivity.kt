@@ -2,12 +2,10 @@ package com.example.umc_closit.ui.mission
 
 import android.app.Dialog
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
@@ -15,10 +13,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
+import com.example.umc_closit.data.remote.post.TagData
 import com.example.umc_closit.databinding.ActivityTaggingBinding
 import com.example.umc_closit.databinding.CustomTagDialogBinding
-import java.util.ArrayList
-import com.example.umc_closit.data.remote.post.TagData
 
 class TaggingActivity : AppCompatActivity() {
 
@@ -30,7 +27,6 @@ class TaggingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🚀 View Binding 초기화
         binding = ActivityTaggingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -32,9 +33,16 @@ import com.example.umc_closit.ui.profile.history.HistoryActivity
 import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.ui.profile.recent.RecentDetailActivity
+import com.example.umc_closit.utils.JsonUtils
 import com.example.umc_closit.utils.TokenUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -261,40 +269,75 @@ class ProfileFragment : Fragment() {
 
     private fun uploadProfileImage(imageUri: Uri) {
         val clositId = loggedInUserClositId
+        val fileName = "${clositId}_profile_${System.currentTimeMillis()}.jpg"
 
-        try {
-            val inputStream = requireContext().contentResolver.openInputStream(imageUri)
-            inputStream?.use { input ->
-                val requestFile = input.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
-                val fileName = "${clositId}_profile_${System.currentTimeMillis()}.jpg"
-                val body = MultipartBody.Part.createFormData("user_image", fileName, requestFile)
+        // 1. Presigned URL 발급
+        val presignReq = JsonUtils.createRequestBody(mapOf("imageUrl" to fileName))
+        val presignCall = { RetrofitClient.profileService.getPresignedProfileUrl(presignReq) }
 
-                val apiCall = { RetrofitClient.profileService.uploadProfileImage(clositId, body) }
+        TokenUtils.handleTokenRefresh(
+            call = presignCall(),
+            onSuccess = { response ->
+                val presignedUrl = response.result.imageUrl
+                val pureUrl = presignedUrl.substringBefore("?")
 
-                TokenUtils.handleTokenRefresh(
-                    call = apiCall(),
-                    onSuccess = { response ->
-                        if (response.isSuccess) {
-                            Toast.makeText(requireContext(), "프로필 이미지 변경 성공", Toast.LENGTH_SHORT).show()
-                            loadUserProfile()
-                        } else {
-                            Toast.makeText(requireContext(), "프로필 이미지 변경 실패: ${response.message}", Toast.LENGTH_SHORT).show()
-                            Log.e("PROFILE_IMAGE", "프로필 이미지 변경 실패: ${response.message}")
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        // 2. 이미지 byte 변환
+                        val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+                        val imageBytes = inputStream?.readBytes()
+                        inputStream?.close()
+
+                        if (imageBytes == null) {
+                            Log.e("PROFILE_IMAGE", "이미지 바이트 변환 실패")
+                            return@launch
                         }
-                    },
-                    onFailure = { t ->
-                        Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("PROFILE_IMAGE", "네트워크 오류", t)
-                    },
-                    retryCall = apiCall,
-                    context = requireContext()
-                )
-            } ?: Log.e("PROFILE_IMAGE", "inputStream이 null임")
-        } catch (e: Exception) {
-            Log.e("PROFILE_IMAGE", "Exception 발생", e)
-        }
-    }
 
+                        // 3. S3 PUT 요청
+                        val putRequest = Request.Builder()
+                            .url(presignedUrl)
+                            .put(imageBytes.toRequestBody("image/jpeg".toMediaType()))
+                            .build()
+
+                        val putResponse = OkHttpClient().newCall(putRequest).execute()
+                        if (!putResponse.isSuccessful) {
+                            Log.e("PROFILE_IMAGE", "S3 업로드 실패: ${putResponse.code}")
+                            return@launch
+                        }
+
+                        // 4. 이미지 URL 등록
+                        val registerReq = JsonUtils.createRequestBody(
+                            mapOf("imageUrl" to pureUrl)
+                        )
+                        val registerCall = { RetrofitClient.profileService.uploadProfileImage(registerReq) }
+
+                        TokenUtils.handleTokenRefresh(
+                            call = registerCall(),
+                            onSuccess = {
+                                requireActivity().runOnUiThread {
+                                    Toast.makeText(requireContext(), "프로필 이미지 변경 성공", Toast.LENGTH_SHORT).show()
+                                    loadUserProfile()
+                                }
+                            },
+                            onFailure = {
+                                Log.e("PROFILE_IMAGE", "URL 등록 실패: ${it.message}")
+                            },
+                            retryCall = registerCall,
+                            context = requireContext()
+                        )
+
+                    } catch (e: Exception) {
+                        Log.e("PROFILE_IMAGE", "예외 발생: ${e.message}", e)
+                    }
+                }
+            },
+            onFailure = { t ->
+                Log.e("PROFILE_IMAGE", "Presigned URL 발급 실패: ${t.message}")
+            },
+            retryCall = presignCall,
+            context = requireContext()
+        )
+    }
 
 
     companion object {

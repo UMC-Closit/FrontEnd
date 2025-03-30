@@ -2,6 +2,7 @@ package com.example.umc_closit.ui.mission
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
 import com.example.umc_closit.databinding.ActivityPreviewBinding
@@ -16,10 +17,8 @@ class PreviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🚀 View Binding 초기화
         binding = ActivityPreviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
 
 

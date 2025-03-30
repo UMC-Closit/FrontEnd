@@ -47,7 +47,6 @@ data class ProfileUserResponse(
 )
 
 data class ProfileUserResult(
-    val id: Int,
     val role: String,
     val clositId: String,
     val name: String,
@@ -65,6 +64,33 @@ data class EditProfileRequest(
     val currentPassword: String,
     val password: String,
     val birth: String
+)
+
+data class PresignedProfileUrlResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: ProfilePresignedUrlResult
+)
+
+data class ProfilePresignedUrlResult(
+    val imageUrl: String
+)
+
+data class ProfileImageUploadResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: UserProfileData
+)
+
+data class UserProfileData(
+    val role: String,
+    val clositId: String,
+    val name: String,
+    val email: String,
+    val birth: String,
+    val profileImage: String
 )
 
 // highlight
