@@ -23,6 +23,7 @@ import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.profile.FollowRequest
 import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
+import com.example.umc_closit.databinding.DialogLogoutBinding
 import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.login.LoginActivity
@@ -81,9 +82,9 @@ class ProfileFragment : Fragment() {
         binding.tvNoRecent.visibility = View.GONE
 
         if (isMyProfile()) {
-            binding.tvEditProfileImage.visibility = View.VISIBLE
+            binding.clEditProfile.visibility = View.VISIBLE
         } else {
-            binding.tvEditProfileImage.visibility = View.GONE
+            binding.clEditProfile.visibility = View.GONE
         }
 
         binding.tvEditProfileImage.setOnClickListener {
@@ -157,8 +158,9 @@ class ProfileFragment : Fragment() {
         }
 
         binding.tvLogout.setOnClickListener {
-            logout()
+            showLogoutDialog()
         }
+
 
         binding.tvQuit.setOnClickListener {
             val clositId = TokenUtils.getClositId(requireContext()) ?: ""
@@ -518,6 +520,31 @@ class ProfileFragment : Fragment() {
             binding.viewFollowBtn.visibility = View.VISIBLE
             binding.tvFollow.visibility = View.VISIBLE
         }
+    }
+
+
+    private fun showLogoutDialog() {
+        val dialog = Dialog(requireContext())
+        val binding = DialogLogoutBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        // 화면 너비의 80%로 설정
+        val width = (resources.displayMetrics.widthPixels * 0.7).toInt()
+        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.btnConfirm.setOnClickListener {
+            logout()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showQuitDialog(clositId: String, onSuccess: () -> Unit) {

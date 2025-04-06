@@ -61,14 +61,14 @@ class HistoryAdapter(
 
             rvCalendar.post {
                 val scale = root.context.resources.displayMetrics.density
-                val parentWidth = tvSun.width - (8 * scale).toInt()
+                val parentWidth = tvSun.width - (4 * scale).toInt()
 
                 val calendarAdapter = CalendarAdapter(
                     year = year,
                     month = month,
                     postThumbnails = postThumbnails,
                     postColors = postColors,
-                    weekdayWidth = parentWidth.toInt()
+                    weekdayWidth = parentWidth
                 )
 
                 rvCalendar.adapter = calendarAdapter

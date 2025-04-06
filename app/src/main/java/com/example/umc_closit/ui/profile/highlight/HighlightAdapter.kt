@@ -75,7 +75,7 @@ class HighlightAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val itemSize = (screenWidth * 0.14).toInt()
+        val itemSize = (screenWidth * 0.16).toInt()
 
         if (holder is AddHighlightViewHolder) {
             holder.bind(onAddClick, itemSize)
