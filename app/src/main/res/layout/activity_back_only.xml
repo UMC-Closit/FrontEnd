@@ -161,15 +161,31 @@
 
 
         <!-- 공개범위 버튼 -->
-        <ImageButton
-            android:id="@+id/btnPrivacy"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/privacyDropdownLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/btn_privacy"
-            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/marginRight3"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/exposed_dropdown"
+                style="@style/PopupMenuStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_add_highlight_dropdown"
+                android:drawableEnd="@drawable/ic_drop_down"
+                android:drawablePadding="4dp"
+                android:inputType="none"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:padding="8dp"
+                android:text="공개범위"
+                android:textSize="12sp"
+                android:textColor="@color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- 오른쪽 여백 -->
         <View

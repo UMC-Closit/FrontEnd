@@ -5,8 +5,10 @@ import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ItemCalendarMonthBinding
 
 class HistoryAdapter(
@@ -52,9 +54,14 @@ class HistoryAdapter(
                 notifyItemChanged(position)
             }
 
+            val context = holder.itemView.context
+
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(if (isSelected) Color.parseColor("#BDBDBD") else Color.WHITE)
+                setColor(
+                    if (isSelected) ContextCompat.getColor(context, R.color.pink_point)
+                    else Color.WHITE
+                )
                 setStroke(2, Color.BLACK)
             }
             viewColorCircle.background = drawable

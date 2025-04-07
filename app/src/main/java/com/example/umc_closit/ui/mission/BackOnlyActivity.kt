@@ -9,9 +9,9 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -36,7 +36,6 @@ import com.example.umc_closit.model.PostViewModel
 import com.example.umc_closit.ui.timeline.TimelineActivity
 import com.example.umc_closit.utils.JsonUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -48,9 +47,7 @@ import java.util.UUID
 class BackOnlyActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBackOnlyBinding
-    private var originalBitmapPath: String? = null
     private var originalBitmap: Bitmap? = null
-    private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
     private var tvPrivacyStatus: TextView? = null  // 공개범위 TextView
 
@@ -159,8 +156,13 @@ class BackOnlyActivity : AppCompatActivity() {
         }
 
 
-        binding.btnPrivacy.setOnClickListener {
-            showPrivacyOptions(it)
+        val options = listOf("전체공개", "친구공개", "비공개")
+        val adapter = ArrayAdapter(this, R.layout.item_dropdown, options)
+        binding.exposedDropdown.setAdapter(adapter)
+
+
+        binding.exposedDropdown.setOnClickListener {
+            binding.exposedDropdown.showDropDown()
         }
 
         binding.btnHashtag.setOnClickListener {
@@ -221,13 +223,12 @@ class BackOnlyActivity : AppCompatActivity() {
                     ItemTag(x = it.xRatio, y = it.yRatio, content = it.tagText)
                 } ?: emptyList()
 
-                val visibility = when (tvPrivacyStatus?.text?.toString()) {
+                val visibility = when (binding.exposedDropdown.text.toString()) {
                     "전체공개" -> "PUBLIC"
                     "친구공개" -> "FRIEND"
-                    "나만보기" -> "PRIVATE"
+                    "비공개" -> "PRIVATE"
                     else -> "PUBLIC"
                 }
-
                 val finalPost = PostRequest(
                     frontImage = frontPresignedUrl.substringBefore("?"),
                     backImage = backPresignedUrl.substringBefore("?"),
@@ -246,42 +247,6 @@ class BackOnlyActivity : AppCompatActivity() {
                     Toast.makeText(this@BackOnlyActivity, "업로드 중 오류: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
                 Log.e("UPLOAD", "에러: ${e.message}", e)
-            }
-        }
-    }
-
-    // 드롭다운 메뉴를 표시하는 함수
-    private fun showPrivacyOptions(view: View) {
-        // PopupMenu 객체 생성
-        val popupMenu = PopupMenu(this, view)
-
-        // 메뉴 항목을 추가 (전체공개, 친구공개, 나만보기)
-        popupMenu.menuInflater.inflate(com.example.umc_closit.R.menu.privacy_menu, popupMenu.menu)
-
-        // 메뉴 아이템 클릭 시 동작 설정
-        popupMenu.setOnMenuItemClickListener { item ->
-            handlePrivacyOptionSelection(item)
-            true
-        }
-
-        // 드롭다운 메뉴 표시
-        popupMenu.show()
-    }
-
-    // 선택된 공개범위 옵션 처리
-    private fun handlePrivacyOptionSelection(item: MenuItem) {
-        when (item.itemId) {
-            com.example.umc_closit.R.id.menu_public -> {
-                tvPrivacyStatus?.text = "전체공개"
-                binding.btnPrivacy.setImageResource(com.example.umc_closit.R.drawable.ic_public) // 전체공개 아이콘으로 변경
-            }
-            com.example.umc_closit.R.id.menu_friends -> {
-                tvPrivacyStatus?.text = "친구공개"
-                binding.btnPrivacy.setImageResource(com.example.umc_closit.R.drawable.ic_friends) // 친구공개 아이콘으로 변경
-            }
-            com.example.umc_closit.R.id.menu_private -> {
-                tvPrivacyStatus?.text = "나만보기"
-                binding.btnPrivacy.setImageResource(com.example.umc_closit.R.drawable.ic_private) // 나만보기 아이콘으로 변경
             }
         }
     }

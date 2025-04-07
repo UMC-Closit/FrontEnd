@@ -82,9 +82,9 @@ class ProfileFragment : Fragment() {
         binding.tvNoRecent.visibility = View.GONE
 
         if (isMyProfile()) {
-            binding.clEditProfile.visibility = View.VISIBLE
+            binding.tvEditProfileImage.visibility = View.VISIBLE
         } else {
-            binding.clEditProfile.visibility = View.GONE
+            binding.tvEditProfileImage.visibility = View.GONE
         }
 
         binding.tvEditProfileImage.setOnClickListener {
@@ -167,9 +167,6 @@ class ProfileFragment : Fragment() {
             showQuitDialog(clositId) {}
         }
 
-        binding.viewFollowBtn.setOnClickListener {
-            toggleFollow()
-        }
         binding.tvFollow.setOnClickListener {
             toggleFollow()
         }
@@ -488,17 +485,17 @@ class ProfileFragment : Fragment() {
 
 
     private fun updateFollowButtonUI(following: Boolean) {
-        val backgroundDrawable = binding.viewFollowBtn.background.mutate() as android.graphics.drawable.GradientDrawable
+        val backgroundDrawable = binding.tvFollow.background.mutate() as android.graphics.drawable.GradientDrawable
 
         if (following) {
             binding.tvFollow.text = "팔로잉"
-            backgroundDrawable.setColor(resources.getColor(R.color.pink_point, null))
-            backgroundDrawable.setStroke(2, resources.getColor(R.color.pink_point, null)) // 테두리 변경
-            binding.tvFollow.setTextColor(resources.getColor(R.color.white, null))
+            backgroundDrawable.setColor(resources.getColor(R.color.following_gray, null))
+            backgroundDrawable.setStroke(2, resources.getColor(R.color.following_gray, null)) // 테두리 변경
+            binding.tvFollow.setTextColor(resources.getColor(R.color.black, null))
         } else {
             binding.tvFollow.text = "팔로우"
-            backgroundDrawable.setColor(resources.getColor(R.color.black, null))
-            backgroundDrawable.setStroke(2, resources.getColor(R.color.white, null)) // 테두리 변경
+            backgroundDrawable.setColor(resources.getColor(R.color.pink_point, null))
+            backgroundDrawable.setStroke(2, resources.getColor(R.color.pink_point, null)) // 테두리 변경
             binding.tvFollow.setTextColor(resources.getColor(R.color.white, null))
         }
     }
@@ -512,12 +509,10 @@ class ProfileFragment : Fragment() {
         if (loggedInUserClositId == profileUserClositId) {
             // 내 프로필이면 수정 관련 버튼 보이게
             binding.clSettingsContainer.visibility = View.VISIBLE
-            binding.viewFollowBtn.visibility = View.GONE
             binding.tvFollow.visibility = View.GONE
         } else {
             // 다른 사람 프로필이면 팔로우 버튼 보이게
             binding.clSettingsContainer.visibility = View.GONE
-            binding.viewFollowBtn.visibility = View.VISIBLE
             binding.tvFollow.visibility = View.VISIBLE
         }
     }

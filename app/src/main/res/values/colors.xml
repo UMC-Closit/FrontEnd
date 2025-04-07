@@ -17,6 +17,8 @@
     <color name="gray">#B0B0B0</color>
     <color name="bright_gray">#A9A9A9</color>
     <color name="text_gray">#9E9E9E</color>
+    <color name="history_gray">#A5A5A5</color>
+    <color name="following_gray">#EFEFF0</color>
 
 
     <color name="menu_inactive">#2E2E2E</color>

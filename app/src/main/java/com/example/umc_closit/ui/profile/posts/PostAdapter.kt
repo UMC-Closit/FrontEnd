@@ -43,10 +43,26 @@ class PostAdapter(private val posts: MutableList<Post>, private val context: Con
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = posts[position]
         with(holder.binding) {
-            Glide.with(imgPost.context)
-                .load(post.imageUrl)  // 이미지 URL 사용
-                .into(imgPost)
+            // 비율에 따라 크기 설정 먼저
+            imgPost.post {
+                val width = imgPost.width
+                val height = (width * 4) / 3
 
+                imgPost.layoutParams = imgPost.layoutParams.apply {
+                    this.height = height
+                }
+
+                imgCheck.layoutParams = imgCheck.layoutParams.apply {
+                    this.height = height
+                }
+
+                // 크기 정해진 후에 이미지 로드
+                Glide.with(imgPost.context)
+                    .load(post.imageUrl)
+                    .into(imgPost)
+            }
+
+            // 체크 표시
             imgCheck.visibility = if (selectedPosts.contains(post)) View.VISIBLE else View.GONE
         }
     }

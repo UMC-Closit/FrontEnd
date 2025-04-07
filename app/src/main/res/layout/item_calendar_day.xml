@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="20"
         android:textSize="14sp"
-        android:textColor="@color/white"
+        android:textColor="@color/history_gray"
         app:layout_constraintTop_toTopOf="@+id/iv_calendar"
         app:layout_constraintBottom_toBottomOf="@id/iv_calendar"
         app:layout_constraintStart_toStartOf="@id/iv_calendar"

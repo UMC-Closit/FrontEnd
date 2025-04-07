@@ -37,5 +37,9 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <style name="PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:popupBackground">@drawable/bg_detail_edittext</item>
+    </style>
 
 </resources>
