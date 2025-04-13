@@ -64,6 +64,7 @@
         <activity android:name=".ui.profile.highlight.HighlightDetailActivity" />
         <activity android:name=".ui.profile.recent.RecentDetailActivity"/>
         <activity android:name=".ui.upload.UploadActivity"/>
+        <activity android:name=".ui.profile.follow.FollowListActivity"/>
 
 
         <activity
