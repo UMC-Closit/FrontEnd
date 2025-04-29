@@ -15,7 +15,7 @@
     <color name="gray">#B0B0B0</color>
     <color name="bright_gray">#A9A9A9</color>
     <color name="text_gray">#9E9E9E</color>
-
+    <color name="yellow_login">#FFCB14</color>
 
     <color name="menu_inactive">#2E2E2E</color>
     <color name="menu_active">#BABECD</color>
