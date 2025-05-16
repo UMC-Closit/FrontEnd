@@ -1,65 +1,53 @@
 package com.example.umc_closit.ui.mission
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageButton
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.data.remote.post.TagData
-import com.example.umc_closit.databinding.ActivityBackOnlyBinding
-import com.example.umc_closit.ui.mission.FrontOnlyActivity.Companion
-import com.example.umc_closit.ui.timeline.TimelineActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.example.umc_closit.data.remote.post.PostRequest
-import com.example.umc_closit.data.remote.post.ItemTag
-import com.example.umc_closit.data.remote.post.PostService
-import com.example.umc_closit.data.remote.RetrofitClient
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
-import androidx.activity.viewModels
 import androidx.constraintlayout.helper.widget.Flow
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
 import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.post.ItemTag
+import com.example.umc_closit.data.remote.post.PostRequest
+import com.example.umc_closit.data.remote.post.PostService
+import com.example.umc_closit.data.remote.post.TagData
+import com.example.umc_closit.databinding.ActivityBackOnlyBinding
 import com.example.umc_closit.databinding.CustomTagDialogBinding
 import com.example.umc_closit.model.PostViewModel
-import com.example.umc_closit.utils.FileUtils
+import com.example.umc_closit.ui.timeline.TimelineActivity
 import com.example.umc_closit.utils.JsonUtils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.util.UUID
 
 class BackOnlyActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBackOnlyBinding
-    private var originalBitmapPath: String? = null
     private var originalBitmap: Bitmap? = null
-    private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
     private var tvPrivacyStatus: TextView? = null  // 공개범위 TextView
 
@@ -75,6 +63,10 @@ class BackOnlyActivity : AppCompatActivity() {
 
     companion object {
         private const val TAGGING_REQUEST_CODE = 1001
+    }
+
+    private fun getDisplayTag(fullTag: String): String {
+        return if (fullTag.length > 7) fullTag.substring(0, 7) + "..." else fullTag
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +103,6 @@ class BackOnlyActivity : AppCompatActivity() {
 
         if (hashtags.isNotEmpty()) {
             hashtags.forEach { hashtag ->
-
                 createHashtagTextView(hashtag, binding.clHashtag, binding.flowHashtagContainer)
             }
         }
@@ -135,65 +126,11 @@ class BackOnlyActivity : AppCompatActivity() {
         })
 
         binding.btnUpload.setOnClickListener {
-
             if (frontPhotoPath.isNullOrEmpty() || backPhotoPath.isNullOrEmpty()) {
                 Toast.makeText(this, "이미지 경로를 확인하세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            val frontImagePart = try {
-                FileUtils.createImagePart("frontImage", frontPhotoPath)
-            } catch (e: IllegalArgumentException) {
-                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val backImagePart = try {
-                FileUtils.createImagePart("backImage", backPhotoPath)
-            } catch (e: IllegalArgumentException) {
-                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val frontItemtags = frontTagList?.map { tag ->
-                ItemTag(
-                    x = tag.xRatio,
-                    y = tag.yRatio,
-                    content = tag.tagText
-                )
-            } ?: emptyList()
-
-            val backItemtags = backTagList?.map { tag ->
-                ItemTag(
-                    x = tag.xRatio,
-                    y = tag.yRatio,
-                    content = tag.tagText
-                )
-            } ?: emptyList()
-
-            val visibility = when (tvPrivacyStatus?.text?.toString()) {
-                "전체공개" -> "PUBLIC"
-                "친구공개" -> "FRIEND"
-                "나만보기" -> "PRIVATE"
-                else -> "PUBLIC"
-            }
-
-            val requestObject = mapOf(
-                "hashtags" to hashtags,
-                "frontItemtags" to frontItemtags,
-                "backItemtags" to backItemtags,
-                "pointColor" to "#${Integer.toHexString(pointColor)}",
-                "visibility" to visibility,
-                "mission" to true
-            )
-
-            val requestBody = JsonUtils.createRequestBody(requestObject)
-
-            viewModel.uploadPost(
-                requestBody = requestBody,
-                frontImagePart = frontImagePart,
-                backImagePart = backImagePart
-            )
+            uploadFullPost(frontPhotoPath, backPhotoPath)
         }
 
         binding.addItem.setOnClickListener{
@@ -219,8 +156,13 @@ class BackOnlyActivity : AppCompatActivity() {
         }
 
 
-        binding.btnPrivacy.setOnClickListener {
-            showPrivacyOptions(it)
+        val options = listOf("전체공개", "친구공개", "비공개")
+        val adapter = ArrayAdapter(this, R.layout.item_dropdown, options)
+        binding.exposedDropdown.setAdapter(adapter)
+
+
+        binding.exposedDropdown.setOnClickListener {
+            binding.exposedDropdown.showDropDown()
         }
 
         binding.btnHashtag.setOnClickListener {
@@ -232,38 +174,79 @@ class BackOnlyActivity : AppCompatActivity() {
 
     }
 
-    // 드롭다운 메뉴를 표시하는 함수
-    private fun showPrivacyOptions(view: View) {
-        // PopupMenu 객체 생성
-        val popupMenu = PopupMenu(this, view)
+    private fun uploadFullPost(frontPhotoPath: String, backPhotoPath: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val frontFileName = "${UUID.randomUUID()}.jpg"
+                val backFileName = "${UUID.randomUUID()}.jpg"
 
-        // 메뉴 항목을 추가 (전체공개, 친구공개, 나만보기)
-        popupMenu.menuInflater.inflate(com.example.umc_closit.R.menu.privacy_menu, popupMenu.menu)
+                // 1. Presigned URL 요청
+                val presignedRequest = mapOf(
+                    "frontImageUrl" to frontFileName,
+                    "backImageUrl" to backFileName
+                )
+                val requestBody = JsonUtils.createRequestBody(presignedRequest)
+                val presignedResponse = postService.getPresignedUrls(requestBody)
 
-        // 메뉴 아이템 클릭 시 동작 설정
-        popupMenu.setOnMenuItemClickListener { item ->
-            handlePrivacyOptionSelection(item)
-            true
-        }
+                val frontPresignedUrl = presignedResponse.result.frontImageUrl
+                val backPresignedUrl = presignedResponse.result.backImageUrl
 
-        // 드롭다운 메뉴 표시
-        popupMenu.show()
-    }
+                // 2. 이미지 PUT
+                val okHttpClient = OkHttpClient()
 
-    // 선택된 공개범위 옵션 처리
-    private fun handlePrivacyOptionSelection(item: MenuItem) {
-        when (item.itemId) {
-            com.example.umc_closit.R.id.menu_public -> {
-                tvPrivacyStatus?.text = "전체공개"
-                binding.btnPrivacy.setImageResource(com.example.umc_closit.R.drawable.ic_public) // 전체공개 아이콘으로 변경
-            }
-            com.example.umc_closit.R.id.menu_friends -> {
-                tvPrivacyStatus?.text = "친구공개"
-                binding.btnPrivacy.setImageResource(com.example.umc_closit.R.drawable.ic_friends) // 친구공개 아이콘으로 변경
-            }
-            com.example.umc_closit.R.id.menu_private -> {
-                tvPrivacyStatus?.text = "나만보기"
-                binding.btnPrivacy.setImageResource(com.example.umc_closit.R.drawable.ic_private) // 나만보기 아이콘으로 변경
+                fun putImage(filePath: String, url: String): Boolean {
+                    val file = File(filePath)
+                    val request = Request.Builder()
+                        .url(url)
+                        .put(file.asRequestBody("image/jpeg".toMediaType()))
+                        .build()
+                    val response = okHttpClient.newCall(request).execute()
+                    return response.isSuccessful
+                }
+
+                val frontUploadSuccess = putImage(frontPhotoPath, frontPresignedUrl)
+                val backUploadSuccess = putImage(backPhotoPath, backPresignedUrl)
+
+                if (!frontUploadSuccess || !backUploadSuccess) {
+                    runOnUiThread {
+                        Toast.makeText(this@BackOnlyActivity, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                // 3. 최종 게시글 업로드
+                val frontItemtags = frontTagList?.map {
+                    ItemTag(x = it.xRatio, y = it.yRatio, content = it.tagText)
+                } ?: emptyList()
+
+                val backItemtags = backTagList?.map {
+                    ItemTag(x = it.xRatio, y = it.yRatio, content = it.tagText)
+                } ?: emptyList()
+
+                val visibility = when (binding.exposedDropdown.text.toString()) {
+                    "전체공개" -> "PUBLIC"
+                    "친구공개" -> "FRIEND"
+                    "비공개" -> "PRIVATE"
+                    else -> "PUBLIC"
+                }
+                val finalPost = PostRequest(
+                    frontImage = frontPresignedUrl.substringBefore("?"),
+                    backImage = backPresignedUrl.substringBefore("?"),
+                    hashtags = hashtags,
+                    frontItemtags = frontItemtags,
+                    backItemtags = backItemtags,
+                    pointColor = "#${Integer.toHexString(pointColor)}",
+                    visibility = visibility,
+                    mission = true
+                )
+
+                viewModel.uploadPost(finalPost)
+
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this@BackOnlyActivity, "업로드 중 오류: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+                Log.e("UPLOAD", "에러: ${e.message}", e)
             }
         }
     }
@@ -355,14 +338,21 @@ class BackOnlyActivity : AppCompatActivity() {
     }
 
     private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
+        val displayTag = getDisplayTag(tagText) // ✅ display tag 사용
+
         val tagView = android.widget.TextView(this).apply {
-            text = tagText
+            text = displayTag
             setTextColor(Color.WHITE)
             textSize = 14f
             setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
             val leftPad = dpToPx(30)
             val pad = dpToPx(8)
             setPadding(leftPad, pad, pad, pad)
+
+            // 전체 태그를 클릭하면 Toast로 보여주기 (선택 사항)
+            setOnClickListener {
+                Toast.makeText(context, "전체 태그: $tagText", Toast.LENGTH_SHORT).show()
+            }
         }
 
         val layoutParams = ConstraintLayout.LayoutParams(
@@ -380,6 +370,7 @@ class BackOnlyActivity : AppCompatActivity() {
 
         binding.imageAndTag.addView(tagView, layoutParams)
     }
+
 
     private fun dpToPx(dp: Int): Int {
         val scale = resources.displayMetrics.density

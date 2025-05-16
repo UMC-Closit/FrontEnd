@@ -1,14 +1,14 @@
 package com.example.umc_closit.model
 
-import androidx.lifecycle.*
-import com.example.umc_closit.data.remote.post.ItemTag
-import com.example.umc_closit.data.remote.post.PostUploadResponse
-import com.example.umc_closit.data.remote.post.PostService
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.utils.FileUtils
-import com.example.umc_closit.utils.JsonUtils
+import com.example.umc_closit.data.remote.post.PostRequest
+import com.example.umc_closit.data.remote.post.PostService
+import com.example.umc_closit.data.remote.post.PostUploadResponse
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 class PostViewModel : ViewModel() {
@@ -20,17 +20,13 @@ class PostViewModel : ViewModel() {
     val uploadResult: LiveData<Result<PostUploadResponse>> = _uploadResult
 
     fun uploadPost(
-        requestBody: RequestBody,
-        frontImagePart: MultipartBody.Part,
-        backImagePart: MultipartBody.Part
+        requestBody: PostRequest,
     ) {
         viewModelScope.launch {
             try {
                 // API 호출
                 val response = postService.uploadPost(
-                    request = requestBody,
-                    frontImage = frontImagePart,
-                    backImage = backImagePart
+                    request = requestBody
                 )
 
                 // 응답 처리

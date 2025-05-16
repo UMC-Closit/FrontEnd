@@ -73,10 +73,37 @@ class CalendarAdapter(
                     color.matches(Regex("^[0-9A-Fa-f]{8}$")) -> "#$color" // AARRGGBB
                     else -> {
                         Log.e("HISTORY", "잘못된 색상 코드: $color -> null 처리")
-                        "#D9D9D9"
+                        "#A5A5A5"
                     }
                 }
             }
+
+            val hasData = postThumbnails.containsKey(fullDateKey) || postColors.containsKey(fullDateKey)
+            val isPointColorMode = postColors.containsKey(fullDateKey)
+
+            val textColor = if (hasData) {
+                if (isPointColorMode) {
+                    try {
+                        val colorInt = Color.parseColor(pointColorHex)
+                        val r = Color.red(colorInt)
+                        val g = Color.green(colorInt)
+                        val b = Color.blue(colorInt)
+
+                        val luminance = 0.299 * r + 0.587 * g + 0.114 * b
+
+                        if (luminance < 150) root.context.getColor(R.color.white_default)
+                        else root.context.getColor(R.color.history_gray)
+                    } catch (e: IllegalArgumentException) {
+                        root.context.getColor(R.color.white_default) // 파싱 실패 시 기본
+                    }
+                } else {
+                    root.context.getColor(R.color.white_default) // 포인트 컬러 모드 아닐 때
+                }
+            } else {
+                root.context.getColor(R.color.history_gray)
+            }
+
+            tvDay.setTextColor(textColor)
 
 
             Log.d("HISTORY", "onBindViewHolder 날짜: $fullDateKey, 포스트 ID: $thumbnailUrl, 색상: $pointColorHex")

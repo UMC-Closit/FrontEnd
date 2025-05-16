@@ -2,6 +2,7 @@ package com.example.umc_closit.ui.mission
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mission.camera.CameraFrontCallback
 import com.example.mission.camera.CameraPreviewManager
@@ -15,7 +16,6 @@ class MissionActivity : AppCompatActivity(), CameraFrontCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🚀 View Binding 초기화
         binding = ActivityMissionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

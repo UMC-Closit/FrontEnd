@@ -4,9 +4,12 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc_closit.R
 import com.example.umc_closit.databinding.ItemCalendarMonthBinding
 
 class HistoryAdapter(
@@ -36,7 +39,16 @@ class HistoryAdapter(
         Log.d("HISTORY", "onBindViewHolder: ${year}년 ${month}월, 선택 여부: $isSelected")
 
         with(holder.binding) {
-            tvMonth.text = "${year}년 ${month}월"
+            tvMonth.text = "${month}월"
+
+            if (month == 1 || position == 0) {
+                clCalendarDivider.visibility = View.VISIBLE
+                tvYear.text = "$year"
+                Log.d("HISTORY", "clCalendarDivider → VISIBLE / year: $year, month: $month")
+            } else {
+                clCalendarDivider.visibility = View.GONE
+                Log.d("HISTORY", "clCalendarDivider → GONE / year: $year, month: $month")
+            }
 
             viewColorCircle.setOnClickListener {
                 if (isSelected) {
@@ -52,23 +64,28 @@ class HistoryAdapter(
                 notifyItemChanged(position)
             }
 
+            val context = holder.itemView.context
+
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(if (isSelected) Color.parseColor("#BDBDBD") else Color.WHITE)
+                setColor(
+                    if (isSelected) ContextCompat.getColor(context, R.color.pink_point)
+                    else Color.WHITE
+                )
                 setStroke(2, Color.BLACK)
             }
             viewColorCircle.background = drawable
 
             rvCalendar.post {
                 val scale = root.context.resources.displayMetrics.density
-                val parentWidth = tvSun.width - (8 * scale).toInt()
+                val parentWidth = tvSun.width - (4 * scale).toInt()
 
                 val calendarAdapter = CalendarAdapter(
                     year = year,
                     month = month,
                     postThumbnails = postThumbnails,
                     postColors = postColors,
-                    weekdayWidth = parentWidth.toInt()
+                    weekdayWidth = parentWidth
                 )
 
                 rvCalendar.adapter = calendarAdapter
