@@ -89,10 +89,10 @@ class FollowListActivity : AppCompatActivity() {
                     followingList.addAll(newFollowingList)
 
                     if (followingList.isEmpty()) {
-                        binding.tvNewNone.visibility = View.VISIBLE
-                        binding.tvNewNone.text = "팔로잉 목록이 없습니다"
+                        binding.tvFollowNone.visibility = View.VISIBLE
+                        binding.tvFollowNone.text = "팔로잉 목록이 비어 있습니다."
                     } else {
-                        binding.tvNewNone.visibility = View.GONE
+                        binding.tvFollowNone.visibility = View.GONE
                     }
 
                     hasNextPage = response.result?.hasNext ?: false
@@ -137,10 +137,10 @@ class FollowListActivity : AppCompatActivity() {
                     followersList.addAll(newFollowersList)
 
                     if (followersList.isEmpty()) {
-                        binding.tvNewNone.visibility = View.VISIBLE
-                        binding.tvNewNone.text = "팔로워 목록이 없습니다"
+                        binding.tvFollowNone.visibility = View.VISIBLE
+                        binding.tvFollowNone.text = "팔로워 목록이 비어 있습니다."
                     } else {
-                        binding.tvNewNone.visibility = View.GONE
+                        binding.tvFollowNone.visibility = View.GONE
                     }
 
                     hasNextPage = response.result?.hasNext ?: false

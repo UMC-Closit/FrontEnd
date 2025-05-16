@@ -37,7 +37,9 @@ interface BattleApiService {
     // 배틀 게시글 목록 조회 API
     @GET("/api/auth/communities/battle")
     fun getBattleList(
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("sorting") sorting: String, // "LATEST" or "TRENDING"
+        @Query("status") status: String    // "INACTIVE", "PENDING", "ACTIVE", "COMPLETED"
     ): Call<BattleListResponse>
 
     // 배틀 챌린지 게시글 목록 조회 API

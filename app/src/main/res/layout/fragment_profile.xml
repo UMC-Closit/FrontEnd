@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white_profile_bg">
@@ -48,6 +49,59 @@
                 app:layout_constraintBottom_toBottomOf="@+id/cl_follow_btn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/cl_follow_btn" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutMenuOptions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintWidth_percent="0.3"
+                android:layout_marginRight="4dp"
+                android:visibility="invisible"
+                android:elevation="4dp"
+                app:layout_constraintEnd_toEndOf="@id/iv_profile_menu"
+                app:layout_constraintTop_toBottomOf="@id/iv_profile_menu">
+
+                <TextView
+                    android:id="@+id/btnBlock"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="차단하기"
+                    android:fontFamily="@font/noto_regular"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_top_round"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/following_gray"
+                    app:layout_constraintTop_toBottomOf="@id/btnBlock"
+                    app:layout_constraintStart_toStartOf="@id/btnBlock"
+                    app:layout_constraintEnd_toEndOf="@id/btnBlock"/>
+
+                <TextView
+                    android:id="@+id/btnReport"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="신고하기"
+                    android:fontFamily="@font/noto_regular"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:includeFontPadding="false"
+                    android:padding="10dp"
+                    android:background="@drawable/bg_bottom_round"
+                    android:textColor="@color/black"
+                    app:layout_constraintTop_toBottomOf="@id/divider"
+                    app:layout_constraintStart_toStartOf="@id/btnBlock"
+                    app:layout_constraintEnd_toEndOf="@id/btnBlock"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_follow_btn"
@@ -324,6 +378,19 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_history" />
 
             <TextView
+                android:id="@+id/tv_block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="차단된 사용자"
+                android:paddingVertical="5dp"
+                android:includeFontPadding="false"
+                android:fontFamily="@font/noto_regular"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@id/tv_editInfo"
+                app:layout_constraintTop_toBottomOf="@id/tv_editInfo" />
+
+            <TextView
                 android:id="@+id/tv_savePosts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -333,8 +400,8 @@
                 android:fontFamily="@font/noto_regular"
                 android:textSize="13sp"
                 android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/tv_editInfo"
-                app:layout_constraintTop_toBottomOf="@id/tv_editInfo" />
+                app:layout_constraintStart_toStartOf="@id/tv_block"
+                app:layout_constraintTop_toBottomOf="@id/tv_block" />
 
             <TextView
                 android:id="@+id/tv_logout"

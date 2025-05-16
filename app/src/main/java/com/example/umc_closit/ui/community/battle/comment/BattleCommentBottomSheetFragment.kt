@@ -133,6 +133,8 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
                         battleCommentId = response.result.battleCommentId,
                         clositId = response.result.clositId,
                         content = content,
+                        parentBattleCommentId = 0,
+                        thumbnail = "string",
                         createdAt = response.result.createdAt
                     )
                     // 댓글이 없었을 때 첫 댓글인 경우

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.profile.BlockRequest
 import com.example.umc_closit.data.remote.profile.FollowRequest
 import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
@@ -28,6 +30,7 @@ import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.profile.follow.FollowListActivity
 import com.example.umc_closit.ui.login.LoginActivity
+import com.example.umc_closit.ui.profile.block.BlockedUserActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
@@ -182,6 +185,10 @@ class ProfileFragment : Fragment() {
             startActivity(Intent(requireContext(), SavedPostsActivity::class.java))
         }
 
+        binding.tvBlock.setOnClickListener {
+            startActivity(Intent(requireContext(), BlockedUserActivity::class.java))
+        }
+
         binding.tvLogout.setOnClickListener {
             showLogoutDialog()
         }
@@ -195,6 +202,58 @@ class ProfileFragment : Fragment() {
         binding.tvFollow.setOnClickListener {
             toggleFollow()
         }
+
+        binding.btnBlock.setOnClickListener {
+            blockUser(profileUserClositId)
+            hideMenuWithAnimation(binding.layoutMenuOptions)
+        }
+
+        binding.ivProfileMenu.setOnClickListener {
+            if (!isMyProfile()) {
+                if (binding.layoutMenuOptions.visibility == View.VISIBLE) {
+                    hideMenuWithAnimation(binding.layoutMenuOptions)
+                } else {
+                    showMenuWithAnimation(binding.layoutMenuOptions)
+                }
+            }
+        }
+
+        // 루트 뷰 터치 시 메뉴 닫기
+        binding.root.setOnTouchListener { _, event ->
+            if (binding.layoutMenuOptions.visibility == View.VISIBLE) {
+                val menuRect = Rect()
+                binding.layoutMenuOptions.getGlobalVisibleRect(menuRect)
+
+                // 메뉴 영역 밖을 터치했을 때 닫기
+                if (!menuRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    hideMenuWithAnimation(binding.layoutMenuOptions)
+                }
+            }
+            false
+        }
+
+    }
+
+    private fun blockUser(targetClositId: String) {
+        val request = BlockRequest(targetClositId)
+        val apiCall = { RetrofitClient.profileService.blockUser(request) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    Toast.makeText(requireContext(), "사용자를 차단했습니다.", Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                } else {
+                    Toast.makeText(requireContext(), "차단 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
 
     private fun updateUI() {
@@ -631,5 +690,46 @@ class ProfileFragment : Fragment() {
         TokenUtils.clearTokens(requireContext())
         startActivity(Intent(requireContext(), LoginActivity::class.java))
         requireActivity().finishAffinity()
+    }
+
+    private fun showMenuWithAnimation(view: View) {
+        view.apply {
+            // 우측 상단 기준으로 스케일 애니메이션
+            post {
+                pivotX = width.toFloat()
+                pivotY = 0f
+
+                scaleX = 0f
+                scaleY = 0f
+                alpha = 0f
+                visibility = View.VISIBLE
+
+                animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .alpha(1f)
+                    .setDuration(150)
+                    .start()
+            }
+        }
+    }
+
+    private fun hideMenuWithAnimation(view: View) {
+        view.apply {
+            post {
+                pivotX = width.toFloat()
+                pivotY = 0f
+
+                animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .alpha(0f)
+                    .setDuration(150)
+                    .withEndAction {
+                        visibility = View.GONE
+                    }
+                    .start()
+            }
+        }
     }
 }

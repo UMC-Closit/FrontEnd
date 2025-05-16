@@ -1,5 +1,6 @@
 package com.example.umc_closit.data.remote.profile
 
+import com.example.umc_closit.data.remote.BaseResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -96,4 +97,15 @@ interface ProfileService {
         @Query("page") page: Int,  // 페이지 번호
         @Query("size") size: Int   // 한 페이지에 불러올 항목 수
     ): Call<FollowerResponse>
+
+    // block
+    @GET("/api/auth/users/block")
+    fun getBlockedUsers(): Call<BlockedUserListResponse>
+
+    @POST("/api/auth/users/block")
+    fun blockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
+
+    @DELETE("/api/auth/users/block")
+    fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
+
 }

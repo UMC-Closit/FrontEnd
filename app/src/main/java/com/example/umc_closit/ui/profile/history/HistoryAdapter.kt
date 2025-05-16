@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -38,7 +39,16 @@ class HistoryAdapter(
         Log.d("HISTORY", "onBindViewHolder: ${year}년 ${month}월, 선택 여부: $isSelected")
 
         with(holder.binding) {
-            tvMonth.text = "${year}년 ${month}월"
+            tvMonth.text = "${month}월"
+
+            if (month == 1 || position == 0) {
+                clCalendarDivider.visibility = View.VISIBLE
+                tvYear.text = "$year"
+                Log.d("HISTORY", "clCalendarDivider → VISIBLE / year: $year, month: $month")
+            } else {
+                clCalendarDivider.visibility = View.GONE
+                Log.d("HISTORY", "clCalendarDivider → GONE / year: $year, month: $month")
+            }
 
             viewColorCircle.setOnClickListener {
                 if (isSelected) {

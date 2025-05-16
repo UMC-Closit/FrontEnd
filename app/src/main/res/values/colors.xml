@@ -9,7 +9,7 @@
 
     <color name="transparent">#00000000</color>
 
-    <color name="error_red">#FF6E6E</color>
+    <color name="error_red">#D72F2F</color>
 
     <color name="gray_dark">#797979</color>
     <color name="gray_normal">#D9D9D9</color>
@@ -19,6 +19,7 @@
     <color name="text_gray">#9E9E9E</color>
     <color name="history_gray">#A5A5A5</color>
     <color name="following_gray">#EFEFF0</color>
+    <color name="weekday_gray">#474747</color>
 
 
     <color name="menu_inactive">#2E2E2E</color>

@@ -65,6 +65,7 @@
         <activity android:name=".ui.profile.recent.RecentDetailActivity"/>
         <activity android:name=".ui.upload.UploadActivity"/>
         <activity android:name=".ui.profile.follow.FollowListActivity"/>
+        <activity android:name=".ui.profile.block.BlockedUserActivity"/>
 
 
         <activity

@@ -42,7 +42,7 @@ class HighlightAdapter(
                 .load(item.thumbnail)
                 .into(binding.highlightImage)
 
-            binding.highlightText.text = item.createdAt.substring(2, 10).replace("-", ".")
+            binding.highlightText.text = item.createdAt.substring(2, 10).replace("-", ".").replace("/", ".")
 
             binding.highlightImage.layoutParams = binding.highlightImage.layoutParams.apply {
                 width = itemSize
