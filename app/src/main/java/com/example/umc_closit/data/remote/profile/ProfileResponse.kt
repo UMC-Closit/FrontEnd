@@ -1,0 +1,245 @@
+package com.example.umc_closit.data.remote.profile
+
+// follow
+data class FollowRequest(
+    val receiver: String
+)
+
+data class FollowResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: FollowResult?
+)
+
+data class FollowResult(
+    val followId: Int,
+    val senderId: Int,
+    val receiverId: Int,
+    val createdAt: String
+)
+
+// unfollow
+data class UnfollowResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: String
+)
+
+// isfollowing
+data class FollowCheckResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: Boolean
+)
+
+// profile info
+data class ProfileUserResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: ProfileUserResult
+)
+
+data class ProfileUserResult(
+    val role: String,
+    val clositId: String,
+    val name: String,
+    val email: String,
+    val birth: String,
+    val profileImage: String?,
+    val followers: Int,
+    val following: Int,
+    val createdAt: String
+)
+
+// edit profile
+data class EditProfileRequest(
+    val name: String,
+    val currentPassword: String,
+    val password: String,
+    val birth: String
+)
+
+data class PresignedProfileUrlResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: ProfilePresignedUrlResult
+)
+
+data class ProfilePresignedUrlResult(
+    val imageUrl: String
+)
+
+data class ProfileImageUploadResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: UserProfileData
+)
+
+data class UserProfileData(
+    val role: String,
+    val clositId: String,
+    val name: String,
+    val email: String,
+    val birth: String,
+    val profileImage: String
+)
+
+// highlight
+data class HighlightListResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HighlightListResult
+)
+
+data class HighlightListResult(
+    val highlights: List<HighlightItem>,
+    val hasNext: Boolean,
+    val pageNumber: Int,
+    val size: Int
+)
+
+data class HighlightItem(
+    val clositId: String,
+    val userName: String,
+    val postId: Int,
+    val thumbnail: String,
+    val createdAt: String,
+    val updatedAt: String? = null
+)
+
+data class HighlightDetailResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HighlightDetailResult
+)
+
+data class HighlightDetailResult(
+    val highlightId: Int,
+    val clositId: String,
+    val createdAt: String,
+    val updatedAt: String?,
+    val post: HighlightPost
+)
+
+data class HighlightPost(
+    val id: Int,
+    val backImage: String,
+    val createdAt: String
+)
+
+
+data class HighlightCreateResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HighlightCreateResult
+)
+
+data class HighlightCreateResult(
+    val highlightId: Int,
+    val clositId: String,
+    val postId: Int,
+    val createdAt: String
+)
+
+data class HighlightDeleteResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: String
+)
+
+// 북마크 조회
+data class BookmarkResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: BookmarkResult
+)
+
+data class BookmarkResult(
+    val bookmarkResultDTOList: List<BookmarkItem>,
+    val listSize: Int,
+    val hasNext: Boolean,
+    val first: Boolean,
+    val last: Boolean
+)
+
+data class BookmarkItem(
+    val clositId: String,
+    val userName: String,
+    val bookmarkId: Int,
+    val postId: Int,
+    val thumbnail: String,
+    val createdAt: String
+)
+
+
+// 팔로잉 목록
+
+data class FollowingResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: FollowingResult
+)
+
+data class FollowingResult(
+    val followings: List<Follow>,
+    val hasNext: Boolean
+)
+
+// 팔로워 목록
+data class FollowerResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: FollowerResult
+)
+
+data class FollowerResult(
+    val followers: List<Follow>,
+    val hasNext: Boolean
+)
+
+data class Follow(
+    val clositId: String,
+    val name: String,
+    val email: String,
+    val birth: String,
+    val profileImage: String
+)
+
+// 차단된 사용자
+
+data class BlockedUser(
+    val clositId: String,
+    val name: String,
+    val profileImage: String
+)
+
+data class BlockedUserListResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: BlockedUserListResult
+)
+
+data class BlockedUserListResult(
+    val blockedUsers: List<BlockedUser>,
+    val hasNext: Boolean,
+    val pageNumber: Int,
+    val size: Int
+)
+
+data class BlockRequest(
+    val blockedClositId: String
+)

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 경계선 -->
+    <item>
+        <shape android:shape="rectangle">
+            <size android:height="0.1mm" />
+            <solid android:color="@color/gray_bright" /> <!-- 경계선 색상 (연한 회색) -->
+        </shape>
+    </item>
+
+    <!-- 배경 -->
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white" /> <!-- 바텀 네비게이션 배경 색상 -->
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,393 @@
+package com.example.umc_closit.ui.mission
+
+import android.app.Dialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.constraintlayout.helper.widget.Flow
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
+import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.post.ItemTag
+import com.example.umc_closit.data.remote.post.PostRequest
+import com.example.umc_closit.data.remote.post.PostService
+import com.example.umc_closit.data.remote.post.TagData
+import com.example.umc_closit.databinding.ActivityBackOnlyBinding
+import com.example.umc_closit.databinding.CustomTagDialogBinding
+import com.example.umc_closit.model.PostViewModel
+import com.example.umc_closit.ui.timeline.TimelineActivity
+import com.example.umc_closit.utils.JsonUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.util.UUID
+
+class BackOnlyActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityBackOnlyBinding
+    private var originalBitmap: Bitmap? = null
+
+    private var tvPrivacyStatus: TextView? = null  // 공개범위 TextView
+
+    private var hashtags: ArrayList<String> = arrayListOf()
+    private var pointColor: Int = -1
+    private var frontTagList: ArrayList<TagData>? = null
+
+    private var backTagList: ArrayList<TagData>? = null
+
+    private lateinit var postService: PostService
+
+    private val viewModel: PostViewModel by viewModels()
+
+    companion object {
+        private const val TAGGING_REQUEST_CODE = 1001
+    }
+
+    private fun getDisplayTag(fullTag: String): String {
+        return if (fullTag.length > 7) fullTag.substring(0, 7) + "..." else fullTag
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityBackOnlyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        postService = RetrofitClient.postService
+
+        hashtags = intent.getStringArrayListExtra("hashtags") ?: arrayListOf()
+        pointColor = intent.getIntExtra("pointColor", -1)
+        frontTagList = intent.getParcelableArrayListExtra("frontTagList") ?: arrayListOf()
+
+        binding.ivBack.setOnClickListener {
+            finish()
+        }
+
+        val backPhotoPath = intent.getStringExtra("backPhotoPath")
+        backPhotoPath?.let { path ->
+            originalBitmap = rotateBitmapIfNeeded(path)
+            originalBitmap?.let { bmp ->
+                binding.imageViewBackOnly.setImageBitmap(bmp)
+            }
+        }
+
+        // Upload 보낼 frontPhotoPath
+        val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
+
+        var isColorExtractMode = false
+
+        if (pointColor != -1) {
+            setIconColor(binding.viewColorIcon, pointColor)
+        }
+
+        if (hashtags.isNotEmpty()) {
+            hashtags.forEach { hashtag ->
+                createHashtagTextView(hashtag, binding.clHashtag, binding.flowHashtagContainer)
+            }
+        }
+
+        binding.viewColorIcon.setOnClickListener {
+            isColorExtractMode = !isColorExtractMode
+        }
+
+        // ViewModel의 업로드 결과 관찰
+        viewModel.uploadResult.observe(this, Observer { result ->
+            result.onSuccess { response ->
+                Toast.makeText(this, "게시글 업로드 성공! ID: ${response.result.postId}", Toast.LENGTH_SHORT).show()
+                // 업로드 성공 시 타임라인으로 이동
+                val intent = Intent(this, TimelineActivity::class.java)
+                intent.putExtra("showUploadFragment", true)
+                startActivity(intent)
+                finish()
+            }.onFailure { error ->
+                Toast.makeText(this, "업로드 실패: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        })
+
+        binding.btnUpload.setOnClickListener {
+            if (frontPhotoPath.isNullOrEmpty() || backPhotoPath.isNullOrEmpty()) {
+                Toast.makeText(this, "이미지 경로를 확인하세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            uploadFullPost(frontPhotoPath, backPhotoPath)
+        }
+
+        binding.addItem.setOnClickListener{
+            val intent = Intent(this, TaggingActivity::class.java).apply {
+                putExtra("photoPath", backPhotoPath)
+            }
+            startActivityForResult(intent, TAGGING_REQUEST_CODE)
+        }
+
+
+        binding.imageViewBackOnly.setOnTouchListener { _, event ->
+            if (isColorExtractMode) {
+                if (event.action == MotionEvent.ACTION_DOWN || event.action == MotionEvent.ACTION_MOVE) {
+                    originalBitmap?.let { bmp ->
+                        val color = getTouchedColor(bmp, event.x, event.y)
+                        setIconColor(binding.viewColorIcon, color)
+                        pointColor = color
+                    }
+                    isColorExtractMode = false
+                }
+            }
+            true
+        }
+
+
+        val options = listOf("전체공개", "친구공개", "비공개")
+        val adapter = ArrayAdapter(this, R.layout.item_dropdown, options)
+        binding.exposedDropdown.setAdapter(adapter)
+
+
+        binding.exposedDropdown.setOnClickListener {
+            binding.exposedDropdown.showDropDown()
+        }
+
+        binding.btnHashtag.setOnClickListener {
+            showHashtagDialog { newHashtag ->
+                hashtags.add(newHashtag)
+                createHashtagTextView(newHashtag, binding.clHashtag, binding.flowHashtagContainer)
+            }
+        }
+
+    }
+
+    private fun uploadFullPost(frontPhotoPath: String, backPhotoPath: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val frontFileName = "${UUID.randomUUID()}.jpg"
+                val backFileName = "${UUID.randomUUID()}.jpg"
+
+                // 1. Presigned URL 요청
+                val presignedRequest = mapOf(
+                    "frontImageUrl" to frontFileName,
+                    "backImageUrl" to backFileName
+                )
+                val requestBody = JsonUtils.createRequestBody(presignedRequest)
+                val presignedResponse = postService.getPresignedUrls(requestBody)
+
+                val frontPresignedUrl = presignedResponse.result.frontImageUrl
+                val backPresignedUrl = presignedResponse.result.backImageUrl
+
+                // 2. 이미지 PUT
+                val okHttpClient = OkHttpClient()
+
+                fun putImage(filePath: String, url: String): Boolean {
+                    val file = File(filePath)
+                    val request = Request.Builder()
+                        .url(url)
+                        .put(file.asRequestBody("image/jpeg".toMediaType()))
+                        .build()
+                    val response = okHttpClient.newCall(request).execute()
+                    return response.isSuccessful
+                }
+
+                val frontUploadSuccess = putImage(frontPhotoPath, frontPresignedUrl)
+                val backUploadSuccess = putImage(backPhotoPath, backPresignedUrl)
+
+                if (!frontUploadSuccess || !backUploadSuccess) {
+                    runOnUiThread {
+                        Toast.makeText(this@BackOnlyActivity, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                // 3. 최종 게시글 업로드
+                val frontItemtags = frontTagList?.map {
+                    ItemTag(x = it.xRatio, y = it.yRatio, content = it.tagText)
+                } ?: emptyList()
+
+                val backItemtags = backTagList?.map {
+                    ItemTag(x = it.xRatio, y = it.yRatio, content = it.tagText)
+                } ?: emptyList()
+
+                val visibility = when (binding.exposedDropdown.text.toString()) {
+                    "전체공개" -> "PUBLIC"
+                    "친구공개" -> "FRIEND"
+                    "비공개" -> "PRIVATE"
+                    else -> "PUBLIC"
+                }
+                val finalPost = PostRequest(
+                    frontImage = frontPresignedUrl.substringBefore("?"),
+                    backImage = backPresignedUrl.substringBefore("?"),
+                    hashtags = hashtags,
+                    frontItemtags = frontItemtags,
+                    backItemtags = backItemtags,
+                    pointColor = "#${Integer.toHexString(pointColor)}",
+                    visibility = visibility,
+                    mission = true
+                )
+
+                viewModel.uploadPost(finalPost)
+
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this@BackOnlyActivity, "업로드 중 오류: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+                Log.e("UPLOAD", "에러: ${e.message}", e)
+            }
+        }
+    }
+
+
+    private fun showHashtagDialog(onHashtagSaved: (String) -> Unit) {
+        // 다이얼로그 생성
+        val dialog = Dialog(this)
+        val binding = CustomTagDialogBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명화
+
+        // 기본값으로 '#' 추가
+        binding.etHashtag.setText("#")
+        binding.etHashtag.setSelection(1) // 커서를 # 뒤로 이동
+
+        // 취소 버튼
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // 확인 버튼
+        binding.btnConfirm.setOnClickListener {
+            val input = binding.etHashtag.text.toString().trim()
+
+            // 입력 검증
+            if (input.length > 1 && input.startsWith("#")) {
+                onHashtagSaved(input)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "올바른 해시태그를 입력하세요.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialog.show()
+    }
+    private fun createHashtagTextView(text: String, parentLayout: ConstraintLayout, flow: Flow) {
+
+        val font: Typeface? = ResourcesCompat.getFont(this, R.font.pretendard_regular)
+        val textView = TextView(this).apply {
+            id = View.generateViewId()
+            this.text = text
+            textSize = 16f
+            typeface = ResourcesCompat.getFont(context, R.font.noto_medium)
+            includeFontPadding = false
+            setTextColor(ContextCompat.getColor(context, R.color.white))
+            setBackgroundResource(R.drawable.bg_detail_hashtag)
+            setPadding(36, 12, 36, 12)
+
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+
+            // TODO: 해시태그 클릭 시 삭제 기능 추가
+            // setOnClickListener {}
+        }
+
+        parentLayout.addView(textView)
+        flow.referencedIds += textView.id
+    }
+
+    // 아이콘 색상 변경
+    private fun setIconColor(view: android.view.View, color: Int) {
+        val bg = view.background
+        if (bg is GradientDrawable) {
+            bg.setColor(color)
+        } else {
+            view.setBackgroundColor(color)
+        }
+    }
+
+    // 이미지에서 색상 추출
+    private fun getTouchedColor(bitmap: Bitmap, touchX: Float, touchY: Float): Int {
+        val ivWidth = binding.imageViewBackOnly.width
+        val ivHeight = binding.imageViewBackOnly.height
+
+        val bmpWidth = bitmap.width
+        val bmpHeight = bitmap.height
+
+        val xRatio = touchX / ivWidth
+        val yRatio = touchY / ivHeight
+
+        val pixelX = (xRatio * bmpWidth).toInt().coerceIn(0, bmpWidth - 1)
+        val pixelY = (yRatio * bmpHeight).toInt().coerceIn(0, bmpHeight - 1)
+
+        return bitmap.getPixel(pixelX, pixelY)
+    }
+
+    private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
+        val displayTag = getDisplayTag(tagText) // ✅ display tag 사용
+
+        val tagView = android.widget.TextView(this).apply {
+            text = displayTag
+            setTextColor(Color.WHITE)
+            textSize = 14f
+            setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
+            val leftPad = dpToPx(30)
+            val pad = dpToPx(8)
+            setPadding(leftPad, pad, pad, pad)
+
+            // 전체 태그를 클릭하면 Toast로 보여주기 (선택 사항)
+            setOnClickListener {
+                Toast.makeText(context, "전체 태그: $tagText", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.WRAP_CONTENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        val parentWidth = binding.imageAndTag.width.toFloat()
+        val parentHeight = binding.imageAndTag.height.toFloat()
+
+        layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+        layoutParams.leftMargin = (parentWidth * xRatio).toInt()
+        layoutParams.topMargin = (parentHeight * yRatio).toInt()
+
+        binding.imageAndTag.addView(tagView, layoutParams)
+    }
+
+
+    private fun dpToPx(dp: Int): Int {
+        val scale = resources.displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BackOnlyActivity.TAGGING_REQUEST_CODE && resultCode == RESULT_OK) {
+            val tagList = data?.getParcelableArrayListExtra<TagData>("tagList")
+            if (tagList != null) {
+                backTagList = tagList
+                for (tag in tagList) {
+                    addTagView(tag.tagText, tag.xRatio, tag.yRatio)
+                }
+            }
+
+        }
+    }
+}
