@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -14,18 +15,22 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.profile.BlockRequest
 import com.example.umc_closit.data.remote.profile.FollowRequest
 import com.example.umc_closit.data.remote.profile.FollowResponse
 import com.example.umc_closit.data.remote.profile.UnfollowResponse
+import com.example.umc_closit.databinding.DialogLogoutBinding
 import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
 import com.example.umc_closit.ui.profile.follow.FollowListActivity
 import com.example.umc_closit.ui.login.LoginActivity
+import com.example.umc_closit.ui.profile.block.BlockedUserActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
@@ -33,9 +38,16 @@ import com.example.umc_closit.ui.profile.history.HistoryActivity
 import com.example.umc_closit.ui.profile.posts.SavedPostsActivity
 import com.example.umc_closit.ui.profile.recent.RecentAdapter
 import com.example.umc_closit.ui.profile.recent.RecentDetailActivity
+import com.example.umc_closit.utils.JsonUtils
 import com.example.umc_closit.utils.TokenUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -173,21 +185,75 @@ class ProfileFragment : Fragment() {
             startActivity(Intent(requireContext(), SavedPostsActivity::class.java))
         }
 
-        binding.tvLogout.setOnClickListener {
-            logout()
+        binding.tvBlock.setOnClickListener {
+            startActivity(Intent(requireContext(), BlockedUserActivity::class.java))
         }
+
+        binding.tvLogout.setOnClickListener {
+            showLogoutDialog()
+        }
+
 
         binding.tvQuit.setOnClickListener {
             val clositId = TokenUtils.getClositId(requireContext()) ?: ""
             showQuitDialog(clositId) {}
         }
 
-        binding.viewFollowBtn.setOnClickListener {
-            toggleFollow()
-        }
         binding.tvFollow.setOnClickListener {
             toggleFollow()
         }
+
+        binding.btnBlock.setOnClickListener {
+            blockUser(profileUserClositId)
+            hideMenuWithAnimation(binding.layoutMenuOptions)
+        }
+
+        binding.ivProfileMenu.setOnClickListener {
+            if (!isMyProfile()) {
+                if (binding.layoutMenuOptions.visibility == View.VISIBLE) {
+                    hideMenuWithAnimation(binding.layoutMenuOptions)
+                } else {
+                    showMenuWithAnimation(binding.layoutMenuOptions)
+                }
+            }
+        }
+
+        // 루트 뷰 터치 시 메뉴 닫기
+        binding.root.setOnTouchListener { _, event ->
+            if (binding.layoutMenuOptions.visibility == View.VISIBLE) {
+                val menuRect = Rect()
+                binding.layoutMenuOptions.getGlobalVisibleRect(menuRect)
+
+                // 메뉴 영역 밖을 터치했을 때 닫기
+                if (!menuRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    hideMenuWithAnimation(binding.layoutMenuOptions)
+                }
+            }
+            false
+        }
+
+    }
+
+    private fun blockUser(targetClositId: String) {
+        val request = BlockRequest(targetClositId)
+        val apiCall = { RetrofitClient.profileService.blockUser(request) }
+
+        TokenUtils.handleTokenRefresh(
+            call = apiCall(),
+            onSuccess = { response ->
+                if (response.isSuccess) {
+                    Toast.makeText(requireContext(), "사용자를 차단했습니다.", Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                } else {
+                    Toast.makeText(requireContext(), "차단 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { t ->
+                Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            },
+            retryCall = apiCall,
+            context = requireContext()
+        )
     }
 
     private fun updateUI() {
@@ -286,40 +352,75 @@ class ProfileFragment : Fragment() {
 
     private fun uploadProfileImage(imageUri: Uri) {
         val clositId = loggedInUserClositId
+        val fileName = "${clositId}_profile_${System.currentTimeMillis()}.jpg"
 
-        try {
-            val inputStream = requireContext().contentResolver.openInputStream(imageUri)
-            inputStream?.use { input ->
-                val requestFile = input.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
-                val fileName = "${clositId}_profile_${System.currentTimeMillis()}.jpg"
-                val body = MultipartBody.Part.createFormData("user_image", fileName, requestFile)
+        // 1. Presigned URL 발급
+        val presignReq = JsonUtils.createRequestBody(mapOf("imageUrl" to fileName))
+        val presignCall = { RetrofitClient.profileService.getPresignedProfileUrl(presignReq) }
 
-                val apiCall = { RetrofitClient.profileService.uploadProfileImage(clositId, body) }
+        TokenUtils.handleTokenRefresh(
+            call = presignCall(),
+            onSuccess = { response ->
+                val presignedUrl = response.result.imageUrl
+                val pureUrl = presignedUrl.substringBefore("?")
 
-                TokenUtils.handleTokenRefresh(
-                    call = apiCall(),
-                    onSuccess = { response ->
-                        if (response.isSuccess) {
-                            Toast.makeText(requireContext(), "프로필 이미지 변경 성공", Toast.LENGTH_SHORT).show()
-                            loadUserProfile()
-                        } else {
-                            Toast.makeText(requireContext(), "프로필 이미지 변경 실패: ${response.message}", Toast.LENGTH_SHORT).show()
-                            Log.e("PROFILE_IMAGE", "프로필 이미지 변경 실패: ${response.message}")
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        // 2. 이미지 byte 변환
+                        val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+                        val imageBytes = inputStream?.readBytes()
+                        inputStream?.close()
+
+                        if (imageBytes == null) {
+                            Log.e("PROFILE_IMAGE", "이미지 바이트 변환 실패")
+                            return@launch
                         }
-                    },
-                    onFailure = { t ->
-                        Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("PROFILE_IMAGE", "네트워크 오류", t)
-                    },
-                    retryCall = apiCall,
-                    context = requireContext()
-                )
-            } ?: Log.e("PROFILE_IMAGE", "inputStream이 null임")
-        } catch (e: Exception) {
-            Log.e("PROFILE_IMAGE", "Exception 발생", e)
-        }
-    }
 
+                        // 3. S3 PUT 요청
+                        val putRequest = Request.Builder()
+                            .url(presignedUrl)
+                            .put(imageBytes.toRequestBody("image/jpeg".toMediaType()))
+                            .build()
+
+                        val putResponse = OkHttpClient().newCall(putRequest).execute()
+                        if (!putResponse.isSuccessful) {
+                            Log.e("PROFILE_IMAGE", "S3 업로드 실패: ${putResponse.code}")
+                            return@launch
+                        }
+
+                        // 4. 이미지 URL 등록
+                        val registerReq = JsonUtils.createRequestBody(
+                            mapOf("imageUrl" to pureUrl)
+                        )
+                        val registerCall = { RetrofitClient.profileService.uploadProfileImage(registerReq) }
+
+                        TokenUtils.handleTokenRefresh(
+                            call = registerCall(),
+                            onSuccess = {
+                                requireActivity().runOnUiThread {
+                                    Toast.makeText(requireContext(), "프로필 이미지 변경 성공", Toast.LENGTH_SHORT).show()
+                                    loadUserProfile()
+                                }
+                            },
+                            onFailure = {
+                                Log.e("PROFILE_IMAGE", "URL 등록 실패: ${it.message}")
+                            },
+                            retryCall = registerCall,
+                            context = requireContext()
+                        )
+
+                    } catch (e: Exception) {
+                        Log.e("PROFILE_IMAGE", "예외 발생: ${e.message}", e)
+                    }
+                }
+            },
+            onFailure = { t ->
+                Log.e("PROFILE_IMAGE", "Presigned URL 발급 실패: ${t.message}")
+            },
+            retryCall = presignCall,
+            context = requireContext()
+        )
+    }
 
 
     companion object {
@@ -468,17 +569,17 @@ class ProfileFragment : Fragment() {
 
 
     private fun updateFollowButtonUI(following: Boolean) {
-        val backgroundDrawable = binding.viewFollowBtn.background.mutate() as android.graphics.drawable.GradientDrawable
+        val backgroundDrawable = binding.tvFollow.background.mutate() as android.graphics.drawable.GradientDrawable
 
         if (following) {
             binding.tvFollow.text = "팔로잉"
-            backgroundDrawable.setColor(resources.getColor(R.color.pink_point, null))
-            backgroundDrawable.setStroke(2, resources.getColor(R.color.pink_point, null)) // 테두리 변경
-            binding.tvFollow.setTextColor(resources.getColor(R.color.white, null))
+            backgroundDrawable.setColor(resources.getColor(R.color.following_gray, null))
+            backgroundDrawable.setStroke(2, resources.getColor(R.color.following_gray, null)) // 테두리 변경
+            binding.tvFollow.setTextColor(resources.getColor(R.color.black, null))
         } else {
             binding.tvFollow.text = "팔로우"
-            backgroundDrawable.setColor(resources.getColor(R.color.black, null))
-            backgroundDrawable.setStroke(2, resources.getColor(R.color.white, null)) // 테두리 변경
+            backgroundDrawable.setColor(resources.getColor(R.color.pink_point, null))
+            backgroundDrawable.setStroke(2, resources.getColor(R.color.pink_point, null)) // 테두리 변경
             binding.tvFollow.setTextColor(resources.getColor(R.color.white, null))
         }
     }
@@ -492,14 +593,37 @@ class ProfileFragment : Fragment() {
         if (loggedInUserClositId == profileUserClositId) {
             // 내 프로필이면 수정 관련 버튼 보이게
             binding.clSettingsContainer.visibility = View.VISIBLE
-            binding.viewFollowBtn.visibility = View.GONE
             binding.tvFollow.visibility = View.GONE
         } else {
             // 다른 사람 프로필이면 팔로우 버튼 보이게
             binding.clSettingsContainer.visibility = View.GONE
-            binding.viewFollowBtn.visibility = View.VISIBLE
             binding.tvFollow.visibility = View.VISIBLE
         }
+    }
+
+
+    private fun showLogoutDialog() {
+        val dialog = Dialog(requireContext())
+        val binding = DialogLogoutBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        // 화면 너비의 80%로 설정
+        val width = (resources.displayMetrics.widthPixels * 0.7).toInt()
+        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        binding.btnConfirm.setOnClickListener {
+            logout()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showQuitDialog(clositId: String, onSuccess: () -> Unit) {
@@ -566,5 +690,46 @@ class ProfileFragment : Fragment() {
         TokenUtils.clearTokens(requireContext())
         startActivity(Intent(requireContext(), LoginActivity::class.java))
         requireActivity().finishAffinity()
+    }
+
+    private fun showMenuWithAnimation(view: View) {
+        view.apply {
+            // 우측 상단 기준으로 스케일 애니메이션
+            post {
+                pivotX = width.toFloat()
+                pivotY = 0f
+
+                scaleX = 0f
+                scaleY = 0f
+                alpha = 0f
+                visibility = View.VISIBLE
+
+                animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .alpha(1f)
+                    .setDuration(150)
+                    .start()
+            }
+        }
+    }
+
+    private fun hideMenuWithAnimation(view: View) {
+        view.apply {
+            post {
+                pivotX = width.toFloat()
+                pivotY = 0f
+
+                animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .alpha(0f)
+                    .setDuration(150)
+                    .withEndAction {
+                        visibility = View.GONE
+                    }
+                    .start()
+            }
+        }
     }
 }

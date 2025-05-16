@@ -42,7 +42,7 @@ class HighlightAdapter(
                 .load(item.thumbnail)
                 .into(binding.highlightImage)
 
-            binding.highlightText.text = item.createdAt.substring(2, 10).replace("-", ".")
+            binding.highlightText.text = item.createdAt.substring(2, 10).replace("-", ".").replace("/", ".")
 
             binding.highlightImage.layoutParams = binding.highlightImage.layoutParams.apply {
                 width = itemSize
@@ -75,7 +75,7 @@ class HighlightAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val itemSize = (screenWidth * 0.14).toInt()
+        val itemSize = (screenWidth * 0.16).toInt()
 
         if (holder is AddHighlightViewHolder) {
             holder.bind(onAddClick, itemSize)

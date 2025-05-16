@@ -3,36 +3,26 @@ package com.example.umc_closit.ui.mission
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.lifecycleScope
-import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
-import com.example.umc_closit.databinding.ActivityFrontOnlyBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import com.example.umc_closit.data.remote.post.TagData
-import com.example.umc_closit.databinding.CustomTagDialogBinding
-import android.widget.EditText
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.helper.widget.Flow
-import android.view.inputmethod.EditorInfo
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.content.Context
-import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
+import com.example.mission.utils.RotateBitmap.rotateBitmapIfNeeded
 import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.post.TagData
+import com.example.umc_closit.databinding.ActivityFrontOnlyBinding
+import com.example.umc_closit.databinding.CustomTagDialogBinding
 
 
 class FrontOnlyActivity : AppCompatActivity() {
@@ -41,10 +31,8 @@ class FrontOnlyActivity : AppCompatActivity() {
 
     private var frontPhotoPath: String? = null
     private var backPhotoPath: String? = null
-    private var originalBitmapPath: String? = null
 
     private val hashtags = mutableListOf<String>()
-    private val hashtagsFlow = MutableStateFlow<List<String>>(emptyList())
 
     private var originalBitmap: Bitmap? = null
 
@@ -59,10 +47,13 @@ class FrontOnlyActivity : AppCompatActivity() {
         private const val TAGGING_REQUEST_CODE = 1001
     }
 
+    private fun getDisplayTag(fullTag: String): String {
+        return if (fullTag.length > 7) fullTag.substring(0, 7) + "..." else fullTag
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🚀 View Binding 초기화
         binding = ActivityFrontOnlyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -196,14 +187,21 @@ class FrontOnlyActivity : AppCompatActivity() {
     }
 
     private fun addTagView(tagText: String, xRatio: Float, yRatio: Float) {
+        val displayTag = getDisplayTag(tagText) // ✅ display tag 사용
+
         val tagView = android.widget.TextView(this).apply {
-            text = tagText
+            text = displayTag
             setTextColor(Color.WHITE)
             textSize = 14f
             setBackgroundResource(com.example.umc_closit.R.drawable.bg_hashtag)
             val leftPad = dpToPx(30)
             val pad = dpToPx(8)
             setPadding(leftPad, pad, pad, pad)
+
+            // 전체 태그를 클릭하면 Toast로 보여주기 (선택 사항)
+            setOnClickListener {
+                Toast.makeText(context, "전체 태그: $tagText", Toast.LENGTH_SHORT).show()
+            }
         }
 
         val layoutParams = ConstraintLayout.LayoutParams(

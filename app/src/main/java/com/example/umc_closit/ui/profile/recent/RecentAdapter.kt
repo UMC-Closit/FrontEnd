@@ -21,7 +21,7 @@ class RecentAdapter(
                 .load(item.thumbnail)
                 .into(binding.ivRecentImage)
 
-            val itemHeight = (itemWidth * 10) / 6
+            val itemHeight = (itemWidth * 4) / 3
             binding.ivRecentImage.layoutParams.apply {
                 width = itemWidth
                 height = itemHeight
@@ -43,7 +43,7 @@ class RecentAdapter(
 
 
     override fun onBindViewHolder(holder: RecentViewHolder, position: Int) {
-        val itemWidth = (screenWidth * 0.12).toInt()
+        val itemWidth = (screenWidth * 0.26).toInt()
         holder.bind(items[position], itemWidth)
     }
 

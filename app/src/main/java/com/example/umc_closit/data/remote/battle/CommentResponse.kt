@@ -17,7 +17,9 @@ data class CommentResult(
 
 data class BattleComment(
     val battleCommentId: Int,
+    val parentBattleCommentId: Long,
     val clositId: String,
+    val thumbnail: String,
     val content: String,
     val createdAt: String
 )

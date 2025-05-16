@@ -1,8 +1,5 @@
 package com.example.umc_closit.data.remote.profile
 
-import com.example.umc_closit.data.remote.profile.history.DateHistoryThumbnail
-
-
 // follow
 data class FollowRequest(
     val receiver: String
@@ -47,7 +44,6 @@ data class ProfileUserResponse(
 )
 
 data class ProfileUserResult(
-    val id: Int,
     val role: String,
     val clositId: String,
     val name: String,
@@ -65,6 +61,33 @@ data class EditProfileRequest(
     val currentPassword: String,
     val password: String,
     val birth: String
+)
+
+data class PresignedProfileUrlResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: ProfilePresignedUrlResult
+)
+
+data class ProfilePresignedUrlResult(
+    val imageUrl: String
+)
+
+data class ProfileImageUploadResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: UserProfileData
+)
+
+data class UserProfileData(
+    val role: String,
+    val clositId: String,
+    val name: String,
+    val email: String,
+    val birth: String,
+    val profileImage: String
 )
 
 // highlight
@@ -193,4 +216,30 @@ data class Follow(
     val email: String,
     val birth: String,
     val profileImage: String
+)
+
+// 차단된 사용자
+
+data class BlockedUser(
+    val clositId: String,
+    val name: String,
+    val profileImage: String
+)
+
+data class BlockedUserListResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: BlockedUserListResult
+)
+
+data class BlockedUserListResult(
+    val blockedUsers: List<BlockedUser>,
+    val hasNext: Boolean,
+    val pageNumber: Int,
+    val size: Int
+)
+
+data class BlockRequest(
+    val blockedClositId: String
 )

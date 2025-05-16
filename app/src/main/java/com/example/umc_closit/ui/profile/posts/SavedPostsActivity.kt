@@ -25,14 +25,14 @@ class SavedPostsActivity : AppCompatActivity() {
         binding = ActivitySavedPostsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBack.setOnClickListener {
+        binding.ivBack.setOnClickListener {
             finish()
         }
 
         // btnTrash 클릭 시 동작
-        binding.btnTrash.setOnClickListener {
+        binding.ivDelete.setOnClickListener {
             // btnTrash 숨기고 LinearLayout을 보이게
-            binding.btnTrash.visibility = View.GONE
+            binding.ivDelete.visibility = View.GONE
             binding.imageButtonLayout.visibility = View.VISIBLE
         }
 
@@ -51,7 +51,7 @@ class SavedPostsActivity : AppCompatActivity() {
         binding.btnCancel.setOnClickListener {
             // 선택 해제 후 btnTrash와 LinearLayout 원래대로
             postAdapter.resetSelection()
-            binding.btnTrash.visibility = View.VISIBLE
+            binding.ivDelete.visibility = View.VISIBLE
             binding.imageButtonLayout.visibility = View.GONE
         }
 
