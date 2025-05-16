@@ -158,3 +158,39 @@ data class BookmarkItem(
     val thumbnail: String,
     val createdAt: String
 )
+
+
+// 팔로잉 목록
+
+data class FollowingResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: FollowingResult
+)
+
+data class FollowingResult(
+    val followings: List<Follow>,
+    val hasNext: Boolean
+)
+
+// 팔로워 목록
+data class FollowerResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: FollowerResult
+)
+
+data class FollowerResult(
+    val followers: List<Follow>,
+    val hasNext: Boolean
+)
+
+data class Follow(
+    val clositId: String,
+    val name: String,
+    val email: String,
+    val birth: String,
+    val profileImage: String
+)
