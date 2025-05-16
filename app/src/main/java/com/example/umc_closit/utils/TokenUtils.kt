@@ -104,7 +104,9 @@ object TokenUtils {
                         Log.d("TOKEN_DEBUG", "🔄 원래 API 재시도 시작")
 
                         handleTokenRefresh(
-                            retryCall(),
+                            retryCall().also {
+                                Log.d("TOKEN_DEBUG", "🔁 재시도할 API URL: ${it.request().url}")
+                            },
                             onSuccess,
                             onFailure,
                             retryCall,

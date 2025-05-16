@@ -34,8 +34,7 @@ data class PostPreview(
     val backItemtags: List<ItemTag>,
     val pointColor: String,
     val visibility: String
-)
- : Parcelable
+): Parcelable
 
 @Parcelize
 data class ItemTag(
