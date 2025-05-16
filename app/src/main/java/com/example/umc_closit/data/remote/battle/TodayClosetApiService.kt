@@ -10,13 +10,13 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface TodayClosetApiService {
-    @GET("/api/auth/communities/todayclosets")
+    @GET("/api/v1/communities/todayclosets")
     fun getTodayClosets(
         @Query("page") page: Int
     ): Call<TodayClosetResponse>
 
 
-    @POST("/api/auth/communities/todayclosets")
+    @POST("/api/v1/communities/todayclosets")
     fun uploadTodayCloset(
         @Body request: TodayClosetUploadRequest
     ): Call<TodayClosetResponse>
