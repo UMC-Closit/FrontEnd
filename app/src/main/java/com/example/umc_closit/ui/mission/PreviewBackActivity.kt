@@ -23,9 +23,7 @@ class PreviewBackActivity : AppCompatActivity() {
         val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
         val backPhotoPath = intent.getStringExtra("backPhotoPath")
 
-        binding.ivBack.setOnClickListener {
-            onBackPressed()
-        }
+       
 
         mainPhotoPath = backPhotoPath
         //smallPhotoPath = backPhotoPath

@@ -4,15 +4,15 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:paddingTop="12dp">
+    android:background="@color/gray"
+    android:paddingTop="0dp">
 
     <!-- 툴바 (고정된 영역) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white"
+        android:background="@color/black"
         app:layout_constraintHeight_percent="0.085"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +29,7 @@
             android:id="@+id/iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_back_black"
+            android:src="@drawable/ic_back"
             app:layout_constraintLeft_toRightOf="@+id/marginLeft"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Daily Mission"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:font="@font/ibm_extralight"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_back"
@@ -78,13 +78,21 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_card"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.36"
+        android:background="@drawable/bg_roundcorner">
     <View
         android:id="@+id/margin8"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/imageAndTag"
-        app:layout_constraintHeight_percent="0.015"
+        app:layout_constraintHeight_percent="0.1"
         />
 
     <ImageView
@@ -92,7 +100,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:src="@drawable/btn_add_item"
-        app:layout_constraintHeight_percent="0.03"
+        app:layout_constraintHeight_percent="0.2"
         app:layout_constraintTop_toBottomOf="@id/margin8"
         app:layout_constraintLeft_toLeftOf="@id/imageAndTag"
         />
@@ -101,7 +109,7 @@
         android:id="@+id/layoutPointColor"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.04"
+        app:layout_constraintHeight_percent="0.2"
         app:layout_constraintTop_toBottomOf="@id/addItem"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -114,7 +122,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintWidth_percent="0.18" />
+            app:layout_constraintWidth_percent="0" />
 
         <!-- 오늘의 포인트 색상 텍스트 -->
         <TextView
@@ -186,7 +194,7 @@
         app:layout_constraintHeight_percent="0.01"
         app:layout_constraintTop_toBottomOf="@+id/layoutPointColor"/>
 
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- 계속하기 버튼 -->
     <ImageButton
         android:id="@+id/btnContinue"
