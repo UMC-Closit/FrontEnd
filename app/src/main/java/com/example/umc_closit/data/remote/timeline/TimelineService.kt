@@ -18,7 +18,7 @@ interface TimelineService {
         @Query("follower") follower: Boolean = false,
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10,
-        @Query("sort") sort: String = "LASTEST"
+        @Query("sort") sort: String = "LATEST"
     ): Call<TimelineResponse>
 
     // like
