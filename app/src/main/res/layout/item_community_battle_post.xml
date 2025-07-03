@@ -1,10 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ib_community_battle_post_item"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="150dp"
-    android:layout_height="150dp"
-    android:scaleType="centerCrop"
-    android:src="@drawable/ic_insta"
+    android:layout_height="wrap_content"
     android:layout_marginEnd="10dp"
-    android:background="?attr/selectableItemBackground"
-    android:contentDescription="배틀 게시판 아이템" />
+    android:layout_marginBottom="10dp"
+    android:elevation="2dp"
+    android:background="@color/white"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 사용자 이미지 (게시글 이미지 자리) -->
+        <ImageView
+            android:id="@+id/img_post"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_insta"
+            android:contentDescription="배틀 게시판 아이템" />
+
+        <!-- 사용자 아이디 + 좋아요 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical">
+
+            <!-- 프로필 동그라미 -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_profile"
+                android:contentDescription="사용자 프로필" />
+
+            <!-- 사용자 아이디 -->
+            <TextView
+                android:id="@+id/tv_user_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="logi"
+                android:textSize="13sp"
+                android:textColor="@color/black" />
+
+            <!-- 하트 아이콘 -->
+            <ImageView
+                android:id="@+id/img_heart"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_like_on"
+                app:tint="@color/gray_dark"
+                android:contentDescription="좋아요 아이콘" />
+
+            <!-- 좋아요 수 -->
+            <TextView
+                android:id="@+id/tv_likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24"
+                android:textSize="13sp"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/gray_dark" />
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
