@@ -3,6 +3,7 @@ package com.example.umc_closit.ui.mission
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.mission.camera.CameraBackCallback
 import com.example.mission.camera.CameraPreviewManager
 import com.example.umc_closit.databinding.ActivityMissionBackBinding
@@ -52,4 +53,5 @@ class MissionBackActivity : AppCompatActivity(), CameraBackCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         cameraPreviewManager.onRequestPermissionsResult(requestCode, grantResults)
     }
+
 }

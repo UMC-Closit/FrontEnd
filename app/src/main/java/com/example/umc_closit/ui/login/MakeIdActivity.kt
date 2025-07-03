@@ -23,6 +23,7 @@ class MakeIdActivity : AppCompatActivity() {
     private var emailValidationFailed = false
     private var birthDateValidationFailed = false
     private var isIdChecked = false // ID 중복 확인 완료 여부
+    private var isEmailChecked = false // email 인증 여부
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +83,15 @@ class MakeIdActivity : AppCompatActivity() {
             })
         }
 
+        binding.btnCheckEmail.setOnClickListener {
+            val inputEmail = binding.etEmail.text.toString().trim()
+
+            if (inputEmail.isEmpty()) {
+                Toast.makeText(this@MakeIdActivity, "Email을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+        }
+
 
         binding.btnNext.setOnClickListener {
             val name = binding.etName.text.toString()
@@ -99,6 +109,11 @@ class MakeIdActivity : AppCompatActivity() {
                 Toast.makeText(this, "ID 중복 확인을 완료해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+//            if (!isEmailChecked) {
+//                Toast.makeText(this, "Email 인증을 완료해주세요.", Toast.LENGTH_SHORT).show()
+//                return@setOnClickListener
+//            }
 
             val intent = Intent(this, PasswordActivity::class.java).apply {
                 putExtra("name", name)

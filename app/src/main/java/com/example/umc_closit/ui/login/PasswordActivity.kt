@@ -3,11 +3,13 @@ package com.example.umc_closit.ui.login
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.auth.RegisterRequest
 import com.example.umc_closit.data.remote.auth.RegisterResponse
 import com.example.umc_closit.data.remote.RetrofitClient
@@ -20,6 +22,8 @@ class PasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPasswordBinding
     private var passwordValidationFailed = false
     private var confirmPasswordValidationFailed = false
+    private var isNewPasswordVisible = false
+    private var isConfirmPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +47,50 @@ class PasswordActivity : AppCompatActivity() {
             validateAndRegister(name, userId, email, birthDate)
         }
 
+        // 비밀번호 보기/숨기기 토글 기능
+        binding.btnTogglePassword.setOnClickListener {
+            toggleNewPasswordVisibility()
+        }
+
+        binding.btnTogglePassword2.setOnClickListener {
+            toggleConfirmPasswordVisibility()
+        }
+
         // 뒤로가기 버튼
         binding.btnBack.setOnClickListener {
             onBackPressed()
         }
     }
+
+    private fun toggleNewPasswordVisibility() {
+        if (isNewPasswordVisible) {
+            // 비밀번호 숨김 (기본 상태)
+            binding.etNewPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            // 비밀번호 표시
+            binding.etNewPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            binding.btnTogglePassword.setImageResource(R.drawable.ic_eye)
+        }
+        isNewPasswordVisible = !isNewPasswordVisible
+        binding.etNewPassword.setSelection(binding.etNewPassword.text.length)
+    }
+
+    private fun toggleConfirmPasswordVisibility() {
+        if (isConfirmPasswordVisible) {
+            // 비밀번호 숨김 (기본 상태)
+            binding.etConfirmPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            // 비밀번호 표시
+            binding.etConfirmPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            binding.btnTogglePassword.setImageResource(R.drawable.ic_eye)
+        }
+        isConfirmPasswordVisible = !isConfirmPasswordVisible
+        binding.etConfirmPassword.setSelection(binding.etConfirmPassword.text.length)
+    }
+
+
 
     private fun setupTextWatchers() {
         binding.etNewPassword.addTextChangedListener(object : TextWatcher {
