@@ -28,7 +28,6 @@ class HistoryActivity : AppCompatActivity() {
 
         binding.ivBack.setOnClickListener { onBackPressed() }
 
-        setupRecyclerView()
         fetchDateHistoryList()
     }
 
@@ -46,17 +45,34 @@ class HistoryActivity : AppCompatActivity() {
             onSuccess = { response: DateHistoryResponse ->
                 Log.d("HISTORY", "날짜 히스토리 응답: $response")
 
+                val newDates = mutableListOf<String>()
+
                 response.result?.dateHistoryThumbnailDTOList?.let { result ->
                     result.forEach { item ->
                         val dateKey = item.createdAt.substring(0, 10).replace("/", "-")
                         postThumbnails[dateKey] = item.thumbnail
+                        newDates.add(dateKey)
                         Log.d("HISTORY", "사진 날짜: $dateKey, postId: ${item.postId}")
                     }
                 }
+
                 currentPage++
                 hasNextPage = response.result?.hasNext ?: false
                 isLoading = false
-                binding.rvHistory.adapter?.notifyDataSetChanged()
+
+                // 📌 가장 오래된 날짜를 기준으로 RecyclerView 설정
+                if (currentPage == 1) {
+                    val firstDate = (postThumbnails.keys + newDates).minOrNull()?.let { dateStr ->
+                        val parts = dateStr.split("-")
+                        Calendar.getInstance().apply {
+                            set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                        }
+                    } ?: Calendar.getInstance()
+
+                    setupRecyclerView(firstDate)
+                } else {
+                    binding.rvHistory.adapter?.notifyDataSetChanged()
+                }
             },
             onFailure = { t ->
                 Log.e("HISTORY", "API 실패: ${t.message}")
@@ -65,7 +81,6 @@ class HistoryActivity : AppCompatActivity() {
             retryCall = apiCall,
             context = this
         )
-
     }
 
     fun fetchPointColorHistoryListForMonth(year: Int, month: Int) {
@@ -101,13 +116,13 @@ class HistoryActivity : AppCompatActivity() {
     }
 
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerView(firstUploadDate: Calendar) {
         val sharedPool = RecyclerView.RecycledViewPool()
 
         binding.rvHistory.apply {
             layoutManager = LinearLayoutManager(this@HistoryActivity)
             adapter = HistoryAdapter(
-                months = getMonthsFromFirstUpload(Calendar.getInstance()),
+                months = getMonthsFromFirstUpload(firstUploadDate),
                 postThumbnails = postThumbnails,
                 postColors = postColors,
                 historyActivity = this@HistoryActivity,

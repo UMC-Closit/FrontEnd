@@ -4,7 +4,7 @@
     android:id="@+id/cl_calendar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="3dp">
+    android:layout_marginVertical="1dp">
 
     <ImageView
         android:id="@+id/iv_calendar"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="20"
         android:textSize="14sp"
-        android:textColor="@color/black"
+        android:textColor="@color/history_gray"
         app:layout_constraintTop_toTopOf="@+id/iv_calendar"
         app:layout_constraintBottom_toBottomOf="@id/iv_calendar"
         app:layout_constraintStart_toStartOf="@id/iv_calendar"

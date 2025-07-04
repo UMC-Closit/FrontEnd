@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="#D9D9D9"
     android:paddingTop="0dp">
 
     <!-- 툴바 (고정된 영역) -->
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/black"
-        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintHeight_percent="0.101"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -85,10 +85,10 @@
         android:id="@+id/btnCapturePhoto"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.065"
+        app:layout_constraintHeight_percent="0.1"
         android:adjustViewBounds="true"
         android:background="@android:color/transparent"
-        android:src="@drawable/btn_take"
+        android:src="@drawable/shutter"
         app:layout_constraintBottom_toTopOf="@+id/marginBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

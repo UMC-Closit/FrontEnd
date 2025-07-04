@@ -90,24 +90,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.36"
+        app:layout_constraintHeight_percent="0.3"
         android:background="@drawable/bg_roundcorner">
 
     <View
         android:id="@+id/margin8"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/imageAndTag"
+        app:layout_constraintTop_toTopOf="@id/container_card"
         app:layout_constraintHeight_percent="0.1"
         />
 
-    <View
-        android:id="@+id/margin9"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/margin8"
-        app:layout_constraintHeight_percent="0.015"
-        />
+        <View
+            android:id="@+id/margin9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintWidth_percent="0.04"
+            app:layout_constraintLeft_toLeftOf="@id/container_card"/>
 
     <ImageView
         android:id="@+id/addItem"
@@ -121,14 +120,14 @@
 
 
     <!-- 문구 + 색상 아이콘 + 개인정보 버튼 -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutPointColor"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintTop_toBottomOf="@id/addItem"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/imageAndTag">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutPointColor"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintWidth_percent="0.9"
+            app:layout_constraintTop_toBottomOf="@id/addItem"
+            app:layout_constraintLeft_toRightOf="@id/margin9">
 
         <!-- 왼쪽 여백 -->
         <View
@@ -165,20 +164,36 @@
             app:layout_constraintStart_toEndOf="@id/textTodayColor"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent="0.8"
+            app:layout_constraintHeight_percent="0.5"
             app:layout_constraintDimensionRatio="1:1" />
 
 
         <!-- 공개범위 버튼 -->
-        <ImageButton
-            android:id="@+id/btnPrivacy"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/privacyDropdownLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/btn_privacy"
-            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/marginRight3"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/exposed_dropdown"
+                style="@style/PopupMenuStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_add_highlight_dropdown"
+                android:drawableEnd="@drawable/ic_drop_down"
+                android:drawablePadding="4dp"
+                android:inputType="none"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:padding="8dp"
+                android:text="공개범위"
+                android:textSize="12sp"
+                android:textColor="@color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- 오른쪽 여백 -->
         <View

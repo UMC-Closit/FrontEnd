@@ -1,6 +1,8 @@
 package com.example.umc_closit.data.remote.profile
 
+import com.example.umc_closit.data.remote.BaseResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -38,17 +40,18 @@ interface ProfileService {
         @Path("closit_id") clositId: String
     ): Call<ProfileUserResponse>
 
-    @Multipart
-    @PATCH("/api/auth/users/{closit_id}/profile-image")
+    @PATCH("/api/auth/users/profile-image")
     fun uploadProfileImage(
-        @Path("closit_id") clositId: String,
-        @Part user_image: MultipartBody.Part
-    ): Call<ProfileUserResponse>
+        @Body request: RequestBody
+    ): Call<ProfileImageUploadResponse>
 
     @PATCH("/api/auth/users/")
     fun updateUserProfile(
         @Body request: EditProfileRequest
     ): Call<ProfileUserResponse>
+
+    @POST("/api/auth/users/profile-image/presigned-url")
+    fun getPresignedProfileUrl(@Body body: RequestBody): Call<PresignedProfileUrlResponse>
 
     // highlight
     @GET("/api/auth/users/{closit_id}/highlights")
@@ -78,5 +81,31 @@ interface ProfileService {
         @Query("page") page: Int = 0,  // 기본값 0
         @Query("size") size: Int = 10  // 기본값 10
     ): Call<BookmarkResponse>
+
+    // following list
+    @GET("/api/auth/users/{closit_id}/following")
+    fun getFollowingList(
+        @Path("closit_id") clositId: String,  // 사용자 ID
+        @Query("page") page: Int,  // 페이지 번호
+        @Query("size") size: Int   // 한 페이지에 불러올 항목 수
+    ): Call<FollowingResponse>
+
+    // follower list
+    @GET("/api/auth/users/{closit_id}/followers")
+    fun getFollowersList(
+        @Path("closit_id") clositId: String,  // 사용자 ID
+        @Query("page") page: Int,  // 페이지 번호
+        @Query("size") size: Int   // 한 페이지에 불러올 항목 수
+    ): Call<FollowerResponse>
+
+    // block
+    @GET("/api/auth/users/block")
+    fun getBlockedUsers(): Call<BlockedUserListResponse>
+
+    @POST("/api/auth/users/block")
+    fun blockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
+
+    @DELETE("/api/auth/users/block")
+    fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
 
 }

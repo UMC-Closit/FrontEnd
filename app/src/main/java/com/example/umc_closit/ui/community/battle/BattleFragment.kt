@@ -73,8 +73,12 @@ class BattleFragment : Fragment() {
     /**
      * 배틀 리스트 API 호출
      */
-    private fun fetchBattleList(page: Int) {
-        val call = RetrofitClient.battleApiService.getBattleList(page)
+    private fun fetchBattleList(
+        page: Int,
+        sorting: String = "LATEST", // 기본값 설정 가능
+        status: String = "ACTIVE"
+    ) {
+        val call = RetrofitClient.battleApiService.getBattleList(page, sorting, status)
         call.enqueue(object : Callback<BattleListResponse> {
             override fun onResponse(
                 call: Call<BattleListResponse>,
@@ -95,11 +99,15 @@ class BattleFragment : Fragment() {
                                     battleLikeId = 0, // API에서 제공되지 않으면 기본값
                                     leftPostId = preview.firstPostId,
                                     rightPostId = preview.secondPostId,
-                                    leftPostImageUrl = preview.firstPostFrontImage,  // 추가
-                                    rightPostImageUrl = preview.secondPostFrontImage // 추가
+                                    leftPostImageUrl = preview.firstPostFrontImage,
+                                    rightPostImageUrl = preview.secondPostFrontImage
                                 )
                             })
                         }
+                        Log.d("FETCH_BATTLE", "요청 페이지: $page, 정렬: $sorting, 상태: $status")
+                        Log.d("FETCH_BATTLE", "response code: ${response.code()}")
+                        Log.d("FETCH_BATTLE", "response body: ${response.body()}")
+                        Log.d("FETCH_BATTLE", "response error: ${response.errorBody()?.string()}")
                         battleAdapter.notifyDataSetChanged()
                     } else {
                         Toast.makeText(requireContext(), "API 실패: ${battleResponse?.message}", Toast.LENGTH_SHORT).show()

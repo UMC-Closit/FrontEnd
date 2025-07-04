@@ -19,7 +19,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/weekday_gray</item>
         <item name="android:textStyle">normal</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_weight">1</item>
@@ -37,5 +37,9 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <style name="PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:popupBackground">@drawable/bg_detail_edittext</item>
+    </style>
 
 </resources>
