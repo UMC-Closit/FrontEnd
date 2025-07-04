@@ -18,18 +18,18 @@ import retrofit2.http.Query
 interface ProfileService {
 
     // follow
-    @POST("/api/auth/follows")
+    @POST("/api/v1/follows")
     fun followUser(
         @Body request: FollowRequest
     ): Call<FollowResponse>
 
-    @DELETE("/api/auth/follows/{receiver_closit_id}")
+    @DELETE("/api/v1/follows/{receiver_closit_id}")
     fun unfollowUser(
         @Path("receiver_closit_id") receiverClositId: String
     ): Call<UnfollowResponse>
 
     // check follow
-    @GET("/api/auth/follows/{receiver_closit_id}")
+    @GET("/api/v1/follows/{receiver_closit_id}")
     fun checkFollowStatus(
         @Path("receiver_closit_id") receiverClositId: String
     ): Call<FollowCheckResponse>
@@ -66,14 +66,14 @@ interface ProfileService {
         @Path("highlight_id") highlightId: Int
     ): Call<HighlightDetailResponse>
 
-    @POST("/api/auth/highlights")
+    @POST("/api/v1/highlights")
     fun createHighlight(
         @Body postId: Map<String, Int>
     ): Call<HighlightCreateResponse>
 
-    @DELETE("/api/auth/highlights/{highlight_id}")
+    @DELETE("/api/v1/highlights/{post_id}") // 주의!
     fun deleteHighlight(
-        @Path("highlight_id") highlightId: Int
+        @Path("post_id") highlightId: Int
     ): Call<HighlightDeleteResponse>
 
     @GET("/api/auth/bookmarks")
