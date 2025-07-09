@@ -39,5 +39,11 @@ interface PostService {
         @Query("page") page: Int
     ): Call<RecentPostResponse>
 
+    @GET("/api/v1/posts/hashtag")
+    fun searchPostsByHashtag(
+        @Query("hashtag") hashtag: String,
+        @Query("page") page: Int
+    ): Call<HashtagSearchResponse>
+
 }
 

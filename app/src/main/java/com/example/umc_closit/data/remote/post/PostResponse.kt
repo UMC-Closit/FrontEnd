@@ -84,3 +84,44 @@ data class UserRecentPostDTO(
     val thumbnail: String,
     val createdAt: String
 )
+
+data class HashtagSearchResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: HashtagSearchResult
+)
+
+data class HashtagSearchResult(
+    val postPreviewList: List<PostPreview>,
+    val listSize: Int,
+    val hasNext: Boolean,
+    val first: Boolean,
+    val last: Boolean
+)
+
+data class PostPreview(
+    val postId: Int,
+    val clositId: String,
+    val userName: String,
+    val profileImage: String,
+    val frontImage: String,
+    val backImage: String,
+    val isLiked: Boolean,
+    val isSaved: Boolean,
+    val isHighlighted: Boolean,
+    val hashtags: List<HashtagContent>,
+    val frontItemtags: List<ItemTag>,
+    val backItemtags: List<ItemTag>,
+    val pointColor: String,
+    val visibility: String,
+    val createdAt: String,
+    val mission: Boolean
+) {
+
+}
+
+data class HashtagContent(
+    val content: String
+)
+

@@ -30,8 +30,9 @@
             android:padding="8dp"
             android:gravity="center_vertical">
 
-            <!-- 프로필 동그라미 (고정 아이콘 또는 유저 프로필 이미지 가능) -->
-            <View
+            <!-- 프로필 동그라미 -->
+            <ImageView
+                android:id="@+id/img_user_profile"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginEnd="6dp"

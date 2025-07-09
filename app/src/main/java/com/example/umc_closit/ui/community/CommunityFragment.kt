@@ -2,44 +2,52 @@ package com.example.umc_closit.ui.community
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.umc_closit.data.remote.RetrofitClient
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.umc_closit.R
 import com.example.umc_closit.databinding.FragmentCommunityBinding
-import com.example.umc_closit.ui.community.adapter.BattlePostItem // 어댑터에서 정의한 데이터 클래스 임포트
+import com.example.umc_closit.data.remote.battle.TodayClosetItem
 import com.example.umc_closit.ui.community.adapter.CommunityBattlePostAdapter
 import com.example.umc_closit.ui.community.adapter.CommunityTodayClosetAdapter
-import com.example.umc_closit.ui.community.adapter.TodayClosetItem // 어댑터에서 정의한 데이터 클래스 임포트
+import com.example.umc_closit.data.remote.battle.TodayClosetResponse
+import com.example.umc_closit.data.remote.battle.TodayClosetUploadResponse
+import com.example.umc_closit.data.remote.post.HashtagSearchResponse
 import com.example.umc_closit.ui.community.battle.BattleFragment
 import com.example.umc_closit.ui.community.battle.NewBattleActivity
 import com.example.umc_closit.ui.community.challenge.ChallengeFragment
 import com.example.umc_closit.ui.community.todaycloset.TodayClosetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
 import com.example.umc_closit.ui.upload.UploadActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CommunityFragment : Fragment() {
 
     private var _binding: FragmentCommunityBinding? = null
     private val binding get() = _binding!!
 
+
+
     private lateinit var todayClosetAdapter: CommunityTodayClosetAdapter
     private lateinit var battlePostAdapter: CommunityBattlePostAdapter
 
-    // postId와 battleId는 각 아이템을 식별할 수 있는 고유한 값이어야 합니다.
-    private val todayClosetSampleData = listOf(
-        TodayClosetItem(R.drawable.ic_insta, "today_post_1"), // 실제 드로어블 및 ID로 변경
-        TodayClosetItem(R.drawable.ic_insta, "today_post_2"),
-        TodayClosetItem(R.drawable.ic_insta, "today_post_3")
-    )
-
-    private val battlePostSampleData = listOf(
-        BattlePostItem(R.drawable.ic_insta, "battle_1"), // 실제 드로어블 및 ID로 변경
-        BattlePostItem(R.drawable.ic_insta, "battle_2"),
-        BattlePostItem(R.drawable.ic_insta, "battle_3")
-    )
+//    private val todayClosetSampleData = listOf(
+//        TodayClosetItem(R.drawable.ic_insta, 1), // 실제 드로어블 및 ID로 변경
+//        TodayClosetItem(R.drawable.ic_insta, 2),
+//        TodayClosetItem(R.drawable.ic_insta, 3)
+//    )
+//
+//    private val battlePostSampleData = listOf(
+//        BattleItem(R.drawable.ic_insta, "battle_1"), // 실제 드로어블 및 ID로 변경
+//        BattleItem(R.drawable.ic_insta, "battle_2"),
+//        BattleItem(R.drawable.ic_insta, "battle_3")
+//    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +63,8 @@ class CommunityFragment : Fragment() {
         setupClickListeners()
         setupTodayClosetRecyclerView()
         setupBattlePostRecyclerView()
+        TodayClosetApiService()
+        setupSearchFunctionality()
     }
 
     private fun setupClickListeners() {
@@ -65,11 +75,11 @@ class CommunityFragment : Fragment() {
 
         // "오늘의 옷장" 업로드 버튼 클릭 시 UploadActivity 실행
         binding.btnUploadTodayCloset.setOnClickListener {
-            startActivity(Intent(requireContext(), UploadActivity::class.java))
+           startActivity(Intent(requireContext(), UploadActivity::class.java))
         }
 
         // "배틀 게시판" 타이틀 TextView 클릭 시 BattleFragment로 이동
-        binding.tvBattlePostTitle.setOnClickListener {
+       binding.tvBattlePostTitle.setOnClickListener {
             navigateTo(BattleFragment())
         }
 
@@ -80,7 +90,7 @@ class CommunityFragment : Fragment() {
     }
 
     private fun setupTodayClosetRecyclerView() {
-        todayClosetAdapter = CommunityTodayClosetAdapter(todayClosetSampleData) { clickedItem ->
+        todayClosetAdapter = CommunityTodayClosetAdapter(emptyList()) { clickedItem ->
             // "오늘의 옷장" RecyclerView 아이템 클릭 시 DetailActivity로 이동
             val intent = Intent(requireContext(), DetailActivity::class.java)
             // DetailActivity에 어떤 아이템인지 정보를 전달할 수 있습니다.
@@ -95,14 +105,12 @@ class CommunityFragment : Fragment() {
     }
 
     private fun setupBattlePostRecyclerView() {
-        battlePostAdapter = CommunityBattlePostAdapter(battlePostSampleData) { clickedItem ->
+        battlePostAdapter = CommunityBattlePostAdapter(emptyList()) { clickedItem ->
             // "배틀 게시판" RecyclerView 아이템 클릭 시 ChallengeFragment로 이동
-            // (요구사항에 따라 DetailActivity 또는 다른 Fragment/Activity로 변경 가능)
-            // 여기서는 ChallengeFragment로 이동하는 것으로 가정합니다.
             val fragment = ChallengeFragment().apply {
                 arguments = Bundle().apply {
                     // ChallengeFragment에 어떤 배틀 아이템인지 정보를 전달할 수 있습니다.
-                    putString("BATTLE_ID", clickedItem.battleId) // 예시: battleId 전달
+//                    putString("BATTLE_ID", clickedItem.battleId) // 예시: battleId 전달
                 }
             }
             navigateTo(fragment)
@@ -122,9 +130,72 @@ class CommunityFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // RecyclerView 어댑터를 null로 설정하여 메모리 누수 방지 (선택 사항이지만 권장)
+        // RecyclerView 어댑터를 null로 설정하여 메모리 누수 방지
         binding.rvCommunityTodayCloset.adapter = null
-        binding.rvCommunityBattlePost.adapter = null
         _binding = null
+    }
+
+    private fun TodayClosetApiService() {
+        RetrofitClient.todayClosetApiService.getTodayClosets(page = 0)
+            .enqueue(object : Callback<TodayClosetResponse> {
+                override fun onResponse(
+                    call: Call<TodayClosetResponse>,
+                    response: Response<TodayClosetResponse>
+                ) {
+                    if (response.isSuccessful && response.body()?.isSuccess == true) {
+                        val items = response.body()?.result?.todayClosets ?: emptyList()
+                        todayClosetAdapter.updateData(items)
+                    } else {
+                        Log.e("TodayCloset", "API 응답 실패: ${response.body()?.message}")
+                    }
+                }
+
+                override fun onFailure(call: Call<TodayClosetResponse>, t: Throwable) {
+                    Log.e("TodayCloset", "네트워크 오류: ${t.message}")
+                }
+            })
+    }
+
+    private fun setupSearchFunctionality() {
+        binding.imgSearchIconCommunity.setOnClickListener {
+            performHashtagSearch()
+        }
+        binding.etSearchCommunity.setOnEditorActionListener { v, actionId, event ->
+            performHashtagSearch()
+            true
+        }
+    }
+
+    private fun performHashtagSearch() {
+        val query = binding.etSearchCommunity.text.toString().trim()
+        if (query.isEmpty()) return
+        val hashtag = if (query.startsWith("#")) query.substring(1) else query
+        RetrofitClient.postService.searchPostsByHashtag(hashtag, 0)
+            .enqueue(object : Callback<HashtagSearchResponse> {
+                override fun onResponse(
+                    call: Call<HashtagSearchResponse>,
+                    response: Response<HashtagSearchResponse>
+                ) {
+                    if (response.isSuccessful && response.body()?.isSuccess == true) {
+                        val items = response.body()?.result?.postPreviewList ?: emptyList()
+                        val todayClosetItems = items.map {
+                            TodayClosetItem(
+                                postId = it.postId,
+                                frontImage = it.frontImage,
+                                profileImage = it.profileImage,
+                                viewCount = 0,
+                                todayClosetId = TODO(),
+                                backImage = it.backImage
+                            )
+                        }
+                        todayClosetAdapter.updateData(todayClosetItems)
+                    } else {
+                        Log.e("HashtagSearch", "API 응답 실패: ${response.body()?.message}")
+                    }
+                }
+                override fun onFailure(call: Call<HashtagSearchResponse>, t: Throwable) {
+                    Log.e("HashtagSearch", "네트워크 오류: ${t.message}")
+                }
+            })
     }
 }

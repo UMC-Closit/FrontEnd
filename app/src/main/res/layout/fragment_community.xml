@@ -144,7 +144,7 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_battle_post_title"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- "배틀 게시판" RecyclerView -->
+<!--     "배틀 게시판" RecyclerView-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_community_battle_post"
         android:layout_width="match_parent"
