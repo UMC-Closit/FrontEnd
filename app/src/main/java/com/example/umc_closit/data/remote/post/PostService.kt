@@ -14,19 +14,23 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PostService {
-    @GET("/api/v1/posts/{post_id}")
+    @GET("/api/auth/posts/{post_id}")
     fun getPostDetail(
         @Path("post_id") postId: Int
     ): Call<PostResponse>
 
-    @DELETE("/api/v1/posts/{post_id}")
+    @DELETE("/api/auth/posts/{post_id}")
     suspend fun deletePost(
         @Path("post_id") postId: Int
     ): Response<PostDeleteResponse>
 
-    @POST("/api/v1/posts")
+
+    @Multipart
+    @POST("/api/auth/posts")
     suspend fun uploadPost(
-        @Body request: PostRequest
+        @Part("request") request: RequestBody,
+        @Part frontImage: MultipartBody.Part,
+        @Part backImage: MultipartBody.Part,
     ): Response<PostUploadResponse>
 
     @GET("/api/auth/users/{closit_id}/recent-post")
@@ -35,9 +39,11 @@ interface PostService {
         @Query("page") page: Int
     ): Call<RecentPostResponse>
 
-    @POST("/api/v1/posts/presigned-url")
-    suspend fun getPresignedUrls(
-        @Body request: RequestBody
-    ): PresignedUrlResponse
+    @GET("/api/v1/posts/hashtag")
+    fun searchPostsByHashtag(
+        @Query("hashtag") hashtag: String,
+        @Query("page") page: Int
+    ): Call<HashtagSearchResponse>
+
 }
 
