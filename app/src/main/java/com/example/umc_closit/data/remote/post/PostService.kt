@@ -29,7 +29,7 @@ interface PostService {
         @Body request: PostRequest
     ): Response<PostUploadResponse>
 
-    @GET("/api/auth/users/{closit_id}/recent-post")
+    @GET("/api/v1/users/{closit_id}/recent-post")
     fun getRecentPosts(
         @Path("closit_id") clositId: String,
         @Query("page") page: Int

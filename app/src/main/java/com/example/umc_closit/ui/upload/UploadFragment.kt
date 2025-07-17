@@ -1,6 +1,7 @@
 package com.example.umc_closit.ui.upload
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,7 @@ class UploadFragment : Fragment() {
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
+                Log.d("PostDetail", "response: $response")
                 if (response.isSuccess) {
                     post = response.result  // post 데이터 저장
                     Glide.with(requireContext()).load(post.frontImage).into(binding.ivImageBig)
@@ -65,7 +67,6 @@ class UploadFragment : Fragment() {
             onFailure = { t ->
                 // 오류 처리
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }

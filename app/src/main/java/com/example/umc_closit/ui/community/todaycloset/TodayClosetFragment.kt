@@ -102,9 +102,6 @@ class TodayClosetFragment : Fragment() {
                 Log.e("TodayCloset", "API 호출 실패", throwable)
                 Toast.makeText(requireContext(), "네트워크 오류", Toast.LENGTH_SHORT).show()
             },
-            retryCall = {
-                RetrofitClient.todayClosetApiService.getTodayClosets(page)
-            },
             context = requireContext()
         )
     }

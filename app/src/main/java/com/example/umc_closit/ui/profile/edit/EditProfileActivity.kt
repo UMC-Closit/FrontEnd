@@ -64,7 +64,6 @@ class EditProfileActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -106,7 +105,6 @@ class EditProfileActivity : AppCompatActivity() {
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 Log.e("EDIT","$t")
             },
-            retryCall = apiCall,
             context = this
         )
     }

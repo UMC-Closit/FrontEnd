@@ -172,7 +172,6 @@ class CalendarAdapter(
                     onFailure = { t ->
                         Log.e("CALENDAR", "네트워크 오류: ${t.message}")
                     },
-                    retryCall = apiCall,
                     context = context
                 )
             }

@@ -1,5 +1,6 @@
 package com.example.umc_closit.data.remote.auth
 
+import com.example.umc_closit.data.remote.BaseResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -20,12 +21,12 @@ interface AuthService {
         @Body request: RefreshRequest
     ): Call<RefreshResponse>
 
-    @GET("/api/auth/users/isunique/{closit_id}")
+    @GET("/api/v1/users/isunique/{closit_id}")
     fun checkIdUnique(
         @Path("closit_id") clositId: String
-    ): Call<CheckIdResponse>
+    ): Call<BaseResponse<Boolean>>
 
-    @DELETE("/api/auth/users/")
+    @DELETE("/api/v1/users/")
     fun deleteUser(
     ): Call<QuitResponse<String>>
 }

@@ -29,12 +29,18 @@ data class PostPreview(
     val isLiked: Boolean,
     val isSaved: Boolean,
     val isFriend: Boolean,
-    val hashtags: List<String>,
+    val hashtags: List<Hashtag>,
     val frontItemtags: List<ItemTag>,
     val backItemtags: List<ItemTag>,
     val pointColor: String,
     val visibility: String
 ): Parcelable
+
+@Parcelize
+data class Hashtag(
+    val id: Long,
+    val name: String
+) : Parcelable
 
 @Parcelize
 data class ItemTag(

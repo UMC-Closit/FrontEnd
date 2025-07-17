@@ -25,15 +25,16 @@
         android:id="@+id/tvComments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Comments"
         android:fontFamily="@font/noto_light"
         android:includeFontPadding="false"
+        android:paddingTop="8dp"
+        android:text="Comments"
+        android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@id/blackLine"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:paddingTop="8dp" />
+        app:layout_constraintTop_toBottomOf="@id/blackLine" />
 
     <TextView
         android:id="@+id/tv_no_comment"

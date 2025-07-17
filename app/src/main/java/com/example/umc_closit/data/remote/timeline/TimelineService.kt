@@ -44,18 +44,18 @@ interface TimelineService {
     ): Call<BookmarkDeleteResponse>
 
     // notification
-    @PATCH("/api/auth/notifications")
+    @PATCH("/api/v1/notifications")
     fun getNotifications(
         @Query("page") page: Int
     ): Call<NotificationResponse>
 
 
-    @PATCH("/api/auth/notifications/{notification_id}")
+    @PATCH("/api/v1/notifications/{notification_id}")
     fun readNotification(
         @Path("notification_id") notificationId: Int
     ): Call<NotificationReadResponse>
 
-    @DELETE("/api/auth/notifications/{notification_id}")
+    @DELETE("/api/v1/notifications/{notification_id}")
     fun deleteNotification(
         @Path("notification_id") notificationId: Int
     ): Call<NotificationDeleteResponse>

@@ -88,7 +88,6 @@ class UploadActivity : AppCompatActivity() {
                 Log.e("UPLOAD", "API Call Failed: ${t.message}")  // 실패 로그 추가
                 Toast.makeText(this, "게시글 불러오기 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
 
@@ -153,7 +152,6 @@ class UploadActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
