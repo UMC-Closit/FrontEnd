@@ -77,6 +77,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        android.util.Log.d("ProfileFragment", "ProfileFragment onViewCreated 호출됨")
 
         checkUser()
         loadUserHighlights()

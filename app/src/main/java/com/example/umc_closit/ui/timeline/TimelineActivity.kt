@@ -45,12 +45,15 @@ class TimelineActivity : AppCompatActivity() {
 
         // 2️⃣ BottomNavigationView 설정 (항상 동작하도록)
         binding.btnvTimeline.setOnItemSelectedListener { item ->
+            android.util.Log.d("TimelineActivity", "BottomNavigationView 클릭: ${item.title}")
             when (item.itemId) {
                 R.id.menu_timeline -> {
+                    android.util.Log.d("TimelineActivity", "TimelineFragment로 전환")
                     replaceFragment(TimelineFragment())
                     true
                 }
                 R.id.menu_profile -> {
+                    android.util.Log.d("TimelineActivity", "ProfileFragment로 전환")
                     val userClositId = TokenUtils.getClositId(this)
                     val profileFragment = ProfileFragment().apply {
                         arguments = Bundle().apply {
@@ -61,15 +64,21 @@ class TimelineActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_community -> {
+                    android.util.Log.d("TimelineActivity", "CommunityFragment로 전환")
                     replaceFragment(CommunityFragment())
                     true
                 }
                 R.id.menu_upload -> {
+                    android.util.Log.d("TimelineActivity", "MissionActivity로 전환")
                     val intent = Intent(this, MissionActivity::class.java)
                     startActivity(intent)
+                    finish() // TimelineActivity 종료
                     true
                 }
-                else -> false
+                else -> {
+                    android.util.Log.d("TimelineActivity", "알 수 없는 메뉴 아이템: ${item.itemId}")
+                    false
+                }
             }
         }
     }
@@ -77,7 +86,14 @@ class TimelineActivity : AppCompatActivity() {
 
 
     private fun replaceFragment(fragment: Fragment) {
+        android.util.Log.d("TimelineActivity", "프래그먼트 전환: ${fragment.javaClass.simpleName}")
         supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                android.R.anim.fade_in,
+                android.R.anim.fade_out,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
             .replace(R.id.fragment_container, fragment) // fragment_container는 TimelineActivity의 FrameLayout ID
             .commit()
     }

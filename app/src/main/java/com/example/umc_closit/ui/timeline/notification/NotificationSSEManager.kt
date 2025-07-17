@@ -14,7 +14,14 @@ object NotificationSSEManager {
     private var eventSource: EventSource? = null
 
     fun startSSEConnection(token: String) {
-        val url = "http://54.180.132.28:8080/"
+        // 토큰 검증
+        if (token.isEmpty()) {
+            Log.e("SSE", "토큰이 비어있음 - SSE 연결 실패")
+            return
+        }
+        
+        Log.d("SSE", "SSE 연결 시작 - 토큰: ${token.take(20)}...")
+        val url = "http://54.180.132.28:8080/api/v1/notifications/stream"
 
         val handler = object : EventHandler {
             override fun onOpen() {
@@ -33,6 +40,16 @@ object NotificationSSEManager {
 
             override fun onError(t: Throwable?) {
                 Log.e("SSE", "Error: ${t?.message}")
+                // 401 에러인 경우 토큰 재발급 시도
+                if (t?.message?.contains("401") == true) {
+                    Log.d("SSE", "401 에러 감지 - 토큰 재발급 필요")
+                    // 3초 후 재연결 시도
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        Log.d("SSE", "SSE 재연결 시도")
+                        stopSSEConnection()
+                        // 재연결은 TimelineFragment에서 처리
+                    }, 3000)
+                }
             }
         }
 

@@ -2,6 +2,7 @@ package com.example.umc_closit.data.remote.timeline
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 
 data class TimelineResponse(
     val isSuccess: Boolean,
@@ -18,6 +19,14 @@ data class TimelineResult(
     val last: Boolean
 )
 
+// Hashtag 데이터 클래스 추가
+@Parcelize
+data class Hashtag(
+    val id: Int? = null,
+    val name: String? = null,
+    val content: String? = null
+) : Parcelable
+
 // Timeline item
 @Parcelize
 data class PostPreview(
@@ -29,7 +38,7 @@ data class PostPreview(
     val isLiked: Boolean,
     val isSaved: Boolean,
     val isFriend: Boolean,
-    val hashtags: List<String>,
+    val likeCount: Int,// 좋아요 수 세기위한 필드 추가
     val frontItemtags: List<ItemTag>,
     val backItemtags: List<ItemTag>,
     val pointColor: String,
@@ -39,7 +48,8 @@ data class PostPreview(
 @Parcelize
 data class ItemTag(
     val x: Float,
-    val y: Float
+    val y: Float,
+    val content: String
 ) : Parcelable
 
 // like

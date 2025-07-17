@@ -35,33 +35,33 @@ interface ProfileService {
     ): Call<FollowCheckResponse>
 
     // profile info
-    @GET("/api/auth/users/{closit_id}")
+    @GET("/api/v1/users/{closit_id}")
     fun getUserProfile(
         @Path("closit_id") clositId: String
     ): Call<ProfileUserResponse>
 
-    @PATCH("/api/auth/users/profile-image")
+    @PATCH("/api/v1/users/profile-image")
     fun uploadProfileImage(
         @Body request: RequestBody
     ): Call<ProfileImageUploadResponse>
 
-    @PATCH("/api/auth/users/")
+    @PATCH("/api/v1/users/")
     fun updateUserProfile(
         @Body request: EditProfileRequest
     ): Call<ProfileUserResponse>
 
-    @POST("/api/auth/users/profile-image/presigned-url")
+    @POST("/api/v1/users/profile-image/presigned-url")
     fun getPresignedProfileUrl(@Body body: RequestBody): Call<PresignedProfileUrlResponse>
 
     // highlight
-    @GET("/api/auth/users/{closit_id}/highlights")
+    @GET("/api/v1/users/{closit_id}/highlights")
     fun getHighlights(
         @Path("closit_id") clositId: String,
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10
     ): Call<HighlightListResponse>
 
-    @GET("/api/auth/highlights/{highlight_id}")
+    @GET("/api/v1/highlights/{highlight_id}")
     fun getHighlightDetail(
         @Path("highlight_id") highlightId: Int
     ): Call<HighlightDetailResponse>
@@ -76,14 +76,14 @@ interface ProfileService {
         @Path("post_id") highlightId: Int
     ): Call<HighlightDeleteResponse>
 
-    @GET("/api/auth/bookmarks")
+    @GET("/api/v1/bookmarks")
     fun getBookmarks(
         @Query("page") page: Int = 0,  // 기본값 0
         @Query("size") size: Int = 10  // 기본값 10
     ): Call<BookmarkResponse>
 
     // following list
-    @GET("/api/auth/users/{closit_id}/following")
+    @GET("/api/v1/users/{closit_id}/following")
     fun getFollowingList(
         @Path("closit_id") clositId: String,  // 사용자 ID
         @Query("page") page: Int,  // 페이지 번호
@@ -91,7 +91,7 @@ interface ProfileService {
     ): Call<FollowingResponse>
 
     // follower list
-    @GET("/api/auth/users/{closit_id}/followers")
+    @GET("/api/v1/users/{closit_id}/followers")
     fun getFollowersList(
         @Path("closit_id") clositId: String,  // 사용자 ID
         @Query("page") page: Int,  // 페이지 번호
@@ -99,13 +99,13 @@ interface ProfileService {
     ): Call<FollowerResponse>
 
     // block
-    @GET("/api/auth/users/block")
+    @GET("/api/v1/users/block")
     fun getBlockedUsers(): Call<BlockedUserListResponse>
 
-    @POST("/api/auth/users/block")
+    @POST("/api/v1/users/block")
     fun blockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
 
-    @DELETE("/api/auth/users/block")
+    @DELETE("/api/v1/users/block")
     fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
 
 }
