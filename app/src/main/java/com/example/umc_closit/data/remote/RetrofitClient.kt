@@ -16,9 +16,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://54.180.132.28:8080/"
+    private const val BASE_URL = "https://closit.site/"
 
-    private lateinit var retrofit: Retrofit
+    lateinit var retrofit: Retrofit
 
     fun init(context: Context) {
         val client = OkHttpClient.Builder()

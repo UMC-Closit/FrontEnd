@@ -147,7 +147,6 @@ class PostDetailFragment : Fragment() {
             onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -231,7 +230,6 @@ class PostDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 Log.e("HIGHLIGHT","$t")
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -254,7 +252,6 @@ class PostDetailFragment : Fragment() {
             onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }

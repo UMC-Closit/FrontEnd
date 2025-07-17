@@ -2,7 +2,7 @@ package com.example.umc_closit.data.remote.profile
 
 // follow
 data class FollowRequest(
-    val receiver: String
+    val receiverClositId: String
 )
 
 data class FollowResponse(
@@ -219,7 +219,6 @@ data class Follow(
 )
 
 // 차단된 사용자
-
 data class BlockedUser(
     val clositId: String,
     val name: String,
@@ -242,4 +241,15 @@ data class BlockedUserListResult(
 
 data class BlockRequest(
     val blockedClositId: String
+)
+
+data class BlockStatusResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: BlockStatusResult
+)
+
+data class BlockStatusResult(
+    val blocked: Boolean
 )

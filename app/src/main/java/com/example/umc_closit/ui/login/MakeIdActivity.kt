@@ -7,13 +7,12 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import com.example.umc_closit.R
+import com.example.umc_closit.data.remote.BaseResponse
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.auth.CheckIdResponse
 import com.example.umc_closit.databinding.ActivityMakeidBinding
-import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,8 +52,8 @@ class MakeIdActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            RetrofitClient.authService.checkIdUnique(inputId).enqueue(object : Callback<CheckIdResponse> {
-                override fun onResponse(call: Call<CheckIdResponse>, response: Response<CheckIdResponse>) {
+            RetrofitClient.authService.checkIdUnique(inputId).enqueue(object : Callback<BaseResponse<Boolean>> {
+                override fun onResponse(call: Call<BaseResponse<Boolean>>, response: Response<BaseResponse<Boolean>>) {
                     if (response.isSuccessful) {
                         val result = response.body()?.result ?: false
 
@@ -76,7 +75,7 @@ class MakeIdActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<CheckIdResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<Boolean>>, t: Throwable) {
                     Toast.makeText(this@MakeIdActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })

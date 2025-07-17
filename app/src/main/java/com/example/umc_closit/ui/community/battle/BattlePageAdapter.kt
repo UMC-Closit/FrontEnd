@@ -147,9 +147,6 @@ class BattlePageAdapter(
                 Log.e("Vote", "API 호출 실패", throwable)
                 Toast.makeText(context, "네트워크 오류: ${throwable.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = {
-                apiService.voteBattle(battleId, requestBody)  // 재시도 시에도 battleId를 포함
-            },
             context = context
         )
     }

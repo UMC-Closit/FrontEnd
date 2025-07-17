@@ -147,6 +147,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <!-- 사용자 정보 컨테이너 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_userInfoContainer"
@@ -247,189 +248,218 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Highlights Section -->
-        <TextView
-            android:id="@+id/tv_highlightsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Highlights"
-            android:padding="16dp"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/ibm_medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cl_topContainer" />
-
+        <!--하이라이트, 최근 게시글-->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_highlight"
+            android:id="@+id/cl_posts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle"
-            app:layout_constraintBottom_toTopOf="@+id/tv_recentTitle">
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_topContainer">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_highlights"
+            <!-- Highlights Title -->
+            <TextView
+                android:id="@+id/tv_highlightsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ibm_medium"
+                android:padding="16dp"
+                android:text="Highlights"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Highlights Section -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_highlight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_highlightsTitle">
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_highlights"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_no_highlight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:text="하이라이트가 비어 있습니다."
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Recent Title -->
             <TextView
-                android:id="@+id/tv_no_highlight"
+                android:id="@+id/tv_recentTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/noto_regular"
-                android:text="하이라이트가 비어 있습니다."
-                android:textColor="@color/text_gray"
-                android:textSize="12sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:fontFamily="@font/ibm_medium"
+                android:padding="16dp"
+                android:text="Recent"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/cl_highlight" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Recent Section -->
-        <TextView
-            android:id="@+id/tv_recentTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/ibm_medium"
-            android:padding="16dp"
-            android:text="Recent"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cl_highlight" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_recent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tv_recentTitle">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_recent"
+            <!-- Recent Section -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_recent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_recentTitle">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_recent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_no_recent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:text="최근 게시글이 아직 존재하지 않습니다."
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 설정 메뉴 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_settingsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="28dp"
+                android:background="@drawable/bg_rounded_box"
                 android:paddingHorizontal="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingVertical="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/cl_recent">
 
-            <TextView
-                android:id="@+id/tv_no_recent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/noto_regular"
-                android:text="최근 게시글이 아직 존재하지 않습니다."
-                android:textColor="@color/text_gray"
-                android:textSize="12sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/tv_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:includeFontPadding="false"
+                    android:paddingVertical="5dp"
+                    android:text="히스토리"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_editInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:includeFontPadding="false"
+                    android:paddingVertical="5dp"
+                    android:text="내 정보 수정"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@id/tv_history"
+                    app:layout_constraintTop_toBottomOf="@id/tv_history" />
+
+                <TextView
+                    android:id="@+id/tv_block"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:includeFontPadding="false"
+                    android:paddingVertical="5dp"
+                    android:text="차단된 사용자"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@id/tv_editInfo"
+                    app:layout_constraintTop_toBottomOf="@id/tv_editInfo" />
+
+                <TextView
+                    android:id="@+id/tv_savePosts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:includeFontPadding="false"
+                    android:paddingVertical="5dp"
+                    android:text="게시물 저장"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@id/tv_block"
+                    app:layout_constraintTop_toBottomOf="@id/tv_block" />
+
+                <TextView
+                    android:id="@+id/tv_logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:includeFontPadding="false"
+                    android:paddingVertical="5dp"
+                    android:text="로그아웃"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@id/tv_savePosts"
+                    app:layout_constraintTop_toBottomOf="@id/tv_savePosts" />
+
+                <TextView
+                    android:id="@+id/tv_quit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_regular"
+                    android:includeFontPadding="false"
+                    android:paddingVertical="5dp"
+                    android:text="탈퇴하기"
+                    android:textColor="@color/error_red"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@id/tv_logout"
+                    app:layout_constraintTop_toBottomOf="@id/tv_logout" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- 설정 메뉴 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_settingsContainer"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_block_info"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="28dp"
-            android:layout_marginHorizontal="16dp"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:background="@drawable/bg_rounded_box"
+            android:fontFamily="@font/noto_regular"
+            android:includeFontPadding="false"
+            android:paddingVertical="5dp"
+            android:text="사용자를 찾을 수 없음"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cl_recent">
-
-            <TextView
-                android:id="@+id/tv_history"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="히스토리"
-                android:paddingVertical="5dp"
-                android:fontFamily="@font/noto_regular"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                android:includeFontPadding="false"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_editInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="내 정보 수정"
-                android:paddingVertical="5dp"
-                android:includeFontPadding="false"
-                android:fontFamily="@font/noto_regular"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/tv_history"
-                app:layout_constraintTop_toBottomOf="@id/tv_history" />
-
-            <TextView
-                android:id="@+id/tv_block"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="차단된 사용자"
-                android:paddingVertical="5dp"
-                android:includeFontPadding="false"
-                android:fontFamily="@font/noto_regular"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/tv_editInfo"
-                app:layout_constraintTop_toBottomOf="@id/tv_editInfo" />
-
-            <TextView
-                android:id="@+id/tv_savePosts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="게시물 저장"
-                android:paddingVertical="5dp"
-                android:includeFontPadding="false"
-                android:fontFamily="@font/noto_regular"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/tv_block"
-                app:layout_constraintTop_toBottomOf="@id/tv_block" />
-
-            <TextView
-                android:id="@+id/tv_logout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="로그아웃"
-                android:paddingVertical="5dp"
-                android:includeFontPadding="false"
-                android:fontFamily="@font/noto_regular"
-                android:textSize="13sp"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/tv_savePosts"
-                app:layout_constraintTop_toBottomOf="@id/tv_savePosts" />
-
-            <TextView
-                android:id="@+id/tv_quit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="탈퇴하기"
-                android:paddingVertical="5dp"
-                android:includeFontPadding="false"
-                android:fontFamily="@font/noto_regular"
-                android:textSize="13sp"
-                android:textColor="@color/error_red"
-                app:layout_constraintStart_toStartOf="@id/tv_logout"
-                app:layout_constraintTop_toBottomOf="@id/tv_logout" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/cl_topContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

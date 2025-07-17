@@ -8,6 +8,6 @@ class ClositApp : Application() {
         super.onCreate()
 
         // 앱 시작할 때 Retrofit 초기화
-        RetrofitClient.init(this)
+        RetrofitClient.init(applicationContext)
     }
 }
