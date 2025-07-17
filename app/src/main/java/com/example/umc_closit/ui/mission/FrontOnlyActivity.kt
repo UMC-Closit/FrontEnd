@@ -4,10 +4,14 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.RenderEffect
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.graphics.Shader
+import android.os.Build
+import androidx.annotation.RequiresApi
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -68,6 +72,24 @@ class FrontOnlyActivity : AppCompatActivity() {
             originalBitmap?.let { bmp ->
                 binding.imageViewFrontOnly.setImageBitmap(bmp)
             }
+            // 배경에 사진 보이기
+            originalBitmap?.let { bmp ->
+                binding.imageViewFrontOnlyBackground.setImageBitmap(bmp)
+            }
+        }
+
+        //배경 사진 blur 효과 추가
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ) {
+            val blurEffect = RenderEffect.createBlurEffect(
+                40f,40f, Shader.TileMode.CLAMP
+            )
+            binding.blurBox.setRenderEffect(blurEffect)
+            binding.blurBox.alpha = 0.8f
+
+        } else {
+            // API 31보다 아래버전
+            binding.blurBox.setBackgroundColor(0x88FFFFFF.toInt()) // 반투명 흰색
         }
 
         backPhotoPath = intent.getStringExtra("backPhotoPath")

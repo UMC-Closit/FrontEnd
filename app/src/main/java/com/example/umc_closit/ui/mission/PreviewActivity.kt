@@ -22,9 +22,9 @@ class PreviewActivity : AppCompatActivity() {
         val frontPhotoPath = intent.getStringExtra("frontPhotoPath")
 
 
-        binding.ivBack.setOnClickListener {
-            onBackPressed()
-        }
+//        binding.ivBack.setOnClickListener {
+//            onBackPressed()
+//        }
 
         mainPhotoPath = frontPhotoPath
 
