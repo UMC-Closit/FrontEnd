@@ -1,127 +1,128 @@
 package com.example.umc_closit.ui.community.battle
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.umc_closit.Community.BattlePageAdapter
 import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.BattleItem
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.data.remote.battle.BattleListResponse
+import com.example.umc_closit.data.remote.battle.BattleApiService
+import com.example.umc_closit.data.remote.battle.ChallengeBattlePreview
+import com.example.umc_closit.data.remote.battle.ChallengeBattleResponse
+import com.example.umc_closit.databinding.FragmentBattleBinding
 import com.example.umc_closit.ui.community.challenge.ChallengeFragment
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.umc_closit.utils.TokenUtils
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class BattleFragment : Fragment() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var battleAdapter: BattlePageAdapter
-    private val battleList = mutableListOf<BattleItem>()
+    private var _binding: FragmentBattleBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_battle, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentBattleBinding.inflate(inflater, container, false)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val adapter = BattlePagerAdapter(this)
+        binding.viewPager.adapter = adapter
 
-        // RecyclerView 설정
-        recyclerView = view.findViewById(R.id.Battle_recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        battleAdapter = BattlePageAdapter(requireContext(), battleList)
-        recyclerView.adapter = battleAdapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            val tabText = if (position == 0) "진행중" else "완료됨"
+            val textView = TextView(requireContext()).apply {
+                text = tabText
+                textSize = 12f
+                includeFontPadding = false
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.light_gray))
+                typeface = Typeface.DEFAULT
+                gravity = Gravity.BOTTOM
+                setPadding(0, 0, 0, 0) // ✅ 패딩 제거
+                minHeight = 0 // ✅ 최소 높이 제거
+                setLineSpacing(0f, 1f) // ✅ 줄 간격 줄이기
+            }
+            tab.customView = textView
+        }.attach()
 
-        // 배틀 리스트 API 호출
-        fetchBattleList(0)
-        // 왼쪽 네모 클릭 시 ChallengeFragment로 이동
-        val leftItem: View = view.findViewById(R.id.left_item)
-        leftItem.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ChallengeFragment())
-                .addToBackStack(null)
-                .commit()
+        binding.clChallengeWrapper.setOnClickListener{
+            val fragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.fragment_container, ChallengeFragment())
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
         }
 
-        // 오른쪽 네모 클릭 시 ChallengeFragment로 이동
-        val rightItem: View = view.findViewById(R.id.right_item)
-        rightItem.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ChallengeFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
-        // createButton 클릭 시 NewBattleActivity로 이동
-        val createButton: View = view.findViewById(R.id.createButton)
-        createButton.setOnClickListener {
+        binding.clChallenge.setOnClickListener {
             val intent = Intent(requireContext(), NewBattleActivity::class.java)
             startActivity(intent)
         }
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                val textView = tab.customView as? TextView
+                textView?.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                textView?.setTypeface(null, Typeface.BOLD)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                val textView = tab.customView as? TextView
+                textView?.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_gray))
+                textView?.setTypeface(null, Typeface.NORMAL)
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+        // 처음 시작 시 첫 번째 탭에 스타일 적용
+        val firstTab = binding.tabLayout.getTabAt(0)
+        val firstTextView = firstTab?.customView as? TextView
+        firstTextView?.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+        firstTextView?.setTypeface(null, Typeface.BOLD)
+
+        // 챌린지 데이터 불러오기
+        fetchChallengeBattles()
     }
 
-    /**
-     * 배틀 리스트 API 호출
-     */
-    private fun fetchBattleList(
-        page: Int,
-        sorting: String = "LATEST", // 기본값 설정 가능
-        status: String = "ACTIVE"
-    ) {
-        val call = RetrofitClient.battleApiService.getBattleList(page, sorting, status)
-        call.enqueue(object : Callback<BattleListResponse> {
-            override fun onResponse(
-                call: Call<BattleListResponse>,
-                response: Response<BattleListResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val battleResponse = response.body()
-                    if (battleResponse != null && battleResponse.isSuccess) {
-                        val battles = battleResponse.result?.battlePreviewList
-                        battleList.clear()
-                        if (battles != null) {
-                            battleList.addAll(battles.map { preview ->
-                                BattleItem(
-                                    id = preview.battleId.toInt(),
-                                    battleId = preview.battleId,
-                                    userProfileUrl = preview.firstProfileImage,
-                                    userName = preview.firstClositId,
-                                    battleLikeId = 0, // API에서 제공되지 않으면 기본값
-                                    leftPostId = preview.firstPostId,
-                                    rightPostId = preview.secondPostId,
-                                    leftPostImageUrl = preview.firstPostFrontImage,
-                                    rightPostImageUrl = preview.secondPostFrontImage
-                                )
-                            })
-                        }
-                        Log.d("FETCH_BATTLE", "요청 페이지: $page, 정렬: $sorting, 상태: $status")
-                        Log.d("FETCH_BATTLE", "response code: ${response.code()}")
-                        Log.d("FETCH_BATTLE", "response body: ${response.body()}")
-                        Log.d("FETCH_BATTLE", "response error: ${response.errorBody()?.string()}")
-                        battleAdapter.notifyDataSetChanged()
-                    } else {
-                        Toast.makeText(requireContext(), "API 실패: ${battleResponse?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Log.e("API_ERROR", "응답 실패: ${response.code()} - ${response.message()}")
-                    Toast.makeText(requireContext(), "불러오기 실패", Toast.LENGTH_SHORT).show()
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
-            override fun onFailure(call: Call<BattleListResponse>, t: Throwable) {
-                Log.e("API_ERROR", "네트워크 오류: ${t.localizedMessage}")
-                Toast.makeText(requireContext(), "네트워크 오류 발생", Toast.LENGTH_SHORT).show()
-            }
-        })
+    private fun fetchChallengeBattles() {
+        val apiService = RetrofitClient.createService(BattleApiService::class.java)
+
+        TokenUtils.handleTokenRefresh(
+            call = apiService.getChallengeBattles(page = 0),
+            onSuccess = { response ->
+                val result = response as ChallengeBattleResponse
+                if (result.isSuccess && result.result != null) {
+                    val challengeList = result.result.challengeBattlePreviewList
+                    Log.d("ChallengeList", "받은 리스트 크기: ${challengeList.size}")
+                    challengeList.forEach {
+                        Log.d("ChallengeList", "title=${it.title}, id=${it.battleId}")
+                    }
+                    val adapter = ChallengePreviewAdapter(challengeList, requireContext())
+                    binding.rvChallenge.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    binding.rvChallenge.adapter = adapter
+                } else {
+                    Toast.makeText(requireContext(), "불러오기 실패: ${result.message}", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { error ->
+                Toast.makeText(requireContext(), "네트워크 오류: ${error.message}", Toast.LENGTH_SHORT).show()
+            },
+            context = requireContext()
+        )
     }
 }

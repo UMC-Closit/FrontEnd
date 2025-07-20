@@ -6,12 +6,15 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -28,10 +31,10 @@ import com.example.umc_closit.data.remote.profile.UnfollowResponse
 import com.example.umc_closit.databinding.DialogLogoutBinding
 import com.example.umc_closit.databinding.DialogQuitBinding
 import com.example.umc_closit.databinding.FragmentProfileBinding
-import com.example.umc_closit.ui.profile.follow.FollowListActivity
 import com.example.umc_closit.ui.login.LoginActivity
 import com.example.umc_closit.ui.profile.block.BlockedUserActivity
 import com.example.umc_closit.ui.profile.edit.EditProfileActivity
+import com.example.umc_closit.ui.profile.follow.FollowListActivity
 import com.example.umc_closit.ui.profile.highlight.HighlightAdapter
 import com.example.umc_closit.ui.profile.highlight.HighlightDetailActivity
 import com.example.umc_closit.ui.profile.history.HistoryActivity
@@ -42,13 +45,14 @@ import com.example.umc_closit.utils.JsonUtils
 import com.example.umc_closit.utils.TokenUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okio.Timeout
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -205,7 +209,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnBlock.setOnClickListener {
-            blockUser(profileUserClositId)
+            showBlockDialog(profileUserClositId, binding.tvUsername.text.toString())
             hideMenuWithAnimation(binding.layoutMenuOptions)
         }
 
@@ -216,6 +220,16 @@ class ProfileFragment : Fragment() {
                 } else {
                     showMenuWithAnimation(binding.layoutMenuOptions)
                 }
+            }
+        }
+
+        checkBlockStatus(profileUserClositId) { blockedByMe, blockedMe ->
+            if (blockedMe) {
+                showBlockedByOtherUI()
+            } else if (blockedByMe) {
+                showBlockedByMeUI()
+            } else {
+                showNormalUI()
             }
         }
 
@@ -237,22 +251,30 @@ class ProfileFragment : Fragment() {
 
     private fun blockUser(targetClositId: String) {
         val request = BlockRequest(targetClositId)
-        val apiCall = { RetrofitClient.profileService.blockUser(request) }
+        Log.d("BLOCK", "📡 차단 요청 시작 - clositId=$targetClositId")
+
+        val apiCall = {
+            RetrofitClient.profileService.blockUser(request)
+        }
 
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
+                Log.d("BLOCK", "✅ 응답 도착 - isSuccess=${response.isSuccess}, message=${response.message}")
+
                 if (response.isSuccess) {
                     Toast.makeText(requireContext(), "사용자를 차단했습니다.", Toast.LENGTH_SHORT).show()
+                    Log.d("BLOCK", "🚫 차단 성공 - 사용자 뒤로 이동")
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                 } else {
                     Toast.makeText(requireContext(), "차단 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+                    Log.w("BLOCK", "❌ 차단 실패: ${response.message}")
                 }
             },
             onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                Log.e("BLOCK", "🔥 네트워크 오류: ${t.message}", t)
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -271,6 +293,35 @@ class ProfileFragment : Fragment() {
         } else {
             binding.tvNoRecent.visibility = View.GONE
         }
+    }
+
+    private fun showBlockedByMeUI() {
+        binding.tvFollow.apply {
+            visibility = View.VISIBLE
+            text = "차단됨"
+            setTextColor(resources.getColor(R.color.white, null))
+            (background as GradientDrawable).apply {
+                setColor(resources.getColor(R.color.error_red, null))
+                setStroke(2, resources.getColor(R.color.error_red, null))
+            }
+        }
+        binding.clPosts.visibility = View.GONE
+        binding.tvBlockInfo.visibility = View.VISIBLE
+        binding.ivProfileMenu.visibility = View.VISIBLE
+    }
+
+    private fun showBlockedByOtherUI() {
+        binding.tvFollow.visibility = View.GONE
+        binding.ivProfileMenu.visibility = View.GONE
+        binding.clPosts.visibility = View.GONE
+        binding.tvBlockInfo.visibility = View.VISIBLE
+    }
+
+    private fun showNormalUI() {
+        binding.tvFollow.visibility = View.VISIBLE
+        binding.ivProfileMenu.visibility = View.VISIBLE
+        binding.clPosts.visibility = View.VISIBLE
+        binding.tvBlockInfo.visibility = View.GONE
     }
 
 
@@ -298,7 +349,6 @@ class ProfileFragment : Fragment() {
             onFailure = { t ->
                 Log.e("ProfileFragment", "최근 게시물 불러오기 실패: ${t.message}")
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -328,7 +378,6 @@ class ProfileFragment : Fragment() {
             onFailure = { t ->
                 Log.e("ProfileFragment", "하이라이트 불러오기 실패: ${t.message}")
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -406,7 +455,6 @@ class ProfileFragment : Fragment() {
                             onFailure = {
                                 Log.e("PROFILE_IMAGE", "URL 등록 실패: ${it.message}")
                             },
-                            retryCall = registerCall,
                             context = requireContext()
                         )
 
@@ -418,7 +466,6 @@ class ProfileFragment : Fragment() {
             onFailure = { t ->
                 Log.e("PROFILE_IMAGE", "Presigned URL 발급 실패: ${t.message}")
             },
-            retryCall = presignCall,
             context = requireContext()
         )
     }
@@ -443,29 +490,34 @@ class ProfileFragment : Fragment() {
 
     private fun followUser() {
         val apiCall = {
+            Log.d("FOLLOW", "팔로우 요청할 ID: $profileUserClositId")
+            Log.d("FOLLOW", "📡 API 요청 준비 - followUser(${profileUserClositId})")
             RetrofitClient.profileService.followUser(FollowRequest(profileUserClositId))
         }
 
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response: FollowResponse ->
+                Log.d("FOLLOW", "✅ 응답 도착 - isSuccess=${response.isSuccess}, message=${response.message}")
+
                 if (response.isSuccess) {
                     isFollowing = true
                     updateFollowButtonUI(isFollowing)
+                    Log.d("FOLLOW", "🎉 팔로우 성공 - UI 업데이트됨")
 
                     // 팔로워 수 증가
                     val currentFollowers = binding.tvFollowersCount.text.toString().toInt()
                     binding.tvFollowersCount.text = (currentFollowers + 1).toString()
-
+                    Log.d("FOLLOW", "👥 팔로워 수 증가: ${currentFollowers + 1}")
                 } else {
+                    Log.w("FOLLOW", "❌ 팔로우 실패: ${response.message}")
                     Toast.makeText(requireContext(), "팔로우 실패: ${response.message}", Toast.LENGTH_SHORT).show()
                 }
             },
             onFailure = { t ->
+                Log.e("FOLLOW", "🔥 네트워크 오류: ${t.message}", t)
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("FOLLOW","$t")
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -491,7 +543,6 @@ class ProfileFragment : Fragment() {
             onFailure = { t ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -512,7 +563,6 @@ class ProfileFragment : Fragment() {
             onFailure = { t ->
                 Log.e("FollowStatus", "팔로우 여부 확인 실패: ${t.message}")
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -562,7 +612,6 @@ class ProfileFragment : Fragment() {
                 Toast.makeText(requireContext(), "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 Log.e("PROFILE","네트워크 오류: ${t.message}")
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -600,6 +649,30 @@ class ProfileFragment : Fragment() {
             binding.clSettingsContainer.visibility = View.GONE
             binding.tvFollow.visibility = View.VISIBLE
         }
+    }
+
+    private fun showBlockDialog(targetClositId: String, targetUsername: String) {
+        val dialog = Dialog(requireContext())
+        val inflater = LayoutInflater.from(requireContext())
+        val view = inflater.inflate(R.layout.dialog_block, null)
+
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(true)
+
+        val tvBlockId = view.findViewById<TextView>(R.id.tv_block_id)
+        val tvBlockSpec = view.findViewById<TextView>(R.id.tv_block_spec)
+        val btnConfirm = view.findViewById<Button>(R.id.btnConfirm)
+
+        tvBlockId.text = "@$targetClositId"
+        tvBlockSpec.text = "${targetUsername}님을 차단하면 게시글을 볼 수 없습니다"
+
+        btnConfirm.setOnClickListener {
+            dialog.dismiss()
+            blockUser(targetClositId)
+        }
+
+        dialog.show()
     }
 
 
@@ -676,8 +749,60 @@ class ProfileFragment : Fragment() {
             onFailure = {
                 onResult(false)
             },
-            retryCall = apiCall,
             context = requireContext()
+        )
+    }
+
+    private fun checkBlockStatus(targetClositId: String, onResult: (blockedByMe: Boolean, blockedMe: Boolean) -> Unit) {
+        val context = requireContext()
+        val clositId = TokenUtils.getClositId(context)
+
+        // 1. 먼저 내 clositId 비어있으면 재발급 먼저
+        if (clositId.isNullOrBlank()) {
+            TokenUtils.refreshTokenOnly(
+                context = context,
+                onSuccess = {
+                    Log.d("BLOCK_CHECK", "🔁 토큰 재발급 완료 후 차단 여부 재시작")
+                    checkBlockStatus(targetClositId, onResult) // 재귀 호출
+                },
+                onFailure = {
+                    Log.e("BLOCK_CHECK", "❌ 토큰 재발급 실패")
+                    onResult(false, false) // 실패 시 기본값 리턴
+                },
+            )
+            return
+        }
+
+        // 2. 차단 여부 확인
+        val myCheckCall = { RetrofitClient.profileService.checkUserBlocked(targetClositId) }
+        val otherCheckCall = { RetrofitClient.profileService.checkUserBlocked(clositId) }
+
+        Log.d("BLOCK_CHECK", "📡 차단 여부 확인 시작 - 내가 ${targetClositId} 차단했는지 + 그 사람이 나(${clositId})를 차단했는지")
+
+        TokenUtils.handleTokenRefresh(
+            call = myCheckCall(),
+            onSuccess = { myResponse ->
+                Log.d("BLOCK_CHECK", "✅ 내가 ${targetClositId} 차단했는지 확인 결과: ${myResponse.result.blocked}")
+
+                TokenUtils.handleTokenRefresh(
+                    call = otherCheckCall(),
+                    onSuccess = { otherResponse ->
+                        Log.d("BLOCK_CHECK", "✅ ${targetClositId}가 나(${clositId})를 차단했는지 확인 결과: ${otherResponse.result.blocked}")
+
+                        onResult(myResponse.result.blocked, otherResponse.result.blocked)
+                    },
+                    onFailure = {
+                        Log.e("BLOCK_CHECK", "❌ ${targetClositId} → 나 차단 여부 확인 실패: ${it.message}")
+                        onResult(myResponse.result.blocked, false)
+                    },
+                    context = context
+                )
+            },
+            onFailure = {
+                Log.e("BLOCK_CHECK", "❌ 내가 ${targetClositId} 차단 여부 확인 실패: ${it.message}")
+                onResult(false, false)
+            },
+            context = context
         )
     }
 

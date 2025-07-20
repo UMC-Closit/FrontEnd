@@ -55,7 +55,6 @@ class BlockedUserActivity : AppCompatActivity() {
             onFailure = { t ->
                 Log.e("BlockedUser", "차단 목록 불러오기 실패: ${t.message}")
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -78,7 +77,6 @@ class BlockedUserActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }

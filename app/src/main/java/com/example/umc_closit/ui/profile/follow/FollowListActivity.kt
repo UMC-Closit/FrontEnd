@@ -109,7 +109,6 @@ class FollowListActivity : AppCompatActivity() {
                 _isLoading.value = false
                 Toast.makeText(this, "팔로잉 목록 불러오기 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -157,7 +156,6 @@ class FollowListActivity : AppCompatActivity() {
                 _isLoading.value = false
                 Toast.makeText(this, "팔로워 목록 불러오기 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }

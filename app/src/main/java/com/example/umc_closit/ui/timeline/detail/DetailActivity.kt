@@ -114,7 +114,6 @@ class DetailActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -204,7 +203,6 @@ class DetailActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -225,7 +223,6 @@ class DetailActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -246,7 +243,6 @@ class DetailActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -267,7 +263,6 @@ class DetailActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }

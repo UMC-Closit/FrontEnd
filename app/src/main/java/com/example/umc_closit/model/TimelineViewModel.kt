@@ -21,18 +21,24 @@ class TimelineViewModel : ViewModel() {
     var hasNextPage = true
 
     fun fetchTimelinePosts(context: Context) {
-        if (_isLoading.value == true || !hasNextPage) return
+        if (_isLoading.value == true || !hasNextPage) {
+            Log.d("TimelineViewModel", "⛔ 요청 차단됨: isLoading=${_isLoading.value}, hasNextPage=$hasNextPage")
+            return
+        }
 
+        Log.d("TimelineViewModel", "🚀 fetchTimelinePosts 시작 - currentPage=$currentPage")
         _isLoading.value = true
         Log.d("TIMELINE_DEBUG", "🔄 타임라인 데이터 요청 시작 - 페이지: $currentPage")
 
         val apiCall = {
+            Log.d("TimelineViewModel", "📡 API 요청 준비 완료 - page=$currentPage")
             RetrofitClient.timelineService.getPosts(page = currentPage, size = 10)
         }
 
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
+
                 Log.d("TIMELINE_DEBUG", "✅ 타임라인 API 응답 성공")
                 Log.d("TIMELINE_DEBUG", "📊 응답 데이터: $response")
                 Log.d("TIMELINE_DEBUG", "📋 isSuccess: ${response.isSuccess}")
@@ -59,7 +65,8 @@ class TimelineViewModel : ViewModel() {
                     currentList.addAll(newItems)
                     _timelineItems.value = currentList
 
-                    hasNextPage = response.result.hasNext
+                    hasNextPage = response.result?.hasNext ?: false
+                    Log.d("TimelineViewModel", "📄 hasNextPage: $hasNextPage")
                     currentPage++
                     
                     Log.d("TIMELINE_DEBUG", "📋 현재 총 아이템 수: ${currentList.size}")
@@ -68,6 +75,7 @@ class TimelineViewModel : ViewModel() {
                 } else {
                     Log.e("TIMELINE_DEBUG", "❌ API 응답 실패: ${response.message}")
                 }
+
                 _isLoading.value = false
             },
             onFailure = { error ->
@@ -75,7 +83,6 @@ class TimelineViewModel : ViewModel() {
                 Log.e("TIMELINE_DEBUG", "❌ 에러 상세: ", error)
                 _isLoading.value = false
             },
-            retryCall = apiCall,
             context = context
         )
     }

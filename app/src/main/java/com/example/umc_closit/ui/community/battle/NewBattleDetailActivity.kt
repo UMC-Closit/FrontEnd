@@ -78,7 +78,8 @@ class NewBattleDetailActivity : AppCompatActivity() {
     private fun uploadBattlePost(postId: Int, title: String) {
         val request = BattlePostRequest(
             postId = postId,  // ✅ 전달받은 postId 사용
-            title = title
+            title = title,
+            description = ""
         )
 
         TokenUtils.handleTokenRefresh(
@@ -107,9 +108,6 @@ class NewBattleDetailActivity : AppCompatActivity() {
             onFailure = { throwable ->
                 Log.e("BattleUpload", "API 호출 실패", throwable)
                 Toast.makeText(this@NewBattleDetailActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
-            },
-            retryCall = {
-                RetrofitClient.battleApiService.uploadBattle(request)
             },
             context = this@NewBattleDetailActivity
         )

@@ -107,5 +107,10 @@ interface ProfileService {
 
     @DELETE("/api/v1/users/block")
     fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
+  
+    @GET("/api/v1/users/block")
+    fun checkUserBlocked(
+        @Query("closit_id") clositId: String
+    ): Call<BlockStatusResponse>
 
 }

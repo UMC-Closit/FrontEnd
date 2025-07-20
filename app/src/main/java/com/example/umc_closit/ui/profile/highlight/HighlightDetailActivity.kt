@@ -96,7 +96,6 @@ class HighlightDetailActivity : AppCompatActivity() {
                 }
             },
             onFailure = { t -> onFailure(t) },
-            retryCall = apiCall,
             context = this
         )
     }

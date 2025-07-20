@@ -39,11 +39,18 @@ data class PostPreview(
     val isSaved: Boolean,
     val isFriend: Boolean,
     val likeCount: Int,// 좋아요 수 세기위한 필드 추가
+    val hashtags: List<Hashtag>,
     val frontItemtags: List<ItemTag>,
     val backItemtags: List<ItemTag>,
     val pointColor: String,
     val visibility: String
 ): Parcelable
+
+@Parcelize
+data class Hashtag(
+    val id: Long,
+    val name: String
+) : Parcelable
 
 @Parcelize
 data class ItemTag(

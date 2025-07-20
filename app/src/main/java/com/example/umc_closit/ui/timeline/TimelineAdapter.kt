@@ -109,7 +109,6 @@ class   TimelineAdapter(
                         onFailure = { t ->
                             Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                         },
-                        retryCall = apiCall,
                         context = context
                     )
                 } else {
@@ -125,7 +124,6 @@ class   TimelineAdapter(
                         onFailure = { t ->
                             Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                         },
-                        retryCall = apiCall,
                         context = context
                     )
                 }
@@ -152,7 +150,6 @@ class   TimelineAdapter(
                         onFailure = { t ->
                             Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                         },
-                        retryCall = apiCall,
                         context = context
                     )
 
@@ -175,7 +172,6 @@ class   TimelineAdapter(
                             Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT)
                                 .show()
                         },
-                        retryCall = apiCall,
                         context = context
                     )
                 }

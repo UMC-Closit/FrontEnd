@@ -121,7 +121,6 @@ class CommentBottomSheetFragment : com.google.android.material.bottomsheet.Botto
                 Log.e("COMMENT_LOAD", "댓글 불러오기 에러: ${t.message}")
                 isLoading = false
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -169,7 +168,6 @@ class CommentBottomSheetFragment : com.google.android.material.bottomsheet.Botto
             onFailure = { t ->
                 Toast.makeText(context, "댓글 작성 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -195,7 +193,6 @@ class CommentBottomSheetFragment : com.google.android.material.bottomsheet.Botto
             onFailure = { t ->
                 Toast.makeText(context, "댓글 삭제 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
