@@ -19,14 +19,6 @@ data class TimelineResult(
     val last: Boolean
 )
 
-// Hashtag 데이터 클래스 추가
-@Parcelize
-data class Hashtag(
-    val id: Int? = null,
-    val name: String? = null,
-    val content: String? = null
-) : Parcelable
-
 // Timeline item
 @Parcelize
 data class PostPreview(
