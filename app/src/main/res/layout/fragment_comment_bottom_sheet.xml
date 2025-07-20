@@ -1,0 +1,114 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="16dp"
+    android:paddingHorizontal="16dp"
+    android:background="@drawable/bg_comment_white_round">
+
+
+    <!-- 상단 검은 줄 -->
+    <View
+        android:id="@+id/blackLine"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        app:layout_constraintWidth_percent="0.34"
+        android:background="@drawable/round_black_line"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- Comments 텍스트 -->
+    <TextView
+        android:id="@+id/tvComments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/noto_light"
+        android:includeFontPadding="false"
+        android:paddingTop="8dp"
+        android:text="Comments"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/blackLine" />
+
+    <TextView
+        android:id="@+id/tv_no_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:fontFamily="@font/noto_light"
+        android:includeFontPadding="false"
+        android:paddingTop="8dp"
+        android:text="아직 댓글이 없습니다.\n댓글을 달아보세요!"
+        android:paddingVertical="50dp"
+        app:layout_constraintHeight_percent="0.82"
+        android:visibility="gone"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/commentInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvComments" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/commentsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintHeight_percent="0.82"
+        tools:listitem="@layout/item_comment"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toBottomOf="@id/tvComments"
+        app:layout_constraintBottom_toTopOf="@id/commentInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/commentInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:background="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <EditText
+            android:id="@+id/commentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_comment_edittext"
+            android:hint="add comment"
+            android:fontFamily="@font/noto_regular"
+            android:includeFontPadding="false"
+            android:inputType="textMultiLine"
+            android:lines="1"
+            android:padding="16dp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <ImageView
+            android:id="@+id/iv_submit"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_send"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintHeight_percent="0.75"
+            app:layout_constraintTop_toTopOf="@+id/commentEditText"
+            app:layout_constraintBottom_toBottomOf="@+id/commentEditText" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

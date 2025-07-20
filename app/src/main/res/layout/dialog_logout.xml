@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_add_highlight_dropdown"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_quit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그아웃 하시겠습니까?"
+        android:fontFamily="@font/noto_medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingHorizontal="30dp"
+        android:paddingVertical="24dp"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
+        />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent="0.48"
+        android:backgroundTint="@color/pink_point"
+        android:text="예"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/noto_medium"
+        android:textSize="14dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent="0.48"
+        android:backgroundTint="@color/black"
+        android:fontFamily="@font/noto_medium"
+        android:text="아니오"
+        android:includeFontPadding="false"
+        android:textSize="14dp"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

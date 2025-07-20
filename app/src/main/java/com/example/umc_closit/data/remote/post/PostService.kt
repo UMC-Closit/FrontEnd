@@ -1,0 +1,43 @@
+package com.example.umc_closit.data.remote.post
+
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.DELETE
+import retrofit2.http.Body
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
+
+interface PostService {
+    @GET("/api/v1/posts/{post_id}")
+    fun getPostDetail(
+        @Path("post_id") postId: Int
+    ): Call<PostResponse>
+
+    @DELETE("/api/v1/posts/{post_id}")
+    suspend fun deletePost(
+        @Path("post_id") postId: Int
+    ): Response<PostDeleteResponse>
+
+    @POST("/api/v1/posts")
+    suspend fun uploadPost(
+        @Body request: PostRequest
+    ): Response<PostUploadResponse>
+
+    @GET("/api/v1/users/{closit_id}/recent-post")
+    fun getRecentPosts(
+        @Path("closit_id") clositId: String,
+        @Query("page") page: Int
+    ): Call<RecentPostResponse>
+
+    @POST("/api/v1/posts/presigned-url")
+    suspend fun getPresignedUrls(
+        @Body request: RequestBody
+    ): PresignedUrlResponse
+}
+
