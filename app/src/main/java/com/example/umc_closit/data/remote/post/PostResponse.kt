@@ -85,6 +85,13 @@ data class UserRecentPostDTO(
     val createdAt: String
 )
 
+data class PresignedUrlResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: PresignedUrlResult
+)
+
 data class HashtagSearchResponse(
     val isSuccess: Boolean,
     val code: String,
@@ -93,6 +100,16 @@ data class HashtagSearchResponse(
 )
 
 data class HashtagSearchResult(
+    val postPreviewList: List<PostPreview>,
+    val listSize: Int,
+    val hasNext: Boolean,
+    val first: Boolean,
+    val last: Boolean
+)
+
+data class PresignedUrlResult(
+    val frontImageUrl: String,
+    val backImageUrl: String,
     val postPreviewList: List<PostPreview>,
     val listSize: Int,
     val hasNext: Boolean,

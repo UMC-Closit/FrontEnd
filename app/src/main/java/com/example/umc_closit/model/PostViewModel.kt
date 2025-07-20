@@ -26,7 +26,7 @@ class PostViewModel : ViewModel() {
             try {
                 // API 호출
                 val response = postService.uploadPost(
-                    request = requestBody
+                    request = requestBody,
                 )
 
                 // 응답 처리

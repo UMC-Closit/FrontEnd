@@ -184,7 +184,7 @@ class CommunityFragment : Fragment() {
                                 frontImage = it.frontImage,
                                 profileImage = it.profileImage,
                                 viewCount = 0,
-                                todayClosetId = TODO(),
+                                todayClosetId = 0,
                                 backImage = it.backImage
                             )
                         }
