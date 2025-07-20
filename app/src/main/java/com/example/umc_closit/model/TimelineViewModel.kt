@@ -28,6 +28,7 @@ class TimelineViewModel : ViewModel() {
 
         Log.d("TimelineViewModel", "🚀 fetchTimelinePosts 시작 - currentPage=$currentPage")
         _isLoading.value = true
+        Log.d("TIMELINE_DEBUG", "🔄 타임라인 데이터 요청 시작 - 페이지: $currentPage")
 
         val apiCall = {
             Log.d("TimelineViewModel", "📡 API 요청 준비 완료 - page=$currentPage")
@@ -37,12 +38,29 @@ class TimelineViewModel : ViewModel() {
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
-                Log.d("TimelineViewModel", "✅ 응답 도착 - isSuccess=${response.isSuccess}")
 
+                Log.d("TIMELINE_DEBUG", "✅ 타임라인 API 응답 성공")
+                Log.d("TIMELINE_DEBUG", "📊 응답 데이터: $response")
+                Log.d("TIMELINE_DEBUG", "📋 isSuccess: ${response.isSuccess}")
+                Log.d("TIMELINE_DEBUG", "📋 code: ${response.code}")
+                Log.d("TIMELINE_DEBUG", "📋 message: ${response.message}")
+                
                 if (response.isSuccess) {
-                    val newItems = response.result?.postPreviewList?.filterNotNull() ?: emptyList()
-                    Log.d("TimelineViewModel", "📦 새로 가져온 아이템 수: ${newItems.size}")
-
+                    Log.d("TIMELINE_DEBUG", "📋 result.postPreviewList 크기: ${response.result.postPreviewList.size}")
+                    Log.d("TIMELINE_DEBUG", "📋 result.hasNext: ${response.result.hasNext}")
+                    Log.d("TIMELINE_DEBUG", "📋 result.listSize: ${response.result.listSize}")
+                    
+                    // 각 아이템의 데이터 확인
+                    response.result.postPreviewList.forEachIndexed { index, item ->
+                        Log.d("TIMELINE_DEBUG", "📋 아이템[$index] postId: ${item.postId}")
+                        Log.d("TIMELINE_DEBUG", "📋 아이템[$index] clositId: ${item.clositId}")
+                        Log.d("TIMELINE_DEBUG", "📋 아이템[$index] frontImage: ${item.frontImage}")
+                        Log.d("TIMELINE_DEBUG", "📋 아이템[$index] backImage: ${item.backImage}")
+                    }
+                    
+                    val newItems = response.result.postPreviewList.filterNotNull()
+                    Log.d("TIMELINE_DEBUG", "📋 필터링된 아이템 수: ${newItems.size}")
+                    
                     val currentList = _timelineItems.value.orEmpty().toMutableList()
                     currentList.addAll(newItems)
                     _timelineItems.value = currentList
@@ -50,15 +68,19 @@ class TimelineViewModel : ViewModel() {
                     hasNextPage = response.result?.hasNext ?: false
                     Log.d("TimelineViewModel", "📄 hasNextPage: $hasNextPage")
                     currentPage++
-                    Log.d("TimelineViewModel", "➡️ 다음 페이지로 이동: currentPage=$currentPage")
+                    
+                    Log.d("TIMELINE_DEBUG", "📋 현재 총 아이템 수: ${currentList.size}")
+                    Log.d("TIMELINE_DEBUG", "📋 다음 페이지 존재: $hasNextPage")
+                    Log.d("TIMELINE_DEBUG", "📋 현재 페이지: $currentPage")
                 } else {
-                    Log.w("TimelineViewModel", "❌ 응답 실패: ${response.message}")
+                    Log.e("TIMELINE_DEBUG", "❌ API 응답 실패: ${response.message}")
                 }
 
                 _isLoading.value = false
             },
-            onFailure = { t ->
-                Log.e("TimelineViewModel", "🔥 API 호출 실패: ${t.message}", t)
+            onFailure = { error ->
+                Log.e("TIMELINE_DEBUG", "❌ 타임라인 API 요청 실패: ${error.message}")
+                Log.e("TIMELINE_DEBUG", "❌ 에러 상세: ", error)
                 _isLoading.value = false
             },
             context = context
@@ -66,6 +88,7 @@ class TimelineViewModel : ViewModel() {
     }
 
     fun resetPage() {
+        Log.d("TIMELINE_DEBUG", "🔄 페이지 초기화")
         currentPage = 0
         hasNextPage = true
         _timelineItems.value = emptyList()

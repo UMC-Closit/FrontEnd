@@ -30,6 +30,7 @@ class CommunityFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        android.util.Log.d("CommunityFragment", "CommunityFragment onViewCreated 호출됨")
 
         // "오늘의 옷장" 버튼 클릭 시 fragment_todaycloset으로 변경
         binding.btnTodaycloset.setOnClickListener {

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/reportContainer"
+    android:layout_width="340dp"
+    android:layout_height="383dp"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/reportHeader"
+        android:layout_width="300dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toTopOf="@id/reportContainer"
+        app:layout_constraintHeight_percent="0.15"
+        tools:ignore="MissingConstraints"
+        app:layout_constraintStart_toStartOf="@id/reportContainer"
+        app:layout_constraintEnd_toEndOf="@id/reportContainer">
+
+        <TextView
+            android:id="@+id/reportTitle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintHeight_percent="0.4"
+            android:text="사용자 신고하기"
+            android:textSize="18dp"
+            android:fontFamily="@font/ibm_bold"
+            app:layout_constraintStart_toStartOf="@id/reportHeader"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.36"
+            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintTop_toBottomOf="@id/reportTitle"
+            app:layout_constraintStart_toStartOf="@id/reportHeader"
+            android:layout_marginTop="10dp"
+            android:text="Unknown"
+            android:textSize="15dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_info_circle"
+            app:layout_constraintEnd_toEndOf="@id/reportHeader"
+            app:layout_constraintTop_toTopOf="@id/reportHeader"
+            />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/reportForm"
+        android:layout_width="300dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/reportHeader"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintStart_toStartOf="@id/reportContainer"
+        app:layout_constraintEnd_toEndOf="@id/reportContainer">
+
+
+        <TextView
+            android:id="@+id/reportReason"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="사유"
+            android:textSize="15dp"
+            app:layout_constraintWidth_percent="0.4"
+            app:layout_constraintHeight_percent="0.2"
+            android:fontFamily="@font/ibm_bold"
+            app:layout_constraintStart_toStartOf="@id/reportForm"
+            android:layout_marginTop="18dp"
+            app:layout_constraintTop_toTopOf="@id/reportForm"
+            />
+
+        <TextView
+            android:id="@+id/reportInfo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="신고하면 어디어디로 갑니다"
+            android:textSize="12dp"
+            app:layout_constraintWidth_percent="0.48"
+            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintEnd_toEndOf="@id/reportForm"
+            android:layout_marginTop="18dp"
+            app:layout_constraintTop_toTopOf="@id/reportForm"
+            />
+
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <ImageButton
+        android:id="@+id/dialogReportButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/btn_report"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@id/dialogReportAndBlockButton"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintStart_toStartOf="@id/reportContainer"
+        app:layout_constraintEnd_toEndOf="@id/reportContainer"
+        />
+    <ImageButton
+        android:id="@+id/dialogReportAndBlockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/btn_report_block"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="@id/reportContainer"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintStart_toStartOf="@id/reportContainer"
+        app:layout_constraintEnd_toEndOf="@id/reportContainer"/>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

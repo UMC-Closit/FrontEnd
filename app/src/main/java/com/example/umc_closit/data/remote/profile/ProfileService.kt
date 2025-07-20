@@ -103,11 +103,11 @@ interface ProfileService {
     fun getBlockedUsers(): Call<BlockedUserListResponse>
 
     @POST("/api/v1/users/block")
-    fun blockUser(@Body body: BlockRequest): Call<BaseResponse<Any>>
+    fun blockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
 
     @DELETE("/api/v1/users/block")
-    fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<Any>>
-
+    fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
+  
     @GET("/api/v1/users/block")
     fun checkUserBlocked(
         @Query("closit_id") clositId: String

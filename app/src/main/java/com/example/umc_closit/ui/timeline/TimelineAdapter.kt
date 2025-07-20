@@ -1,8 +1,11 @@
 package com.example.umc_closit.ui.timeline
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,10 +22,13 @@ import com.example.umc_closit.data.remote.timeline.BookmarkDeleteResponse
 import com.example.umc_closit.data.remote.timeline.BookmarkRequest
 import com.example.umc_closit.data.remote.timeline.LikeResponse
 import com.example.umc_closit.data.remote.timeline.PostPreview
+import com.example.umc_closit.databinding.DialogBlockRepBinding
+import com.example.umc_closit.databinding.DialogDelModBinding
 import com.example.umc_closit.databinding.ItemTimelineBinding
 import com.example.umc_closit.ui.profile.ProfileFragment
 import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
+import com.example.umc_closit.data.remote.post.PostDeleteResponse
 import com.example.umc_closit.utils.FileUtils
 import com.example.umc_closit.utils.TokenUtils
 
@@ -43,6 +49,9 @@ class   TimelineAdapter(
     override fun onBindViewHolder(holder: TimelineViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val item = timelineItems[position] ?: return
 
+        Log.d("TIMELINE_ADAPTER", "🎯 onBindViewHolder 호출 - position: $position")
+        Log.d("TIMELINE_ADAPTER", "📊 바인딩할 아이템: $item")
+
         with(holder.binding) {
             Glide.with(context).load(item.frontImage).into(ivImageBig)
             Glide.with(context).load(item.backImage).into(ivImageSmall)
@@ -50,6 +59,9 @@ class   TimelineAdapter(
 
             ivLike.setImageResource(if (item.isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
             ivSave.setImageResource(if (item.isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
+
+            // 좋아요 수 binding
+            likeCountNum.text = item.likeCount.toString()
 
             ivImageBig.setOnClickListener {
                 val intent = Intent(context, DetailActivity::class.java)
@@ -163,9 +175,17 @@ class   TimelineAdapter(
                         context = context
                     )
                 }
-
             }
 
+//            ivOption.setOnClickListener {
+//                val myClositId = TokenUtils.getClositId(context)
+//                val isMyPost = (item.clositId == myClositId)
+//                if (isMyPost) {
+//                    showDeleteModifyDialog(context, item.postId) {
+//                        timelineItems.removeAt(position)
+//                        notifyItemRemoved(position)
+//                    }
+//            }
 
             ivUserProfile.setOnClickListener {
                 val activity = context as? androidx.fragment.app.FragmentActivity
@@ -179,15 +199,96 @@ class   TimelineAdapter(
                     ?.commit()
             }
 
+//            ivOption.setOnClickListener {
+//                val myClositId = TokenUtils.getClositId(context) //나의 Id
+//                val isMyPost = (item.clositId == myClositId)
+//
+//                if (isMyPost) {
+//                    showDeleteModifyDialog(context)
+//                }
+//                else {
+//                    showBlockReportDialog(context)
+//                }
+//            }
 
         }
     }
 
     fun updateTimelineItems(updatedItems: List<PostPreview>) {
+        Log.d("TIMELINE_ADAPTER", "🔄 어댑터 데이터 업데이트")
+        Log.d("TIMELINE_ADAPTER", "📊 업데이트할 아이템 수: ${updatedItems.size}")
+        Log.d("TIMELINE_ADAPTER", "📊 기존 아이템 수: ${this.timelineItems.size}")
+        
         this.timelineItems.clear()
         this.timelineItems.addAll(updatedItems)
         notifyDataSetChanged()
+        
+        Log.d("TIMELINE_ADAPTER", "✅ 어댑터 업데이트 완료 - 총 아이템 수: ${this.timelineItems.size}")
     }
+
+    //삭제 수정 dialog 표시
+    fun showDeleteModifyDialog(context: Context) {
+        val dialog = Dialog(context)
+        val binding = DialogDelModBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명
+        dialog.show()
+
+        // 예시: 삭제 버튼 클릭 리스너
+        binding.deleteButton.setOnClickListener {
+            // 삭제 로직
+            dialog.dismiss()
+        }
+        // 예시: 수정 버튼 클릭 리스너
+        binding.modifyButton.setOnClickListener {
+            // 수정 로직
+            dialog.dismiss()
+        }
+    }
+
+
+    //차단, 신고 dialog 표시
+    fun showBlockReportDialog(context: Context) {
+        val dialog = Dialog(context)
+        val binding = DialogBlockRepBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        // 예시: 차단 버튼 클릭 리스너
+        binding.blockButton.setOnClickListener {
+            // 차단 보내기 로직
+            dialog.dismiss()
+        }
+        // 예시: 신고 버튼 클릭 리스너
+        binding.reportButton.setOnClickListener {
+            // 신고 로직
+            dialog.dismiss()
+        }
+    }
+//    fun deletePost(context: Context, postId: Int, onSuccess: () -> Unit) {
+//        val apiCall = { RetrofitClient.postService.deletePost(postId) }
+//        TokenUtils.handleTokenRefresh(
+//            call = apiCall(),
+//            onSuccess = { response ->
+//                if (response.isSuccess) {
+//                    Toast.makeText(context, "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+//                    onSuccess()
+//                } else {
+//                    Toast.makeText(context, "삭제 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+//                }
+//            },
+//            onFailure = { t ->
+//                Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+//            },
+//            retryCall = apiCall,
+//            context = context
+//        )
+//    }
+
+
+
+
 
     override fun getItemCount(): Int = timelineItems.size
 }

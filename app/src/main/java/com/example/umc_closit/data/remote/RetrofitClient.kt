@@ -3,6 +3,7 @@ package com.example.umc_closit.data.remote
 
 import ChallengeApiService
 import android.content.Context
+import android.util.Log
 import com.example.umc_closit.data.TodayClosetApiService
 import com.example.umc_closit.data.remote.auth.AuthService
 import com.example.umc_closit.data.remote.post.PostService
@@ -11,6 +12,7 @@ import com.example.umc_closit.data.remote.timeline.TimelineService
 import com.example.umc_closit.data.remote.profile.history.HistoryService
 import com.example.umc_closit.data.remote.battle.BattleApiService
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,8 +23,16 @@ object RetrofitClient {
     lateinit var retrofit: Retrofit
 
     fun init(context: Context) {
+        // 로깅 인터셉터 추가
+        val loggingInterceptor = HttpLoggingInterceptor { message ->
+            Log.d("API_RESPONSE", message)
+        }.apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
         val client = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(loggingInterceptor) // 로깅 인터셉터 추가
             .build()
 
         retrofit = Retrofit.Builder()
