@@ -3,21 +3,27 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+
+  <!-- 배경 사각형 (회색) -->
   <path
       android:pathData="M6,2.75L18,2.75A3.25,3.25 0,0 1,21.25 6L21.25,18A3.25,3.25 0,0 1,18 21.25L6,21.25A3.25,3.25 0,0 1,2.75 18L2.75,6A3.25,3.25 0,0 1,6 2.75z"
-      android:strokeWidth="1.5"
-      android:fillColor="#00000000"
-      android:strokeColor="#000000"/>
+      android:fillColor="#757575"
+      android:strokeWidth="0" />
+
+  <!-- 가로 막대 -->
   <path
       android:pathData="M9,12H15"
       android:strokeWidth="1.5"
-      android:fillColor="#00000000"
-      android:strokeColor="#000000"
-      android:strokeLineCap="round"/>
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent" />
+
+  <!-- 세로 막대 -->
   <path
       android:pathData="M12,9V15"
       android:strokeWidth="1.5"
-      android:fillColor="#00000000"
-      android:strokeColor="#000000"
-      android:strokeLineCap="round"/>
+      android:strokeColor="#FFFFFF"
+      android:strokeLineCap="round"
+      android:fillColor="@android:color/transparent" />
+
 </vector>

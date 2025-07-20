@@ -25,6 +25,7 @@ interface PostService {
     ): Response<PostDeleteResponse>
 
     @POST("/api/v1/posts")
+
     suspend fun uploadPost(
         @Body request: PostRequest
     ): Response<PostUploadResponse>
@@ -35,9 +36,16 @@ interface PostService {
         @Query("page") page: Int
     ): Call<RecentPostResponse>
 
+    @GET("/api/v1/posts/hashtag")
+    fun searchPostsByHashtag(
+        @Query("hashtag") hashtag: String,
+        @Query("page") page: Int
+    ): Call<HashtagSearchResponse>
+
     @POST("/api/v1/posts/presigned-url")
     suspend fun getPresignedUrls(
         @Body request: RequestBody
     ): PresignedUrlResponse
+
 }
 
