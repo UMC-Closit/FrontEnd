@@ -9,11 +9,13 @@ import android.widget.TextView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.battle.ChallengeBattlePreview
 import com.example.umc_closit.databinding.ItemChallengeBinding
+import com.example.umc_closit.utils.FileUtils
 
 class ChallengeAdapter(
     private val challengeList: List<ChallengeBattlePreview>,
@@ -29,7 +31,25 @@ class ChallengeAdapter(
             Glide.with(binding.root.context)
                 .load(challenge.firstPostFrontImage)
                 .placeholder(R.drawable.image_background)
-                .into(binding.leftItem)
+                .into(binding.ivImageBig)
+
+            Glide.with(binding.root.context)
+                .load(challenge.firstPostBackImage)
+                .placeholder(R.drawable.image_background)
+                .into(binding.ivImageSmall)
+
+            var isFrontImageBig = true
+            val fakeTagContainer = ConstraintLayout(binding.root.context)
+
+            binding.ivImageSmall.setOnClickListener {
+                FileUtils.swapImagesWithTagEffect(
+                    bigImageView = binding.ivImageBig,
+                    smallImageView = binding.ivImageSmall,
+                    tagContainer = fakeTagContainer
+                ) {
+                    isFrontImageBig = !isFrontImageBig
+                }
+            }
 
             // Challenge 제목 설정
             binding.challengeTitle.text = challenge.title
@@ -39,10 +59,11 @@ class ChallengeAdapter(
             Glide.with(binding.root.context)
                 .load(challenge.firstProfileImage)
                 .placeholder(R.drawable.ic_profile_placeholder)
+                .circleCrop()
                 .into(binding.profileImage)
 
             // 오른쪽 "도전하기" 카드 클릭 이벤트
-            binding.rightItem.root.setOnClickListener {
+            binding.clChallengeWrapper.setOnClickListener {
                 val intent = Intent(binding.root.context, NewChallengeActivity::class.java)
                 intent.putExtra("challenge_data", challenge)
                 binding.root.context.startActivity(intent)
@@ -57,7 +78,6 @@ class ChallengeAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // ❌ 잘못된 context 전달 제거
         holder.bind(challengeList[position])
     }
 

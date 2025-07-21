@@ -83,10 +83,6 @@ class NewChallengeDetailActivity : AppCompatActivity() {
      * 배틀 도전 API 호출
      */
     private fun uploadChallenge() {
-        // 현재 시간 포맷
-        val currentTime = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-            .format(Date())
-
         // BattleChallengeRequest 생성
         val request = BattleChallengeRequest(
             postId = postId
@@ -107,7 +103,7 @@ class NewChallengeDetailActivity : AppCompatActivity() {
                                 "배틀 도전 성공!",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            finish() // 성공 시 종료
+                            finish()
                         } else {
                             Toast.makeText(
                                 this@NewChallengeDetailActivity,
@@ -116,7 +112,10 @@ class NewChallengeDetailActivity : AppCompatActivity() {
                             ).show()
                         }
                     } else {
-                        Log.e("API_ERROR", "응답 실패: ${response.code()} - ${response.message()}")
+                        val errorBody = response.errorBody()?.string()
+                        Log.e("API_ERROR", "❌ 실패 응답 코드: ${response.code()} - ${response.message()}")
+                        Log.e("API_ERROR", "❌ 에러 바디: $errorBody")
+
                         Toast.makeText(
                             this@NewChallengeDetailActivity,
                             "도전 실패: 서버 에러",

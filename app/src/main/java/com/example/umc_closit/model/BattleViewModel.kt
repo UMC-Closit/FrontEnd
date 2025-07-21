@@ -1,19 +1,17 @@
 package com.example.umc_closit.data
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.MutableLiveData
+import BattleComment
+import CommentPostResult
+import CommentRequest
+import CommentResult
 import androidx.lifecycle.LiveData
-import com.example.umc_closit.data.entities.BattleItem
-import com.example.umc_closit.data.remote.battle.BattleComment
-import com.example.umc_closit.data.remote.battle.CommentResponse
-import com.example.umc_closit.data.remote.battle.CommentRequest
-import com.example.umc_closit.data.remote.battle.CommentPostResponse
-import com.example.umc_closit.data.remote.battle.DeleteCommentResponse
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.umc_closit.data.remote.BaseResponse
 import com.example.umc_closit.data.remote.RetrofitClient
-import retrofit2.Callback
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.*
 
 // BattleViewModel: 배틀 관련 상태 관리를 담당하는 ViewModel입니다.
 class BattleViewModel: ViewModel() {
@@ -53,8 +51,11 @@ class BattleViewModel: ViewModel() {
         _isLoading.value = true
 
         battleApiService.getBattleComments(battleId, page)
-            .enqueue(object : Callback<CommentResponse> {
-                override fun onResponse(call: Call<CommentResponse>, response: Response<CommentResponse>) {
+            .enqueue(object : Callback<BaseResponse<CommentResult>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<CommentResult>>,
+                    response: Response<BaseResponse<CommentResult>>
+                ) {
                     _isLoading.value = false
                     if (response.isSuccessful && response.body()?.isSuccess == true) {
                         _comments.value = response.body()?.result?.battleCommentPreviewList ?: emptyList()
@@ -63,7 +64,7 @@ class BattleViewModel: ViewModel() {
                     }
                 }
 
-                override fun onFailure(call: Call<CommentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<CommentResult>>, t: Throwable) {
                     _isLoading.value = false
                     _errorMessage.value = "네트워크 오류: ${t.message}"
                 }
@@ -71,22 +72,25 @@ class BattleViewModel: ViewModel() {
     }
 
     // 댓글 작성 메서드
-    fun postComment(battleId: Long, content: String) {
-        val commentRequest = CommentRequest(content)
+    fun postComment(battleId: Long, content: String, parentCommentId: Long? = null) {
+        val commentRequest = CommentRequest(content, parentCommentId ?: 0L)
 
         battleApiService.postBattleComment(battleId, commentRequest)
-            .enqueue(object : Callback<CommentPostResponse> {
-                override fun onResponse(call: Call<CommentPostResponse>, response: Response<CommentPostResponse>) {
+            .enqueue(object : Callback<BaseResponse<CommentPostResult>> {
+                override fun onResponse(
+                    call: Call<BaseResponse<CommentPostResult>>,
+                    response: Response<BaseResponse<CommentPostResult>>
+                ) {
                     if (response.isSuccessful && response.body()?.isSuccess == true) {
                         _isCommentPosted.value = true
-                        fetchComments(battleId, page = 0) // 댓글 작성 후 리스트 새로고침
+                        fetchComments(battleId, page = 0)
                     } else {
                         _isCommentPosted.value = false
                         _errorMessage.value = "댓글 작성 실패: ${response.body()?.message}"
                     }
                 }
 
-                override fun onFailure(call: Call<CommentPostResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<CommentPostResult>>, t: Throwable) {
                     _isCommentPosted.value = false
                     _errorMessage.value = "네트워크 오류: ${t.message}"
                 }
@@ -98,27 +102,26 @@ class BattleViewModel: ViewModel() {
         _isLoading.value = true
 
         battleApiService.deleteBattleComment(battleId, commentId)
-            .enqueue(object : Callback<DeleteCommentResponse> {
+            .enqueue(object : Callback<BaseResponse<String>> {
                 override fun onResponse(
-                    call: Call<DeleteCommentResponse>,
-                    response: Response<DeleteCommentResponse>
+                    call: Call<BaseResponse<String>>,
+                    response: Response<BaseResponse<String>>
                 ) {
                     _isLoading.value = false
                     if (response.isSuccessful && response.body()?.isSuccess == true) {
                         _isCommentDeleted.value = true
-                        fetchComments(battleId, page = 0) // 댓글 리스트 새로고침
+                        fetchComments(battleId, page = 0)
                     } else {
                         _isCommentDeleted.value = false
                         _errorMessage.value = "댓글 삭제 실패: ${response.body()?.message}"
                     }
                 }
 
-                override fun onFailure(call: Call<DeleteCommentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<BaseResponse<String>>, t: Throwable) {
                     _isLoading.value = false
                     _isCommentDeleted.value = false
                     _errorMessage.value = "네트워크 오류: ${t.message}"
                 }
             })
     }
-
 }

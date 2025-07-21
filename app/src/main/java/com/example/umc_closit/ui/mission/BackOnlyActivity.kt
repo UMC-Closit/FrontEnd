@@ -89,6 +89,8 @@ class BackOnlyActivity : AppCompatActivity() {
             originalBitmap = rotateBitmapIfNeeded(path)
             originalBitmap?.let { bmp ->
                 binding.imageViewBackOnly.setImageBitmap(bmp)
+                // 배경 이미지에도 동일한 이미지 설정
+                binding.imageViewBackOnlyBackground.setImageBitmap(bmp)
             }
         }
 

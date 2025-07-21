@@ -50,7 +50,7 @@ interface ProfileService {
         @Body request: EditProfileRequest
     ): Call<ProfileUserResponse>
 
-    @POST("/api/auth/users/profile-image/presigned-url")
+    @POST("/api/v1/users/profile-image/presigned-url")
     fun getPresignedProfileUrl(@Body body: RequestBody): Call<PresignedProfileUrlResponse>
 
     // highlight
@@ -107,5 +107,10 @@ interface ProfileService {
 
     @DELETE("/api/v1/users/block")
     fun unblockUser(@Body body: BlockRequest): Call<BaseResponse<String>>
+  
+    @GET("/api/v1/users/block")
+    fun checkUserBlocked(
+        @Query("closit_id") clositId: String
+    ): Call<BlockStatusResponse>
 
 }

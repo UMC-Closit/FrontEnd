@@ -78,7 +78,6 @@ class HistoryActivity : AppCompatActivity() {
                 Log.e("HISTORY", "API 실패: ${t.message}")
                 isLoading = false
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -109,7 +108,6 @@ class HistoryActivity : AppCompatActivity() {
             onFailure = { t ->
                 Log.e("HISTORY", "포인트 컬러 API 실패: ${t.message}")
             },
-            retryCall = apiCall,
             context = this
         )
 

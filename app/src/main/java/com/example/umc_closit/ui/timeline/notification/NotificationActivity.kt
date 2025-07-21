@@ -94,7 +94,6 @@ class NotificationActivity : AppCompatActivity() {
                 Toast.makeText(this, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 isLoading = false
             },
-            retryCall = apiCall,
             context = this
         )
     }
@@ -139,7 +138,6 @@ class NotificationActivity : AppCompatActivity() {
             onFailure = { t ->
                 Toast.makeText(this, "알림 삭제 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = this
         )
     }

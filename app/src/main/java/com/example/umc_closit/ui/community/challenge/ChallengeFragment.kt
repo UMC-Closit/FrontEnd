@@ -50,7 +50,8 @@ class ChallengeFragment : Fragment() {
 
         // createButton 클릭 시 배틀 챌린지 API 호출 (더미 데이터로)
         binding.createButton.setOnClickListener {
-            uploadChallenge(battleId = 1, postId = 123)
+            val intent = Intent(requireContext(), NewBattleActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -75,7 +76,6 @@ class ChallengeFragment : Fragment() {
             onFailure = { error ->
                 Toast.makeText(requireContext(), "네트워크 오류: ${error.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = { apiService.getChallengeBattles(page = 0) },
             context = requireContext()
         )
     }
@@ -112,7 +112,6 @@ class ChallengeFragment : Fragment() {
                 Toast.makeText(requireContext(), "요청 실패: ${error.message}", Toast.LENGTH_SHORT).show()
                 println("요청 실패: ${error.message}")
             },
-            retryCall = originalCall,
             context = requireContext()
         )
     }

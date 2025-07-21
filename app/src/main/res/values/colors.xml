@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF010101</color>
+    <color name="black_2">#FF1C1C1C</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="white_default">#FCFCFD</color>
@@ -30,6 +31,8 @@
     <color name="auth_gray_bright">#BABECD</color>
     <color name="check_gray_bright">#FAFAFA</color>
     <color name="auth_gray_dark">#797979</color>
+
+    <color name="battle_light_gray">#F2F2F3</color>
 
     <color name="light_gray">#D3D3D3</color>
     <color name="white_profile_bg">#FAFAFA</color>

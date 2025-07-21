@@ -1,5 +1,7 @@
 package com.example.umc_closit.ui.battle.comment
 
+import BattleComment
+import CommentRequest
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,8 +14,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.data.remote.RetrofitClient
-import com.example.umc_closit.data.remote.battle.BattleComment
-import com.example.umc_closit.data.remote.battle.CommentRequest
 import com.example.umc_closit.databinding.FragmentCommentBottomSheetBinding
 import com.example.umc_closit.utils.TokenUtils
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -27,6 +27,8 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
     private var battleId: Long = -1
     private var page: Int = 0
     private var hasNext = true
+
+    private var replyingToCommentId: Long? = null
 
     private val handler = Handler(Looper.getMainLooper())
     private val timeUpdateRunnable = object : Runnable {
@@ -47,7 +49,7 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
     ): View {
         binding = FragmentCommentBottomSheetBinding.inflate(inflater, container, false)
 
-        commentAdapter = BattleCommentAdapter(comments, ::deleteComment)
+        commentAdapter = BattleCommentAdapter(comments, ::deleteComment, ::onReplyClick)
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.commentsRecyclerView.adapter = commentAdapter
 
@@ -74,103 +76,125 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
 
     private var isLoading = false
 
-    private fun loadComments() {
-        if (!hasNext || isLoading) return
-        isLoading = true
+    private fun onReplyClick(comment: BattleComment) {
+        replyingToCommentId = comment.battleCommentId.toLong()
 
-        Log.d("BATTLE_COMMENT_LOAD", "댓글 로드 시작, 현재 페이지: $page")
+        // "@닉네임 " 자동입력
+        binding.commentEditText.setText("@${comment.clositId} ")
+        binding.commentEditText.setSelection(binding.commentEditText.text.length)
+
+        // 키보드 포커스
+        binding.commentEditText.requestFocus()
+        val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.showSoftInput(binding.commentEditText, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun loadComments() {
+        if (!hasNext || isLoading) {
+            Log.d("BATTLE_COMMENT_LOAD", "로딩 중단 - hasNext: $hasNext, isLoading: $isLoading")
+            return
+        }
+        isLoading = true
+        Log.d("BATTLE_COMMENT_LOAD", "댓글 로딩 시작 - page: $page")
 
         val apiCall = { RetrofitClient.battleApiService.getBattleComments(battleId, page) }
 
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
-                if (response.isSuccess) {
-                    Log.d("BATTLE_COMMENT_LOAD", "불러온 댓글 개수: ${response.result.battleCommentPreviewList.size}")
+                Log.d("BATTLE_COMMENT_LOAD", "응답 성공 - isSuccess: ${response.isSuccess}, message: ${response.message}")
 
-                    comments.addAll(response.result.battleCommentPreviewList)
+                val result = response.result
+                if (response.isSuccess && result != null) {
+                    val newComments = result.battleCommentPreviewList ?: emptyList()
+                    val sorted = sortCommentsWithReplies(newComments)
+
+                    comments.clear()
+                    comments.addAll(sorted)
                     commentAdapter.notifyDataSetChanged()
-                    hasNext = response.result.hasNext
+
+                    hasNext = result.hasNext
                     page++
 
                     updateNoCommentTextViewVisibility()
                 } else {
-                    Log.e("BATTLE_COMMENT_LOAD", "댓글 불러오기 실패: ${response.message}")
+                    Log.e("BATTLE_COMMENT_LOAD", "댓글 불러오기 실패 - message: ${response.message}, result: $result")
                 }
                 isLoading = false
             },
             onFailure = { t ->
-                Log.e("BATTLE_COMMENT_LOAD", "댓글 불러오기 에러: ${t.message}")
+                Log.e("BATTLE_COMMENT_LOAD", "댓글 불러오기 네트워크 오류 - ${t.message}")
                 isLoading = false
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
 
     private fun postComment() {
         val content = binding.commentEditText.text.toString().trim()
-        if (content.isEmpty()) return
+        if (content.isEmpty()) {
+            Log.d("BATTLE_COMMENT", "입력된 내용이 비어 있음, 요청 중단")
+            return
+        }
 
-        val apiCall = { RetrofitClient.battleApiService.postBattleComment(battleId, CommentRequest(content)) }
         if (battleId <= 0) {
+            Log.e("BATTLE_COMMENT", "유효하지 않은 battleId: $battleId")
             Toast.makeText(context, "유효하지 않은 배틀 ID입니다.", Toast.LENGTH_SHORT).show()
             return
         }
-        Log.d("POST_COMMENT", "Posting comment: $content to battleId: $battleId")
 
+        val parentId = replyingToCommentId
+        Log.d("BATTLE_COMMENT", "댓글 작성 요청 준비 - content: \"$content\", battleId: $battleId, parentId: ${parentId ?: "없음"}")
 
+        val apiCall = {
+            RetrofitClient.battleApiService.postBattleComment(
+                battleId,
+                CommentRequest(content, parentId)
+            )
+        }
 
         binding.commentEditText.text.clear()
+        replyingToCommentId = null
 
         TokenUtils.handleTokenRefresh(
             call = apiCall(),
             onSuccess = { response ->
-                Log.d("POST_COMMENT", "Comment post success: ${response.isSuccess}")
+                Log.d("BATTLE_COMMENT", "응답 수신 - isSuccess: ${response.isSuccess}, message: ${response.message}")
+
                 if (response.isSuccess) {
-                   // val myClositId = TokenUtils.getClositId(requireContext()) ?: ""
+                    val result = response.result
+                    Log.d("BATTLE_COMMENT", "작성된 댓글 ID: ${result.battleCommentId}, 작성자: ${result.clositId}, 작성시각: ${result.createdAt}")
+
                     val newComment = BattleComment(
-                        battleCommentId = response.result.battleCommentId,
-                        clositId = response.result.clositId,
+                        battleCommentId = result.battleCommentId,
+                        clositId = result.clositId,
                         content = content,
-                        parentBattleCommentId = 0,
-                        thumbnail = "string",
-                        createdAt = response.result.createdAt
+                        parentBattleCommentId = parentId ?: 0,
+                        thumbnail = "string", // 실제 썸네일로 대체 필요
+                        createdAt = result.createdAt
                     )
-                    // 댓글이 없었을 때 첫 댓글인 경우
-                    if (comments.isEmpty()) {
-                        comments.add(newComment)
-                        commentAdapter.notifyItemInserted(0)
-                        binding.commentsRecyclerView.scrollToPosition(0)
-                        commentAdapter.notifyDataSetChanged() // <- 이거 필수
-                        Log.d("COMMENT_LOAD", "불러온 댓글 개수: ${comments.size}")
 
-                        // 강제로 뷰 상태 업데이트 (이게 중요함)
-                        updateNoCommentTextViewVisibility()
+                    val insertIndex = if (parentId != null && parentId != 0L) {
+                        comments.indexOfLast { it.battleCommentId.toLong() == parentId } + 1
                     } else {
-                        // 이미 댓글이 있었던 경우
-                        comments.add(0, newComment)
-                        commentAdapter.notifyItemInserted(0)
-                        binding.commentsRecyclerView.scrollToPosition(0)
+                        comments.indexOfLast { it.parentBattleCommentId == 0L } + 1
                     }
-                    /*
-                    comments.add(0, newComment)
-                    commentAdapter.notifyItemInserted(0)
-                    binding.commentsRecyclerView.scrollToPosition(0)
+                    comments.add(newComment)
+                    val sorted = sortCommentsWithReplies(comments)
+                    comments.clear()
+                    comments.addAll(sorted)
+                    commentAdapter.notifyDataSetChanged()
+
                     updateNoCommentTextViewVisibility()
-
-                     */
                 } else {
-                    Log.e("POST_COMMENT", "API responded with failure: ${response.message}")
-                    Toast.makeText(context, "댓글 작성 실패: ${response.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("BATTLE_COMMENT", "API 실패 - ${response.message}")
+                    Toast.makeText(context, "댓글 작성 실패: ${response}", Toast.LENGTH_SHORT).show()
                 }
-
             },
             onFailure = { t ->
-                Toast.makeText(context, "댓글 작성 실패: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("POST_COMMENT", "API 호출 실패: ${t.message}")
+                Log.e("BATTLE_COMMENT", "네트워크 오류 - ${t}")
+                Toast.makeText(context, "댓글 작성 실패: ${t}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -193,7 +217,6 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
             onFailure = { t ->
                 Toast.makeText(context, "댓글 삭제 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             },
-            retryCall = apiCall,
             context = requireContext()
         )
     }
@@ -207,6 +230,22 @@ class BattleCommentBottomSheetFragment : BottomSheetDialogFragment() {
             binding.commentsRecyclerView.visibility = View.VISIBLE
         }
     }
+
+    private fun sortCommentsWithReplies(comments: List<BattleComment>): List<BattleComment> {
+        val result = mutableListOf<BattleComment>()
+        val commentMap = comments.groupBy { it.parentBattleCommentId }
+
+        fun addReplies(parentId: Long) {
+            commentMap[parentId]?.forEach { comment ->
+                result.add(comment)
+                addReplies(comment.battleCommentId.toLong())
+            }
+        }
+
+        addReplies(0L)
+        return result
+    }
+
 
     companion object {
         fun newInstance(battleId: Long): BattleCommentBottomSheetFragment {

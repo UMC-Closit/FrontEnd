@@ -1,12 +1,3 @@
-package com.example.umc_closit.data.remote.battle
-
-data class CommentResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: CommentResult
-)
-
 data class CommentResult(
     val battleCommentPreviewList: List<BattleComment>,
     val listSize: Int,
@@ -25,26 +16,12 @@ data class BattleComment(
 )
 
 data class CommentRequest(
-    val content: String
-)
-
-// 댓글 작성 응답 모델
-data class CommentPostResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: CommentPostResult
+    val content: String,
+    val parentCommentId: Long? = null
 )
 
 data class CommentPostResult(
     val battleCommentId: Int,
     val clositId: String,
     val createdAt: String
-)
-
-data class DeleteCommentResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: String
 )

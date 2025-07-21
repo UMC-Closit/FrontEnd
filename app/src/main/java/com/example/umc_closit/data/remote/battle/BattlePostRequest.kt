@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName
 
 data class BattlePostRequest(
     @SerializedName("postId") val postId: Int,
-    @SerializedName("title") val title: String
+    @SerializedName("title") val title: String,
+    @SerializedName("description") val description: String
 )
 
 data class VoteRequest(

@@ -59,6 +59,7 @@ class CommunityFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        android.util.Log.d("CommunityFragment", "CommunityFragment onViewCreated 호출됨")
 
         setupClickListeners()
         setupTodayClosetRecyclerView()
