@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp">
+
+    <!-- 동그란 프로필 이미지 -->
+    <ImageView
+        android:id="@+id/img_profile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/ic_profile"
+        android:contentDescription="프로필"
+        android:layout_marginEnd="12dp" />
+
+    <!-- 이름 + 조회수 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 이름 -->
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로렌"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#222222" />
+
+        <!-- 조회수 -->
+        <TextView
+            android:id="@+id/tv_views"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="288 조회수"
+            android:textSize="12sp"
+            android:textColor="#AAAAAA"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+</LinearLayout>
