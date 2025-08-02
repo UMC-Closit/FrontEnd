@@ -29,25 +29,6 @@ class ChallengePreviewAdapter(
                 .placeholder(R.drawable.image_background)
                 .into(binding.ivImageBig)
 
-            Glide.with(binding.root.context)
-                .load(challenge.firstPostBackImage)
-                .placeholder(R.drawable.image_background)
-                .into(binding.ivImageSmall)
-
-            var isFrontImageBig = true
-            val fakeTagContainer = ConstraintLayout(binding.root.context)
-
-            // 이미지 스왑 처리
-            binding.ivImageSmall.setOnClickListener {
-                FileUtils.swapImagesWithTagEffect(
-                    bigImageView = binding.ivImageBig,
-                    smallImageView = binding.ivImageSmall,
-                    tagContainer = fakeTagContainer
-                ) {
-                    isFrontImageBig = !isFrontImageBig
-                }
-            }
-
             // 클릭 시 NewChallengeActivity로 이동
             binding.clChallengeWrapper.setOnClickListener {
                 val intent = Intent(binding.root.context, NewChallengeActivity::class.java)

@@ -212,7 +212,7 @@ class PostDetailFragment : Fragment() {
 
     private fun createHighlight(postId: Int) {
         val apiCall = {
-            RetrofitClient.profileService.createHighlight(mapOf("post" to postId))
+            RetrofitClient.profileService.createHighlight(mapOf("postId" to postId))
         }
 
         TokenUtils.handleTokenRefresh(

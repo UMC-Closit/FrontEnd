@@ -19,6 +19,7 @@ import com.example.umc_closit.data.remote.battle.LikeResponse
 import com.example.umc_closit.data.remote.battle.VoteResponse
 import com.example.umc_closit.databinding.ItemBattleMainBinding
 import com.example.umc_closit.ui.battle.comment.BattleCommentBottomSheetFragment
+import com.example.umc_closit.utils.FileUtils
 import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -88,6 +89,31 @@ class BattlePageAdapter(
                     (context as AppCompatActivity).supportFragmentManager,
                     "comment"
                 )
+            }
+
+            var isFrontImageLeft = true
+            var isFrontImageRight = true
+
+            // 왼쪽 이미지 스왑
+            binding.ivLeftSmall.setOnClickListener {
+                FileUtils.swapImagesWithTagEffect(
+                    bigImageView = binding.ivLeftBig,
+                    smallImageView = binding.ivLeftSmall,
+                    tagContainer = binding.clLeftTagContainer
+                ) {
+                    isFrontImageLeft = !isFrontImageLeft
+                }
+            }
+
+            // 오른쪽 이미지 스왑
+            binding.ivRightSmall.setOnClickListener {
+                FileUtils.swapImagesWithTagEffect(
+                    bigImageView = binding.ivRightBig,
+                    smallImageView = binding.ivRightSmall,
+                    tagContainer = binding.clRightTagContainer
+                ) {
+                    isFrontImageRight = !isFrontImageRight
+                }
             }
 
             val isLiked = item.liked ?: false
