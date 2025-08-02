@@ -48,9 +48,9 @@ class BattleFragment : Fragment() {
                 setTextColor(ContextCompat.getColor(requireContext(), R.color.light_gray))
                 typeface = Typeface.DEFAULT
                 gravity = Gravity.BOTTOM
-                setPadding(0, 0, 0, 0) // ✅ 패딩 제거
-                minHeight = 0 // ✅ 최소 높이 제거
-                setLineSpacing(0f, 1f) // ✅ 줄 간격 줄이기
+                setPadding(0, 0, 0, 0)
+                minHeight = 0
+                setLineSpacing(0f, 1f)
             }
             tab.customView = textView
         }.attach()
@@ -71,7 +71,7 @@ class BattleFragment : Fragment() {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val textView = tab.customView as? TextView
                 textView?.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                textView?.setTypeface(null, Typeface.BOLD)
+                textView?.setTypeface(null, Typeface.NORMAL)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {

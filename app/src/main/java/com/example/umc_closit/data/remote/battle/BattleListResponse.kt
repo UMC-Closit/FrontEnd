@@ -1,5 +1,4 @@
 package com.example.umc_closit.data.remote.battle
-
 import com.google.gson.annotations.SerializedName
 
 data class BattleListResponse(
@@ -19,19 +18,19 @@ data class BattleListResult(
 
 data class BattlePreview(
     @SerializedName("battleId") val battleId: Long,
+    @SerializedName("likeCount") val likeCount: Int,
     @SerializedName("title") val title: String,
     @SerializedName("firstClositId") val firstClositId: String,
     @SerializedName("firstProfileImage") val firstProfileImage: String,
     @SerializedName("firstPostId") val firstPostId: Int,
     @SerializedName("firstPostFrontImage") val firstPostFrontImage: String,
     @SerializedName("firstPostBackImage") val firstPostBackImage: String,
-    @SerializedName("firstVotingRate") val firstVotingRate: Float,
+    @SerializedName("firstVotingCnt") val firstVotingCnt: Int,
     @SerializedName("secondClositId") val secondClositId: String,
     @SerializedName("secondProfileImage") val secondProfileImage: String,
     @SerializedName("secondPostId") val secondPostId: Int,
     @SerializedName("secondPostFrontImage") val secondPostFrontImage: String,
     @SerializedName("secondPostBackImage") val secondPostBackImage: String,
-    @SerializedName("secondVotingRate") val secondVotingRate: Float,
+    @SerializedName("secondVotingCnt") val secondVotingCnt: Int,
     @SerializedName("liked") val liked: Boolean
 )
-

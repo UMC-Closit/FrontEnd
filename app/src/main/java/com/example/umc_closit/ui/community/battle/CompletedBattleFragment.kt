@@ -10,10 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.Community.BattlePageAdapter
-import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.BattleItem
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.battle.BattleListResponse
+import com.example.umc_closit.data.remote.battle.BattlePreview
 import com.example.umc_closit.databinding.FragmentCompletedBattleBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,7 +24,7 @@ class CompletedBattleFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var battleAdapter: BattlePageAdapter
-    private val battleList = mutableListOf<BattleItem>()
+    private val battleList = mutableListOf<BattlePreview>()
 
     private var isLoading = false
     private var currentPage = 0
@@ -73,7 +72,6 @@ class CompletedBattleFragment : Fragment() {
                 response: Response<BattleListResponse>
             ) {
                 isLoading = false
-
                 val battleResponse = response.body()
 
                 if (response.isSuccessful && battleResponse != null && battleResponse.isSuccess) {
@@ -83,26 +81,30 @@ class CompletedBattleFragment : Fragment() {
                     if (!battles.isNullOrEmpty()) {
                         binding.tvNobattle.visibility = View.GONE
                         battleList.addAll(battles.map { preview ->
-                            BattleItem(
-                                id = preview.battleId.toInt(),
+                            BattlePreview(
                                 battleId = preview.battleId,
-                                userProfileUrl = preview.firstProfileImage,
-                                userName = preview.firstClositId,
-                                battleLikeId = 0,
-                                leftPostId = preview.firstPostId,
-                                rightPostId = preview.secondPostId,
-                                leftPostImageUrl = preview.firstPostFrontImage,
-                                rightPostImageUrl = preview.secondPostFrontImage
+                                likeCount = preview.likeCount,
+                                title = preview.title,
+                                firstClositId = preview.firstClositId,
+                                firstProfileImage = preview.firstProfileImage,
+                                firstPostId = preview.firstPostId,
+                                firstPostFrontImage = preview.firstPostFrontImage,
+                                firstPostBackImage = preview.firstPostBackImage,
+                                secondPostId = preview.secondPostId,
+                                secondPostFrontImage = preview.secondPostFrontImage,
+                                secondPostBackImage = preview.secondPostBackImage,
+                                firstVotingCnt = preview.firstVotingCnt,
+                                secondVotingCnt = preview.secondVotingCnt,
+                                secondClositId = preview.secondClositId,
+                                secondProfileImage = preview.secondProfileImage,
+                                liked = preview.liked
                             )
                         })
                         battleAdapter.notifyDataSetChanged()
 
-                        // 더 이상 불러올 게 없는 경우
-                        if (battles.size < 10) isLastPage = true // 한 페이지에 10개라 가정
+                        if (battles.size < 10) isLastPage = true
                     } else {
-                        if (page == 0) {
-                            binding.tvNobattle.visibility = View.VISIBLE
-                        }
+                        if (page == 0) binding.tvNobattle.visibility = View.VISIBLE
                         isLastPage = true
                     }
                 } else {
