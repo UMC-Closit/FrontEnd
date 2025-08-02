@@ -1,24 +1,23 @@
 package com.example.umc_closit.Community
 
-import android.animation.ValueAnimator
 import android.content.Context
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.BattleItem
-import com.example.umc_closit.databinding.ItemBattleMainBinding
-import com.example.umc_closit.data.BattleViewModel
+import com.example.umc_closit.model.BattleViewModel
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.battle.BattlePreview
 import com.example.umc_closit.data.remote.battle.LikeResponse
 import com.example.umc_closit.data.remote.battle.VoteResponse
-import com.example.umc_closit.ui.timeline.comment.CommentBottomSheetFragment
+import com.example.umc_closit.databinding.ItemBattleMainBinding
 import com.example.umc_closit.ui.battle.comment.BattleCommentBottomSheetFragment
 import com.example.umc_closit.utils.TokenUtils
 import retrofit2.Call
@@ -27,7 +26,7 @@ import retrofit2.Response
 
 class BattlePageAdapter(
     private val context: Context,
-    private var battleItems: MutableList<BattleItem>
+    private var battleItems: MutableList<BattlePreview>
 ) : RecyclerView.Adapter<BattlePageAdapter.ViewHolder>() {
 
     // ViewModelProvider 수정: AndroidX Lifecycle 방식
@@ -49,30 +48,41 @@ class BattlePageAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = battleItems[position]
+        val binding = holder.binding
 
-        with(holder.binding) {
+        with(binding) {
+
+            tvTitle.text = item.title
+
+            Glide.with(context).load(item.firstPostBackImage).into(ivLeftSmall)
+            Glide.with(context).load(item.firstPostFrontImage).into(ivLeftBig)
+            Glide.with(context).load(item.secondPostBackImage).into(ivRightSmall)
+            Glide.with(context).load(item.secondPostFrontImage).into(ivRightBig)
+
+            tvLeftId.text = item.firstClositId
+            tvRightId.text = item.secondClositId
+
+            tvLikeCount.text = item.likeCount.toString()
+
+            val into = Glide.with(context)
+                .load(item.firstProfileImage)
+                .placeholder(R.drawable.img_profile_user)
+                .error(R.drawable.img_profile_user)
+                .centerCrop()
+                .circleCrop()
+                .into(ivLeftProfile)
 
             Glide.with(context)
-                .load(item.leftPostImageUrl)  // leftPostImageUrl 필드 추가 필요
-                .placeholder(R.drawable.img_gray_square)
-                .error(R.drawable.img_gray_square)
+                .load(item.secondProfileImage)
+                .placeholder(R.drawable.img_profile_user)
+                .error(R.drawable.img_profile_user)
                 .centerCrop()
-                .into(leftItem)
+                .circleCrop()
+                .into(ivRightProfile)
 
-            Glide.with(context)
-                .load(item.rightPostImageUrl)  // rightPostImageUrl 필드 추가 필요
-                .placeholder(R.drawable.img_gray_square)
-                .error(R.drawable.img_gray_square)
-                .centerCrop()
-                .into(rightItem)
+            tvLeftId.text = "Left: ${item.battleId}"
+            tvRightId.text = "Right: ${item.battleId}"
 
-            // 좌측 battleID 표시
-            tvLeftVote.text = "Left: ${item.battleId}"
-
-            // 우측 battleID 표시
-            tvRightVote.text = "Right: ${item.battleId}"
-
-            // 댓글 클릭 시 CommentBottomSheetFragment 호출
             ivComment.setOnClickListener {
                 BattleCommentBottomSheetFragment.newInstance(item.battleId).show(
                     (context as AppCompatActivity).supportFragmentManager,
@@ -80,67 +90,54 @@ class BattlePageAdapter(
                 )
             }
 
-            // 좋아요 상태 반영
-            val isLiked = battleViewModel.getLikeStatus(item.id) ?: false
-            ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
+            val isLiked = item.liked ?: false
+            ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off_clg)
 
-            // 좋아요 버튼 클릭 이벤트
             ivLike.setOnClickListener {
                 val newLikeState = !isLiked
-                battleViewModel.updateLikeStatus(item.id, newLikeState)
-                ivLike.setImageResource(if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off)
+                battleViewModel.updateLikeStatus(item.battleId.toInt(), newLikeState)
+                ivLike.setImageResource(if (newLikeState) R.drawable.ic_like_on else R.drawable.ic_like_off_clg)
 
                 if (newLikeState) {
                     apiService.addBattleLike(item.battleId).enqueue(createLikeCallback("좋아요!"))
                 } else {
-                    apiService.removeBattleLike(item.battleLikeId)
-                        .enqueue(createLikeCallback("좋아요 취소!"))
-
+                    apiService.removeBattleLike(item.battleId).enqueue(createLikeCallback("좋아요 취소!"))
                 }
             }
 
+            // 투표 클릭 이벤트 처리
+            leftArea.setOnClickListener {
+                sendVote(item.battleId, item.firstPostId, binding)
+            }
 
-
-            // 투표 버튼 클릭 이벤트
-            tvLeftVote.setOnClickListener { sendVote(item.battleId, item.leftPostId, voteProgressBar) }
-            tvRightVote.setOnClickListener { sendVote(item.battleId, item.rightPostId, voteProgressBar) }
+            rightArea.setOnClickListener {
+                sendVote(item.battleId, item.secondPostId, binding)
+            }
         }
     }
 
     /**
      * 투표 요청 처리 (TokenUtils 적용)
      */
-    private fun sendVote(battleId: Long, postId: Int, progressBar: ProgressBar) {
+    private fun sendVote(battleId: Long, postId: Int, binding: ItemBattleMainBinding) {
         val requestBody = mapOf("postId" to postId)
 
         TokenUtils.handleTokenRefresh(
-            call = apiService.voteBattle(battleId, requestBody),  // 변경된 부분: battleId를 PathVariable로 전달
+            call = apiService.voteBattle(battleId, requestBody),
             onSuccess = { voteResponse: VoteResponse ->
                 if (voteResponse.isSuccess) {
-                    val firstVotingRate = voteResponse.result?.firstVotingRate?.toDouble() ?: 0.0
-                    val secondVotingRate = voteResponse.result?.secondVotingRate?.toDouble() ?: 0.0
-                    val totalVotes = firstVotingRate + secondVotingRate
+                    val firstVotingRate = voteResponse.result?.firstVotingRate?.toFloat() ?: 0f
+                    val secondVotingRate = voteResponse.result?.secondVotingRate?.toFloat() ?: 0f
+                    val total = firstVotingRate + secondVotingRate
 
-                    val progress = if (totalVotes > 0) {
-                        ((firstVotingRate * 100.0) / totalVotes).toInt()  // 결과를 Int로 변환
-                    } else {
-                        50  // 기본값
+                    if (total > 0f) {
+                        val leftRatio = firstVotingRate / total
+                        animateVoteRatio(binding, leftRatio)
                     }
 
-
-                    animateProgress(progressBar, progress)
-
-                    Toast.makeText(
-                        context,
-                        "투표 성공! ${firstVotingRate}% vs ${secondVotingRate}%",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "투표 성공! ${firstVotingRate}% vs ${secondVotingRate}%", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(
-                        context,
-                        "투표 실패: ${voteResponse.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, "투표 실패: ${voteResponse.message}", Toast.LENGTH_SHORT).show()
                 }
             },
             onFailure = { throwable ->
@@ -151,16 +148,18 @@ class BattlePageAdapter(
         )
     }
 
+    private fun animateVoteRatio(binding: ItemBattleMainBinding, leftRatio: Float) {
+        val rightRatio = 1f - leftRatio
+        val constraintLayout = binding.clVote
 
-    /**
-     * ProgressBar 애니메이션
-     */
-    private fun animateProgress(progressBar: ProgressBar, target: Int) {
-        ValueAnimator.ofInt(progressBar.progress, target).apply {
-            duration = 800L
-            addUpdateListener { progressBar.progress = it.animatedValue as Int }
-            start()
-        }
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(constraintLayout)
+
+        constraintSet.constrainPercentWidth(R.id.left_area, leftRatio)
+        constraintSet.constrainPercentWidth(R.id.right_area, rightRatio)
+
+        TransitionManager.beginDelayedTransition(constraintLayout)
+        constraintSet.applyTo(constraintLayout)
     }
 
     /**

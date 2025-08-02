@@ -3,7 +3,6 @@ package com.example.umc_closit.data.remote.battle
 import CommentPostResult
 import CommentRequest
 import CommentResult
-import com.example.umc_closit.data.BattlePostRequest
 import com.example.umc_closit.data.BattlePostResponse
 import com.example.umc_closit.data.remote.BaseResponse
 import retrofit2.Call
@@ -59,12 +58,12 @@ interface BattleApiService {
     ): Call<DeleteBattleResponse>
 
     // 배틀 like API
-    @POST("/api/v1/communities/battle/like/{battleId}")
+    @POST("/api/v1/communities/battle/{battleId}/likes")
     fun addBattleLike(@Path("battleId") battleId: Long): Call<LikeResponse>
 
     // 배틀 like 취소 API
-    @DELETE("/api/v1/communities/battle/like/{battleLikeId}")
-    fun removeBattleLike(@Path("battleLikeId") battleLikeId: Int): Call<LikeResponse>
+    @DELETE("/api/v1/communities/battle/{battleId}/likes")
+    fun removeBattleLike(@Path("battleId") battleId: Long): Call<LikeResponse>
 
     // 배틀 댓글 조회 API
     @GET("/api/v1/communities/battle/{battle_id}/comments")

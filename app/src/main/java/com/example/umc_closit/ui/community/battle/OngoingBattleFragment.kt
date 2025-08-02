@@ -1,6 +1,5 @@
 package com.example.umc_closit.ui.community.battle
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,22 +10,22 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.umc_closit.Community.BattlePageAdapter
-import com.example.umc_closit.R
-import com.example.umc_closit.data.entities.BattleItem
 import com.example.umc_closit.data.remote.RetrofitClient
 import com.example.umc_closit.data.remote.battle.BattleListResponse
+import com.example.umc_closit.data.remote.battle.BattlePreview
 import com.example.umc_closit.databinding.FragmentCompletedBattleBinding
+import com.example.umc_closit.databinding.FragmentOngoingBattleBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class OngoingBattleFragment : Fragment() {
 
-    private var _binding: FragmentCompletedBattleBinding? = null
+    private var _binding: FragmentOngoingBattleBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var battleAdapter: BattlePageAdapter
-    private val battleList = mutableListOf<BattleItem>()
+    private val battleList = mutableListOf<BattlePreview>()
 
     private var isLoading = false
     private var currentPage = 0
@@ -36,7 +35,7 @@ class OngoingBattleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCompletedBattleBinding.inflate(inflater, container, false)
+        _binding = FragmentOngoingBattleBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,12 +43,12 @@ class OngoingBattleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         battleAdapter = BattlePageAdapter(requireContext(), battleList)
-        binding.rvCompleted.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvCompleted.adapter = battleAdapter
+        binding.rvOngoing.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvOngoing.adapter = battleAdapter
 
         fetchBattleList(currentPage)
 
-        binding.rvCompleted.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rvOngoing.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
@@ -80,19 +79,7 @@ class OngoingBattleFragment : Fragment() {
 
                     if (!battles.isNullOrEmpty()) {
                         binding.tvNobattle.visibility = View.GONE
-                        battleList.addAll(battles.map { preview ->
-                            BattleItem(
-                                id = preview.battleId.toInt(),
-                                battleId = preview.battleId,
-                                userProfileUrl = preview.firstProfileImage,
-                                userName = preview.firstClositId,
-                                battleLikeId = 0,
-                                leftPostId = preview.firstPostId,
-                                rightPostId = preview.secondPostId,
-                                leftPostImageUrl = preview.firstPostFrontImage,
-                                rightPostImageUrl = preview.secondPostFrontImage
-                            )
-                        })
+                        battleList.addAll(battles)
                         battleAdapter.notifyDataSetChanged()
 
                         if (battles.size < 10) isLastPage = true // 페이지 사이즈 10 기준

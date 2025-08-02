@@ -1,6 +1,5 @@
 package com.example.umc_closit.data.entities
 
-// BattleItem: 배틀 게시글 데이터를 담는 데이터 클래스입니다.
 data class BattleItem(
     val id: Int,
     val battleId: Long,
@@ -9,9 +8,15 @@ data class BattleItem(
     val leftPostId: Int,
     val rightPostId: Int,
     val battleLikeId: Int,
-    val leftPostImageUrl: String,   // 추가
-    val rightPostImageUrl: String   // 추가
-//    var isLiked: Boolean = false // 좋아요 상태
-
+    val leftPostImageUrl: String,
+    val rightPostImageUrl: String,
+    val likeCount: Int,
+    val firstPostBackImage: String,
+    val secondPostBackImage: String,
+    val firstVotingCnt: Int,
+    val secondVotingCnt: Int,
+    val firstClositId: String,
+    val secondClositId: String,
+    val firstProfileImage: String,
+    val secondProfileImage: String
 )
-
