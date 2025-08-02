@@ -136,7 +136,7 @@
         app:tabIndicatorColor="@color/pink_point"
         app:tabSelectedTextColor="@color/black"
         app:tabTextColor="@color/light_gray"
-        app:tabIndicatorHeight="2dp"
+        app:tabIndicatorHeight="1dp"
         android:layout_marginStart="4dp"
         app:tabRippleColor="@null"
         app:layout_constraintTop_toBottomOf="@+id/cl_challenge_wrapper"
