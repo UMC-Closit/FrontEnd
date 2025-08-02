@@ -48,22 +48,69 @@ class CommunityTodayClosetAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position] // 이제 item은 TodayClosetItem 타입입니다.
+        
+        android.util.Log.d("CommunityTodayClosetAdapter", "onBindViewHolder - position: $position, frontImage: ${item.frontImage}")
 
         // Glide를 사용하여 게시물 이미지 로드 (frontImage 사용)
         Glide.with(holder.itemView.context)
             .load(item.frontImage) // TodayClosetItem의 frontImage 필드
             .placeholder(R.drawable.ic_insta)
-            //.error(R.drawable.ic_error_placeholder) // 에러 시 보여줄 이미지 (ic_error_placeholder.xml 같은 드로어블 필요)
+            .error(R.drawable.ic_insta) // 에러 시 보여줄 이미지
             .centerCrop()
+            .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                override fun onLoadFailed(
+                    e: com.bumptech.glide.load.engine.GlideException?,
+                    model: Any?,
+                    target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    android.util.Log.e("CommunityTodayClosetAdapter", "이미지 로드 실패: ${item.frontImage}, 에러: ${e?.message}")
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: android.graphics.drawable.Drawable?,
+                    model: Any?,
+                    target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                    dataSource: com.bumptech.glide.load.DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    android.util.Log.d("CommunityTodayClosetAdapter", "이미지 로드 성공: ${item.frontImage}")
+                    return false
+                }
+            })
             .into(holder.postImageView)
 
         // Glide를 사용하여 사용자 프로필 이미지 로드
+        android.util.Log.d("CommunityTodayClosetAdapter", "프로필 이미지 로드 시도: ${item.profileImage}")
         if (item.profileImage.isNotEmpty()) {
             Glide.with(holder.itemView.context)
                 .load(item.profileImage) // TodayClosetItem의 profileImage 필드
                 .placeholder(R.drawable.ic_profile)
                 .error(R.drawable.ic_profile)
                 .circleCrop()
+                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                    override fun onLoadFailed(
+                        e: com.bumptech.glide.load.engine.GlideException?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        android.util.Log.e("CommunityTodayClosetAdapter", "프로필 이미지 로드 실패: ${item.profileImage}, 에러: ${e?.message}")
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: android.graphics.drawable.Drawable?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                        dataSource: com.bumptech.glide.load.DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        android.util.Log.d("CommunityTodayClosetAdapter", "프로필 이미지 로드 성공: ${item.profileImage}")
+                        return false
+                    }
+                })
                 .into(holder.userProfileImageView)
         } else {
             holder.userProfileImageView.setImageResource(R.drawable.ic_profile)
@@ -81,10 +128,14 @@ class CommunityTodayClosetAdapter(
         holder.cardView.contentDescription = "오늘의 옷장 게시물 ID ${item.postId}, 조회수 ${item.viewCount}"
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int {
+        android.util.Log.d("CommunityTodayClosetAdapter", "getItemCount: ${items.size}")
+        return items.size
+    }
 
     // 데이터를 업데이트하는 함수 (Fragment에서 호출)
     fun updateData(newItems: List<TodayClosetItem>) {
+        android.util.Log.d("CommunityTodayClosetAdapter", "updateData 호출됨: ${newItems.size}개 아이템")
         items = newItems
         notifyDataSetChanged() // 데이터 변경 알림
     }

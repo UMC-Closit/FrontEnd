@@ -95,16 +95,15 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_community_today_closet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="248dp"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
         android:paddingStart="20dp"
         android:paddingEnd="10dp"
-    android:clipToPadding="false"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    app:layout_constraintTop_toBottomOf="@id/cl_today_closet_title_container"
-    tools:listitem="@layout/item_community_today_closet"
-    tools:itemCount="5" /> <!-- 디자인 타임 미리보기용 아이템 개수 -->
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/cl_today_closet_title_container"
+        tools:listitem="@layout/item_community_today_closet"
+        tools:itemCount="5" /> <!-- 디자인 타임 미리보기용 아이템 개수 -->
 
 
     <!-- "배틀 게시판" 타이틀 및 업로드 버튼 컨테이너 -->
@@ -148,15 +147,15 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_community_battle_post"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="248dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
         android:paddingStart="20dp"
         android:paddingEnd="10dp"
-        android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/cl_battle_post_title_container"
-        tools:listitem="@layout/item_community_today_closet"
-        tools:itemCount="4" /> <!-- 디자인 타임 미리보기용 아이템 개수 -->
+        tools:itemCount="4"
+        tools:layout_editor_absoluteX="0dp"
+        tools:listitem="@layout/item_community_battle" /> <!-- 디자인 타임 미리보기용 아이템 개수 -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

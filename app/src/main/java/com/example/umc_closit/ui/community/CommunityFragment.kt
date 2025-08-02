@@ -53,19 +53,22 @@ class CommunityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("CommunityFragment", "onCreateView 호출됨")
         _binding = FragmentCommunityBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        android.util.Log.d("CommunityFragment", "CommunityFragment onViewCreated 호출됨")
+        Log.d("CommunityFragment", "onViewCreated 호출됨")
 
         setupClickListeners()
         setupTodayClosetRecyclerView()
         setupBattlePostRecyclerView()
-        TodayClosetApiService()
         setupSearchFunctionality()
+        // RecyclerView 설정 완료 후 API 호출
+        Log.d("CommunityFragment", "API 호출 직전")
+        TodayClosetApiService()
     }
 
     private fun setupClickListeners() {
@@ -94,9 +97,7 @@ class CommunityFragment : Fragment() {
         todayClosetAdapter = CommunityTodayClosetAdapter(emptyList()) { clickedItem ->
             // "오늘의 옷장" RecyclerView 아이템 클릭 시 DetailActivity로 이동
             val intent = Intent(requireContext(), DetailActivity::class.java)
-            // DetailActivity에 어떤 아이템인지 정보를 전달할 수 있습니다.
             intent.putExtra("POST_ID", clickedItem.postId) // 예시: postId 전달
-            // 필요하다면 다른 정보도 전달 (예: clickedItem.imageResId 등)
             startActivity(intent)
         }
         binding.rvCommunityTodayCloset.apply {
@@ -131,20 +132,32 @@ class CommunityFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // RecyclerView 어댑터를 null로 설정하여 메모리 누수 방지
         binding.rvCommunityTodayCloset.adapter = null
         _binding = null
     }
 
     private fun TodayClosetApiService() {
-        RetrofitClient.todayClosetApiService.getTodayClosets(page = 0)
+        Log.d("TodayCloset", "API 호출 시작")
+        try {
+            Log.d("TodayCloset", "RetrofitClient 접근 시도")
+            RetrofitClient.todayClosetApiService.getTodayClosets(page = 0)
             .enqueue(object : Callback<TodayClosetResponse> {
                 override fun onResponse(
                     call: Call<TodayClosetResponse>,
                     response: Response<TodayClosetResponse>
                 ) {
+                    Log.d("TodayCloset", "API 응답 받음: ${response.isSuccessful}")
+                    Log.d("TodayCloset", "응답 바디: ${response.body()}")
                     if (response.isSuccessful && response.body()?.isSuccess == true) {
                         val items = response.body()?.result?.todayClosets ?: emptyList()
+                        Log.d("TodayCloset", "받은 아이템 개수: ${items.size}")
+                        Log.d("TodayCloset", "result 전체: ${response.body()?.result}")
+                        // 첫 번째 아이템의 이미지 URL 로그 출력
+                        if (items.isNotEmpty()) {
+                            val firstItem = items[0]
+                            Log.d("TodayCloset", "첫 번째 아이템 - frontImage: ${firstItem.frontImage}")
+                            Log.d("TodayCloset", "첫 번째 아이템 - profileImage: ${firstItem.profileImage}")
+                        }
                         todayClosetAdapter.updateData(items)
                     } else {
                         Log.e("TodayCloset", "API 응답 실패: ${response.body()?.message}")
@@ -155,6 +168,9 @@ class CommunityFragment : Fragment() {
                     Log.e("TodayCloset", "네트워크 오류: ${t.message}")
                 }
             })
+        } catch (e: Exception) {
+            Log.e("TodayCloset", "RetrofitClient 접근 오류: ${e.message}")
+        }
     }
 
     private fun setupSearchFunctionality() {

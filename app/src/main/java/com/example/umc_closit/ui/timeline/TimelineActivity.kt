@@ -65,7 +65,9 @@ class TimelineActivity : AppCompatActivity() {
                 }
                 R.id.menu_community -> {
                     android.util.Log.d("TimelineActivity", "CommunityFragment로 전환")
-                    replaceFragment(CommunityFragment())
+                    val communityFragment = CommunityFragment()
+                    android.util.Log.d("TimelineActivity", "CommunityFragment 인스턴스 생성됨")
+                    replaceFragment(communityFragment)
                     true
                 }
                 R.id.menu_upload -> {
