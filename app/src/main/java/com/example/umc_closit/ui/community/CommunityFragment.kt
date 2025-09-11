@@ -23,6 +23,8 @@ import com.example.umc_closit.ui.community.challenge.ChallengeFragment
 import com.example.umc_closit.ui.community.todaycloset.TodayClosetFragment
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
 import com.example.umc_closit.ui.upload.UploadActivity
+import com.example.umc_closit.data.remote.battle.BattleListResponse
+import com.example.umc_closit.data.remote.battle.BattlePreview
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,8 +33,6 @@ class CommunityFragment : Fragment() {
 
     private var _binding: FragmentCommunityBinding? = null
     private val binding get() = _binding!!
-
-
 
     private lateinit var todayClosetAdapter: CommunityTodayClosetAdapter
     private lateinit var battlePostAdapter: CommunityBattlePostAdapter
@@ -69,6 +69,7 @@ class CommunityFragment : Fragment() {
         // RecyclerView 설정 완료 후 API 호출
         Log.d("CommunityFragment", "API 호출 직전")
         TodayClosetApiService()
+        BattlePostApiService()
     }
 
     private fun setupClickListeners() {
@@ -170,6 +171,42 @@ class CommunityFragment : Fragment() {
             })
         } catch (e: Exception) {
             Log.e("TodayCloset", "RetrofitClient 접근 오류: ${e.message}")
+        }
+    }
+
+    private fun BattlePostApiService() {
+        Log.d("BattlePost", "배틀 게시판 API 호출 시작")
+        try {
+            RetrofitClient.battleApiService.getBattleList(page = 0, sorting = "LATEST", status = "ACTIVE")
+            .enqueue(object : Callback<BattleListResponse> {
+                override fun onResponse(
+                    call: Call<BattleListResponse>,
+                    response: Response<BattleListResponse>
+                ) {
+                    Log.d("BattlePost", "API 응답 받음: ${response.isSuccessful}")
+                    if (response.isSuccessful && response.body()?.isSuccess == true) {
+                        val battleList = response.body()?.result?.battlePreviewList ?: emptyList()
+                        Log.d("BattlePost", "받은 배틀 아이템 개수: ${battleList.size}")
+                        
+                        if (battleList.isNotEmpty()) {
+                            val firstBattle = battleList[0]
+                            Log.d("BattlePost", "첫 번째 배틀 - firstPostFrontImage: ${firstBattle.firstPostFrontImage}")
+                            Log.d("BattlePost", "첫 번째 배틀 - firstClositId: ${firstBattle.firstClositId}")
+                            Log.d("BattlePost", "첫 번째 배틀 - likeCount: ${firstBattle.likeCount}")
+                        }
+                        
+                        battlePostAdapter.updateData(battleList)
+                    } else {
+                        Log.e("BattlePost", "API 응답 실패: ${response.body()?.message}")
+                    }
+                }
+
+                override fun onFailure(call: Call<BattleListResponse>, t: Throwable) {
+                    Log.e("BattlePost", "네트워크 오류: ${t.message}")
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("BattlePost", "RetrofitClient 접근 오류: ${e.message}")
         }
     }
 
