@@ -1,0 +1,198 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingTop="12dp">
+
+    <!-- 툴바 (고정된 영역) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/check_gray_bright"
+        android:elevation="2dp"
+        app:layout_constraintHeight_percent="0.085"
+        android:paddingVertical="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="도전하기"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:paddingStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_back"
+            app:layout_constraintStart_toEndOf="@+id/iv_back"
+            app:layout_constraintTop_toTopOf="@+id/iv_back" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 스크롤 내부 컨텐츠 -->
+        <!-- ========== [섹션 컨테이너: 날짜~상세설명] ========== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_battle_section"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="16dp"
+            app:layout_constraintTop_toBottomOf="@id/cl_toolbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- 날짜 -->
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3월 6일 - 3월 9일"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- 제목 -->
+            <TextView
+                android:id="@+id/tv_info_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제목"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:fontFamily="@font/ibm_semibold"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_date" />
+
+            <!-- ===== 좌/우 카드 영역 ===== -->
+
+            <!-- 왼쪽 세트(카드 + 투표바) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/set_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_info_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/set_right"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintWidth_percent="0.48">
+
+                <!-- item_upload: 가로 꽉 채우고 비율로 높이 -->
+                <include
+                    android:id="@+id/include_left"
+                    layout="@layout/item_upload"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintDimensionRatio="16:11" />
+
+                <!-- 능동형 투표 바 (Material LinearProgressIndicator) -->
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_left"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="8dp"
+                    android:progress="40"
+                    android:max="100"
+                    app:layout_constraintTop_toBottomOf="@id/include_left"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:trackColor="@color/light_gray_bg"
+                    app:indicatorColor="@color/black"
+                    app:trackCornerRadius="12dp"
+                    app:indicatorDirectionLinear="leftToRight" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 오른쪽 세트(카드 + 투표바) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/set_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_info_title"
+                app:layout_constraintStart_toEndOf="@id/set_left"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="0.48">
+
+                <include
+                    android:id="@+id/include_right"
+                    layout="@layout/item_upload"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintDimensionRatio="16:11" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_right"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="8dp"
+                    android:progress="60"
+                    android:max="100"
+                    app:layout_constraintTop_toBottomOf="@id/include_right"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:trackColor="@color/light_gray_bg"
+                    app:indicatorColor="@color/black"
+                    app:trackCornerRadius="12dp"
+                    app:indicatorDirectionLinear="leftToRight" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 좌/우 설명 -->
+            <TextView
+                android:id="@+id/tv_description_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Lorem ipsum dolor sit amet consectetur. Tempor facilisis massa imperdiet nibh ipsum ultrices in."
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/set_left"
+                app:layout_constraintStart_toStartOf="@id/set_left"
+                app:layout_constraintEnd_toEndOf="@id/set_left" />
+
+            <TextView
+                android:id="@+id/tv_description_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Lorem ipsum dolor sit amet consectetur. Tempor facilisis massa imperdiet nibh ipsum ultrices in."
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/set_right"
+                app:layout_constraintStart_toStartOf="@id/set_right"
+                app:layout_constraintEnd_toEndOf="@id/set_right" />
+
+            <!-- 섹션 하단 여백 -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_description_right"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

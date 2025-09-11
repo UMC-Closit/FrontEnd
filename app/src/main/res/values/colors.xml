@@ -40,4 +40,8 @@
 
     <color name="gray_battle_left">#E4E4E4</color>
     <color name="gray_battle_right">#F2F2F3</color>
+
+    <color name="light_gray_bg">#F5F5F5</color>
+    <color name="medium_gray_bg">#E0E0E0</color>
+
 </resources>
