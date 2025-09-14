@@ -36,9 +36,9 @@
             android:id="@+id/createButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:background="@android:color/transparent"
-            android:drawableEnd="@drawable/ic_upload_plus"
+            android:drawableEnd="@drawable/ic_upload_plus_new"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

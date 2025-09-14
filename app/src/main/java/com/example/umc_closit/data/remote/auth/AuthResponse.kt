@@ -89,3 +89,14 @@ data class QuitResponse<T>(
     val message: String,
     val result: T
 )
+
+data class SocialLoginRequest(
+    val idToken: String
+)
+
+data class SocialLoginResponse(
+    val isSuccess: Boolean,
+    val code: String,
+    val message: String,
+    val result: LoginResult? // 서버에서 내려주는 로그인 결과(토큰 등)
+)

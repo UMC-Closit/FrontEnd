@@ -73,6 +73,10 @@
             android:exported="true"
             android:theme="@style/Theme.UMC_Closit">
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.client_id"
+            android:value="@string/default_web_client_id"/>
     </application>
 
 </manifest>

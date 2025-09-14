@@ -4,39 +4,60 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.res.ResourcesCompat
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.auth.LoginRequest
 import com.example.umc_closit.data.remote.auth.LoginResponse
 import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.auth.SocialLoginRequest
+import com.example.umc_closit.data.remote.auth.SocialLoginResponse
 import com.example.umc_closit.databinding.ActivityLoginBinding
 import com.example.umc_closit.ui.login.find.FindIDActivity
 import com.example.umc_closit.ui.login.find.FindPasswordActivity
 import com.example.umc_closit.ui.timeline.TimelineActivity
 import com.example.umc_closit.utils.TokenUtils
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private var isPasswordVisible = false // 비밀번호 표시 여부
 
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private val RC_SIGN_IN = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        checkLoginStatus() // 로그인 체크
+        checkLoginStatus() // 자동 로그인 체크
 
+        // 1. GoogleSignInOptions 및 Client 초기화
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // 2. 구글 로그인 아이콘 클릭 리스너
+        binding.googleIcon.setOnClickListener {
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+        }
+
+        // 3. 일반 로그인 버튼
         binding.btnLogin.setOnClickListener {
             val email = binding.passwordContainer.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
@@ -49,28 +70,79 @@ class LoginActivity : AppCompatActivity() {
             loginUser(email, password)
         }
 
-        // 비밀번호 보기/숨기기 토글 기능
+        // 4. 비밀번호 보기/숨기기 토글
         binding.btnTogglePassword.setOnClickListener {
             togglePasswordVisibility()
         }
 
-        // 회원가입 버튼 클릭 이벤트
+        // 5. 회원가입, 아이디/비밀번호 찾기 버튼
         binding.btnRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
-
-        // 아이디 찾기 버튼 클릭 이벤트
         binding.btnFindId.setOnClickListener {
-            val intent = Intent(this, FindIDActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, FindIDActivity::class.java))
         }
-
-        // 비밀번호 찾기 버튼 클릭 이벤트
         binding.btnFindPassword.setOnClickListener {
-            val intent = Intent(this, FindPasswordActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, FindPasswordActivity::class.java))
         }
+    }
+
+    // 구글 로그인 결과 처리
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            val idToken = account?.idToken
+            if (idToken != null) {
+                sendIdTokenToServer(idToken)
+            } else {
+                Toast.makeText(this, "구글 토큰이 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: ApiException) {
+            Toast.makeText(this, "구글 로그인 실패: ${e.statusCode}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun sendIdTokenToServer(idToken: String) {
+        val api = { RetrofitClient.authService.socialLogin("GOOGLE", SocialLoginRequest(idToken)) }
+        api().enqueue(object : Callback<SocialLoginResponse> {
+            override fun onResponse(call: Call<SocialLoginResponse>, response: Response<SocialLoginResponse>) {
+                val code = response.code()
+                val raw = response.raw()
+                Log.d("SOCIAL_LOGIN", "HTTP $code ${raw.request.url}")
+                Log.d("SOCIAL_LOGIN", "headers=${response.headers()}")
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    Log.d("SOCIAL_LOGIN", "body=$body")
+                    if (body?.isSuccess == true && body.result != null) {
+                        val result = body.result
+                        // TokenUtils.saveTokens(this@LoginActivity, result.accessToken, result.refreshToken, result.userId)
+                        Toast.makeText(this@LoginActivity, "서버 로그인 성공", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this@LoginActivity, TimelineActivity::class.java))
+                        finish()
+                    } else {
+                        Log.e("SOCIAL_LOGIN", "isSuccess=${body?.isSuccess}, code=${body?.code}, message=${body?.message}, result=${body?.result}")
+                        Toast.makeText(this@LoginActivity, "서버 로그인 실패: ${body?.message ?: "no message"}", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val err = response.errorBody()?.string()
+                    Log.e("SOCIAL_LOGIN", "errorBody=$err")
+                    Toast.makeText(this@LoginActivity, "서버 오류: $code", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<SocialLoginResponse>, t: Throwable) {
+                Log.e("SOCIAL_LOGIN", "network failure", t)
+                Toast.makeText(this@LoginActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun togglePasswordVisibility() {
@@ -134,7 +206,6 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
 
     // 자동 로그인 기능 추가
     private fun checkLoginStatus() {

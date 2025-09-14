@@ -94,51 +94,56 @@
         <!-- 댓글, 좋아요, 저장 버튼 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_actions"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_width="144dp"
+            android:layout_height="40dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_rounded_99"
+            android:layout_marginBottom="20dp"
             app:layout_constraintHeight_default="spread"
-            app:layout_constraintStart_toStartOf="@id/cl_frame"
-            app:layout_constraintTop_toBottomOf="@id/cl_image_container">
+            app:layout_constraintEnd_toEndOf="@id/cl_frame"
+            app:layout_constraintBottom_toBottomOf="@id/cl_image_container">
 
             <!-- 좋아요 버튼 -->
             <ImageView
                 android:id="@+id/iv_like"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_heart"
                 android:layout_marginLeft="10dp"
+                android:layout_marginStart="18dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="@id/cl_actions"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.08" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/like_count_num"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintWidth_percent="0.1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toEndOf="@id/iv_like"
-                android:textSize="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="5dp"
+                android:textSize="16dp"
                 android:text="22"
                 android:textColor="@color/black"
+                android:gravity="center"
                 />
 
             <!-- 댓글 버튼 -->
             <ImageView
                 android:id="@+id/iv_comment"
-                android:layout_width="0dp"
+                android:layout_width="24dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_comment_new"
+                android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toEndOf="@id/like_count_num"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.08" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/comment_count_num"
@@ -151,7 +156,7 @@
             <!-- 저장 버튼 -->
             <ImageView
                 android:id="@+id/iv_save"
-                android:layout_width="0dp"
+                android:layout_width="24dp"
                 android:layout_height="0dp"
                 android:src="@drawable/ic_star"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -31,6 +31,8 @@ import com.example.umc_closit.ui.timeline.detail.DetailActivity
 import com.example.umc_closit.data.remote.post.PostDeleteResponse
 import com.example.umc_closit.utils.FileUtils
 import com.example.umc_closit.utils.TokenUtils
+import com.example.umc_closit.databinding.DialogReportBinding
+import com.example.umc_closit.data.remote.report.ReportRequest
 
 class   TimelineAdapter(
     private val context: Context,
@@ -57,8 +59,8 @@ class   TimelineAdapter(
             Glide.with(context).load(item.backImage).into(ivImageSmall)
             Glide.with(context).load(item.profileImage).transform(CircleCrop()).into(ivUserProfile)
 
-            ivLike.setImageResource(if (item.isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
-            ivSave.setImageResource(if (item.isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
+            ivLike.setImageResource(if (item.isLiked) R.drawable.ic_heart_on else R.drawable.ic_heart)
+            ivSave.setImageResource(if (item.isSaved) R.drawable.ic_star_on else R.drawable.ic_star)
 
             // 좋아요 수 binding
             likeCountNum.text = item.likeCount.toString()
@@ -102,7 +104,10 @@ class   TimelineAdapter(
                         call = apiCall(),
                         onSuccess = { result: LikeResponse ->
                             if (result.isSuccess) {
-                                timelineItems[position] = item.copy(isLiked = false)
+                                timelineItems[position] = item.copy(
+                                    isLiked = result.result.isLiked,
+                                    likeCount = result.result.likeCount
+                                )
                                 notifyItemChanged(position)
                             }
                         },
@@ -117,7 +122,10 @@ class   TimelineAdapter(
                         call = apiCall(),
                         onSuccess = { result: LikeResponse ->
                             if (result.isSuccess) {
-                                timelineItems[position] = item.copy(isLiked = true)
+                                timelineItems[position] = item.copy(
+                                    isLiked = result.result.isLiked,
+                                    likeCount = result.result.likeCount
+                                )
                                 notifyItemChanged(position)
                             }
                         },
@@ -177,15 +185,19 @@ class   TimelineAdapter(
                 }
             }
 
-//            ivOption.setOnClickListener {
-//                val myClositId = TokenUtils.getClositId(context)
-//                val isMyPost = (item.clositId == myClositId)
-//                if (isMyPost) {
-//                    showDeleteModifyDialog(context, item.postId) {
-//                        timelineItems.removeAt(position)
-//                        notifyItemRemoved(position)
-//                    }
-//            }
+            ivOption.setOnClickListener {
+                val myClositId = TokenUtils.getClositId(context)
+                val isMyPost = (item.clositId == myClositId)
+
+                if (isMyPost) {
+                    showDeleteModifyDialog(context, item.postId) {
+                        timelineItems.removeAt(position)
+                        notifyItemRemoved(position)
+                    }
+                } else {
+                    showBlockReportDialog(context)
+                }
+            }
 
             ivUserProfile.setOnClickListener {
                 val activity = context as? androidx.fragment.app.FragmentActivity
@@ -199,17 +211,7 @@ class   TimelineAdapter(
                     ?.commit()
             }
 
-//            ivOption.setOnClickListener {
-//                val myClositId = TokenUtils.getClositId(context) //나의 Id
-//                val isMyPost = (item.clositId == myClositId)
-//
-//                if (isMyPost) {
-//                    showDeleteModifyDialog(context)
-//                }
-//                else {
-//                    showBlockReportDialog(context)
-//                }
-//            }
+
 
         }
     }
@@ -227,25 +229,23 @@ class   TimelineAdapter(
     }
 
     //삭제 수정 dialog 표시
-    fun showDeleteModifyDialog(context: Context) {
+    fun showDeleteModifyDialog(context: Context, postId: Int, onDeleteSuccess: () -> Unit) {
         val dialog = Dialog(context)
         val binding = DialogDelModBinding.inflate(LayoutInflater.from(context))
         dialog.setContentView(binding.root)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
 
-        // 예시: 삭제 버튼 클릭 리스너
         binding.deleteButton.setOnClickListener {
-            // 삭제 로직
+//            deletePost(context, postId, onDeleteSuccess)
             dialog.dismiss()
         }
-        // 예시: 수정 버튼 클릭 리스너
+
         binding.modifyButton.setOnClickListener {
             // 수정 로직
             dialog.dismiss()
         }
     }
-
 
     //차단, 신고 dialog 표시
     fun showBlockReportDialog(context: Context) {
@@ -254,6 +254,8 @@ class   TimelineAdapter(
         dialog.setContentView(binding.root)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
+
+
 
         // 예시: 차단 버튼 클릭 리스너
         binding.blockButton.setOnClickListener {
@@ -264,10 +266,49 @@ class   TimelineAdapter(
         binding.reportButton.setOnClickListener {
             // 신고 로직
             dialog.dismiss()
+            showReportDialog(context)
+        }
+    }
+    private fun showReportDialog(context: Context) {
+        val dialog = Dialog(context)
+        val binding = DialogReportBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        val dm = context.resources.displayMetrics
+        val width = (dm.widthPixels * 0.92).toInt()
+        val height = (dm.heightPixels * 0.55).toInt() // 세로 85%
+        dialog.window?.setLayout(width, height)
+
+        binding.dialogReportButton.setOnClickListener {
+            val content = binding.etContent.text?.toString()?.trim().orEmpty()
+            if (content.isEmpty()) {
+                Toast.makeText(context, "신고 사유를 입력하세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val apiCall = { RetrofitClient.reportService.report(ReportRequest(content)) }
+
+            TokenUtils.handleTokenRefresh(
+                call = apiCall(),
+                onSuccess = { resp ->
+                    if (resp.isSuccess) {
+                        Toast.makeText(context, "신고가 접수되었습니다.", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                    } else {
+                        Toast.makeText(context, resp.message ?: "신고 실패", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onFailure = { t ->
+                    Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                },
+                context = context
+            )
         }
     }
 //    fun deletePost(context: Context, postId: Int, onSuccess: () -> Unit) {
-//        val apiCall = { RetrofitClient.postService.deletePost(postId) }
+//        val apiCall: () -> Call<PostDeleteResponse> = { RetrofitClient.postService.deletePost(postId) }
 //        TokenUtils.handleTokenRefresh(
 //            call = apiCall(),
 //            onSuccess = { response ->

@@ -62,7 +62,8 @@ data class LikeResponse(
 data class LikeResult(
     val isLiked: Boolean,
     val postId: Int,
-    val clositId: String
+    val clositId: String,
+    val likeCount: Int
 )
 
 // save

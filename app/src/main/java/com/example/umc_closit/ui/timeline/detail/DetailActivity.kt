@@ -90,8 +90,8 @@ class DetailActivity : AppCompatActivity() {
 
     private fun updateLikeAndBookmark() {
         // 좋아요/북마크 상태 업데이트
-        binding.ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
-        binding.ivSave.setImageResource(if (isSaved) R.drawable.ic_save_on else R.drawable.ic_save_off)
+        binding.ivLike.setImageResource(if (isLiked) R.drawable.ic_heart_on else R.drawable.ic_heart)
+        binding.ivSave.setImageResource(if (isSaved) R.drawable.ic_star_on else R.drawable.ic_star)
     }
 
     private fun fetchPostDetail(postId: Int) {

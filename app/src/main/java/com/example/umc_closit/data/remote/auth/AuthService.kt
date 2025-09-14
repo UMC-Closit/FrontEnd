@@ -16,6 +16,12 @@ interface AuthService {
     @POST("api/auth/login")
     fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
 
+    @POST("/api/auth/oauth/{provider}/login")
+    fun socialLogin(
+        @Path("provider") provider: String,
+        @Body request: SocialLoginRequest
+    ): Call<SocialLoginResponse>
+
     @POST("/api/auth/refresh")
     fun refreshToken(
         @Body request: RefreshRequest
@@ -29,4 +35,6 @@ interface AuthService {
     @DELETE("/api/v1/users/")
     fun deleteUser(
     ): Call<QuitResponse<String>>
+
+
 }

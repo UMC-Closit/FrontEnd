@@ -5,5 +5,7 @@
 
     <string name="record_days_format">%1$d일째 기록중</string>
 
+    <string name="default_web_client_id">264999588415-vcafofhekom7ntnuo7r55eljed0mkp1h.apps.googleusercontent.com</string>
+
 
 </resources>

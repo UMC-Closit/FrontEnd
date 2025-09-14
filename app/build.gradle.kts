@@ -85,4 +85,7 @@ dependencies {
     implementation("com.launchdarkly:okhttp-eventsource:2.5.0")
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.4")
 
+    // social login (google)
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
 }

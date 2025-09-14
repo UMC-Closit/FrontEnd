@@ -11,6 +11,7 @@ import com.example.umc_closit.data.remote.profile.ProfileService
 import com.example.umc_closit.data.remote.timeline.TimelineService
 import com.example.umc_closit.data.remote.profile.history.HistoryService
 import com.example.umc_closit.data.remote.battle.BattleApiService
+import com.example.umc_closit.data.remote.report.ReportService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -71,6 +72,10 @@ object RetrofitClient {
 
     val postService: PostService by lazy{
         retrofit.create(PostService::class.java)
+    }
+
+    val reportService: ReportService by lazy {
+        retrofit.create(ReportService::class.java)
     }
 
     fun <T> createService(serviceClass: Class<T>): T {

@@ -11,15 +11,24 @@ import com.bumptech.glide.Glide
 import com.example.umc_closit.R
 import com.example.umc_closit.data.remote.battle.TodayClosetItem
 import com.example.umc_closit.ui.timeline.detail.DetailActivity
+import com.example.umc_closit.data.remote.RetrofitClient
+import com.example.umc_closit.data.remote.timeline.LikeResponse
+import com.example.umc_closit.utils.TokenUtils
+import android.widget.Toast
 
 class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>() {
 
     private val itemList = mutableListOf<TodayClosetItem>()
 
+    private val isLikedMap = mutableMapOf<Int, Boolean>()
+    private val likeCountMap = mutableMapOf<Int, Int>()
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val frontImage: ImageView = view.findViewById(R.id.img_front)
         val backImage: ImageView = view.findViewById(R.id.img_back)
         val profileImage: ImageView = view.findViewById(R.id.iv_user_profile)
+        val likeCountNum: TextView = view.findViewById(R.id.like_count_num)
+        val ivLike: ImageView = view.findViewById(R.id.iv_like)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,6 +39,12 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = itemList[position]
+        val postId = item.postId
+        val isLiked = isLikedMap[postId] ?: false
+        val likeCount = likeCountMap[postId] ?: 0
+
+        holder.ivLike.setImageResource(if (isLiked) R.drawable.ic_like_on else R.drawable.ic_like_off)
+        holder.likeCountNum.text = likeCount.toString()
 
         // 전면 사진 로드
         Glide.with(holder.itemView.context)
@@ -57,6 +72,39 @@ class TodayClosetAdapter : RecyclerView.Adapter<TodayClosetAdapter.ViewHolder>()
             val intent = Intent(context, DetailActivity::class.java)
             intent.putExtra("postId", item.postId)
             context.startActivity(intent)
+        }
+
+        holder.ivLike.setOnClickListener {
+            val currentlyLiked = isLikedMap[postId] ?: false
+            if (currentlyLiked) {
+                val call = { RetrofitClient.timelineService.removeLike(postId) }
+                TokenUtils.handleTokenRefresh(
+                    call = call(),
+                    onSuccess = { resp: LikeResponse ->
+                        if (resp.isSuccess) {
+                            isLikedMap[postId] = resp.result.isLiked
+                            likeCountMap[postId] = resp.result.likeCount
+                            notifyItemChanged(holder.bindingAdapterPosition)
+                        }
+                    },
+                    onFailure = { /* 토스트 등 */ },
+                    context = holder.itemView.context
+                )
+            } else {
+                val call = { RetrofitClient.timelineService.addLike(postId) }
+                TokenUtils.handleTokenRefresh(
+                    call = call(),
+                    onSuccess = { resp: LikeResponse ->
+                        if (resp.isSuccess) {
+                            isLikedMap[postId] = resp.result.isLiked
+                            likeCountMap[postId] = resp.result.likeCount
+                            notifyItemChanged(holder.bindingAdapterPosition)
+                        }
+                    },
+                    onFailure = { /* 토스트 등 */ },
+                    context = holder.itemView.context
+                )
+            }
         }
     }
 

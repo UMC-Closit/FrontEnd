@@ -102,18 +102,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- 댓글 버튼 -->
-            <ImageView
-                android:id="@+id/iv_comment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_comment"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toStartOf="@id/iv_like"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.1" />
+
 
             <!-- 좋아요 버튼 -->
             <ImageView
@@ -124,16 +113,44 @@
                 android:src="@drawable/ic_like_off"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toStartOf="@id/iv_save"
+                app:layout_constraintEnd_toStartOf="@id/like_count_num"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.1" />
 
+            <TextView
+                android:id="@+id/like_count_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@id/iv_comment"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="5dp"
+                android:textSize="16dp"
+                android:text="22"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:paddingRight="10dp"
+                />
+
+            <!-- 댓글 버튼 -->
+            <ImageView
+                android:id="@+id/iv_comment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_comment_new"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/iv_save"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.1" />
             <!-- 저장 버튼 -->
+
             <ImageView
                 android:id="@+id/iv_save"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:src="@drawable/ic_save_off"
+                android:src="@drawable/ic_star"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="@id/cl_actions"
