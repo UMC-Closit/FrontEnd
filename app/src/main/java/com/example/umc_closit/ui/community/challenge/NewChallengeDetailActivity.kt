@@ -35,8 +35,8 @@ class NewChallengeDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_new_challenge_detail)
 
         // View 초기화
-        ivImage1Big = findViewById(R.id.iv_image1_big)
-        ivImage2Big = findViewById(R.id.iv_image2_big)
+        ivImage1Big = findViewById(R.id.include_left)
+        ivImage2Big = findViewById(R.id.include_right)
         btnUpload = findViewById(R.id.btnUpload)
 
         // Intent로부터 데이터 수신
