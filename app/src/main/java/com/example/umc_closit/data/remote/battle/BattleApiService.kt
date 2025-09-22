@@ -86,4 +86,10 @@ interface BattleApiService {
         @Path("battle_comment_id") battleCommentId: Int
     ): Call<BaseResponse<String>>
 
+    // 배틀 게시글 상세 조회 API
+    @GET("/api/v1/communities/battle/{battleId}")
+    fun getBattleDetail(
+        @Path("battleId") battleId: Int
+    ): Call<BattleDetailResponse>
+
 }
